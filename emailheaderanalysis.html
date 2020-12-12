@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Home</title>
+        <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger" href="index.html">
+                <span class="d-block d-lg-none">Olivier LEUNG</span>
+                <span class="d-none d-lg-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="assets/img/profile.jpg" alt="" /></span>
+            </a>
+            <div class="d-none d-lg-block description_profile"> <!--d-none is used for responsiveness of the panel when you shring the window -->
+                <h3>Olivier LEUNG</h3>
+                <div class="subheading_panel">Cybersecurity engineer </div>
+                    <div class="subheading_description">Love testing random cyber stuffs ! That's by baking we become a baker</div>
+            </div>
+            <!-- button collapse panel when small windows, responsive pane -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> 
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="index.html#search"><i class="fa fa-search" aria-hidden="true"></i> Search</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="ctfpage.html">CTF</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="dfirpage.html">DFIR</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="binarypage.html">Binary Exploitation</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="reversepage.html">Reverse Engineering</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="tutorialpage.html">Tutorial</a></li>
+                </ul>
+            </div>
+
+            <div class="d-none d-lg-block social-icons">
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/olivierleung"><i class="fab fa-linkedin-in"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://github.com/SkallZou"><i class="fab fa-github"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://twitter.com/olivier_leung"><i class="fab fa-twitter"></i></a>
+            </div>
+        </nav>
+        <!-- Page Content-->
+        <div>
+            <h2 class="header-article"><a href="dfirpage.html">Digital Forensics and Incident Response </a>> Email Header Analysis</h2>
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h3 class="mb-0">1/ Basic email term</h3>
+                        <br>
+                        <p>
+                            <strong>MUA (Mail user agent):</strong> Client application running on the computer used to send and receive email. (Example: Microsoft Outlook) <br/>
+                            <strong>MTA (Mail Transfer Agent):</strong> Accepts messages from a sender and routes them along to their destinations. (Example: Microsoft Exchange) <br/>
+                            <strong>MDA (Mail Delivery Agent):</strong>  Responsible for final delivery of the email to the recipient's inbox.<br/>
+
+                            <br/>
+
+                            <image src="img/Email Header Analysis/TypicalMailFlow.png" nom="TypicalMailFlow" width=35%/>
+
+                            <br/> <br/>
+
+                            <strong>SMTP (Single Message Transfer Protocol) / IMAP (Interactive Message Access Protocol) / POP3 (Post Office Protocol)</strong> are protocols for the MUA to be able to communicate with the MTA. SMTP is used to send the email. <br/>
+
+                            POP3 or IMAP is used to received the email, the main difference between those two protocols is that the POP protocol download the email in the client, without having a backup of the file in the mail server. IMAP, since there is a continue connexion between the client and the server, when you retrieve a file from the server, you get a copy of the email.
+
+                            <br/><br/>
+                            <strong>SPF (Sender Policy Framework):</strong> Defines a mechanism by which a company can specify a server or a list of servers that are allowed to send email on behalf of their domain. If an email fails an SPF check, it can be an easy mechanism we can use to detect spam.
+                            <br/>The SPF record is published by the DNS information as a TXT record type. <br/><br/>
+
+                            <img src="img/Email Header Analysis/SPF_dig.png" nom="SPF_dig" width=30%>
+
+                            <br><br>In this example, it shows us the TXT record for google.com. The SPF-record for google.com is "v=spf1 include:_spf.google.com ~all"
+                            <br>~all: Reject all email if the sender does not belong to the ip address present in the SPF record
+                            <br> Let's dig a little bit deeper.<br><br>
+
+                            <img src="img/Email Header Analysis/SPF_dig_2.png" nom="SPF_dig_2" width=65%>
+
+                            <br><br>
+                            By doing this, we dig deeper in the google SPF, and we find out, there are more spf included, all those spf can send email on behalf of google.com
+
+                            <br><br>Let's dig a bit deeper again <br><br>
+
+                            <img src="img/Email Header Analysis/SPF_dig_3.png" nom="SPF_dig_3" width="70%">
+
+                            <br><br>dig _netblocks.google.com txt +short (and all the variants as well) give us the list of ip addresses that are allowed to send an email on behalf of google.com. You will notice, it can be a range of ip address with the "/" suffix.
+
+                            <br/><br/><strong>DKIM (Domain Keys Identified Mail):</strong> Provides a cryptographic method of verifying a received email actually originated from the sending domain. We can use this to detect forged senders and spam. <br/>
+                            We can find the DKIM information on the DNS information. <br>
+                            The domain will generate a public/private key and publish the public  key in the TXT record of DNS information. Mail server which send the email on behalf of the domain will encrypt the mail  with the private key. This can be considered as the signature of the email. 
+                            When the recipient will receive the email, he will decrypt the email to be able to read the mail
+
+                            <br><br>
+                            <strong>DMARC (Domain-based Message Authentication, Reporting & Conformance)</strong> is a extension of SPF and DKIM. Actions taken if it doesn't match SPF and DKIM such as reject all the email which doesn't have a valid SPF and a valid DKIM.
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h3 class="mb-0">2/ Email analysis</h3>
+                        <h4>A. Legitimate email</h4>
+                        <br>
+                        <p>
+                            This is the email that we are going to analyze:<br>
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

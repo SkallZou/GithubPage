@@ -61,7 +61,7 @@
 
                             <br/>
 
-                            <image src="img/Email Header Analysis/TypicalMailFlow.png" nom="TypicalMailFlow" width=40%/>
+                            <image src="img/Email Header Analysis/TypicalMailFlow.png" nom="TypicalMailFlow" class="img-fluid" width="585" height="314"/>
 
                             <br/> <br/>
 
@@ -73,20 +73,20 @@
                             <strong>SPF (Sender Policy Framework):</strong> Defines a mechanism by which a company can specify a server or a list of servers that are allowed to send email on behalf of their domain. If an email fails an SPF check, it can be an easy mechanism we can use to detect spam.
                             <br/>The SPF record is published by the DNS information as a TXT record type. <br/><br/>
 
-                            <img src="img/Email Header Analysis/SPF_dig.png" nom="SPF_dig" width=30%>
+                            <img src="img/Email Header Analysis/SPF_dig.png" nom="SPF_dig" class="img-fluid" width="500" height="500">
 
                             <br><br>In this example, it shows us the TXT record for google.com. The SPF-record for google.com is "v=spf1 include:_spf.google.com ~all"
                             <br>~all: Reject all email if the sender does not belong to the ip address present in the SPF record
                             <br> Let's dig a little bit deeper.<br><br>
 
-                            <img src="img/Email Header Analysis/SPF_dig_2.png" nom="SPF_dig_2" width=65%>
+                            <img src="img/Email Header Analysis/SPF_dig_2.png" nom="SPF_dig_2" class="img-fluid" width="1000" height="900">
 
                             <br><br>
                             By doing this, we dig deeper in the google SPF, and we find out, there are more spf included, all those spf can send email on behalf of google.com
 
                             <br><br>Let's dig a bit deeper again <br><br>
 
-                            <img src="img/Email Header Analysis/SPF_dig_3.png" nom="SPF_dig_3" width="70%">
+                            <img src="img/Email Header Analysis/SPF_dig_3.png" nom="SPF_dig_3" class="img-fluid" width="1000" height="900">
 
                             <br><br>dig _netblocks.google.com txt +short (and all the variants as well) give us the list of ip addresses that are allowed to send an email on behalf of google.com. You will notice, it can be a range of ip address with the "/" suffix.
 
@@ -109,18 +109,18 @@
                         <br>
                         <p>
                             This is the email that we are going to analyze:<br>
-                            <br><img src="img/Email Header Analysis/apple_mail.png" name="apple_mail" width="50%"><br>
+                            <br><img src="img/Email Header Analysis/apple_mail.png" name="apple_mail" class="img-fluid" width="700" height="700"><br>
                             <br><strong>Received header:</strong> There are several received headers, the top one is closer to the destination and the bottom one is closer to the source.<br>
 
-                            <br><img src="img/Email Header Analysis/Received_header.png" name="Received_header" width="40%"><br>
+                            <br><img src="img/Email Header Analysis/Received_header.png" name="Received_header" class="img-fluid" width="700" height="700"><br>
                             <br>In this screenshot, we have some interesting information, we know where it comes from, who received it, and the ip address of the sender. We would like to know who own this ip address. 17.179.250.121. <br>
 
-                            <br><img src="img/Email Header Analysis/Whois.png" name="Whois" width="40%"> <br>
+                            <br><img src="img/Email Header Analysis/Whois.png" name="Whois" class="img-fluid" width="700" height="700"> <br>
 
                             <br>Since the ip address belongs to Apple, it shows more confidence than an email not coming from a Apple ip address. <br> 
 
                             <br><strong>DKIM-Signature</strong><br>
-                            <br><img src="img/Email Header Analysis/DKIM-Signature.png" name="DKIM-Signature" width="40%"><br>
+                            <br><img src="img/Email Header Analysis/DKIM-Signature.png" name="DKIM-Signature" class="img-fluid" width="700" height="700"><br>
                             <br>V = version of the DKIM <br>
                                 A = encryption method <br>
                                 D = domain sender <br>
@@ -133,48 +133,48 @@
                             <br><strong>Message-ID: </strong>It is a unique identifier, therefore if this message-id has been found before, it might lead to a forgery email. According to RFC 5322, the message-id has to be globally unique. But the structure is not unique, different hosts can generate different message-id.
                             Also if the message-id is sent by a mail server but the message-id format is not the format used by the mail server, it can be a forgery. <br>
 
-                            <br><img src="img/Email Header Analysis/MessageID.png" name="Message-ID" width="45%"><br>
+                            <br><img src="img/Email Header Analysis/MessageID.png" name="Message-ID" class="img-fluid" width="700" height="700"><br>
 
                             <br><strong>Return-path</strong>, Also known as the evelope sender address or bounce address but not the same as the "from" address.
                             Therefore if the return-path is similar as a recipient address, it might be a forged message. <br>
-                            <br><img src="img/Email Header Analysis/Return-path.png" name="Return-path" width="40%"><br>
+                            <br><img src="img/Email Header Analysis/Return-path.png" name="Return-path" class="img-fluid" width="500" height="500"><br>
 
                             <br><strong>X-header</strong><br>
                             Mail providers can create a X - header and provide some good information. Sometimes show the name of the organization, the ip address of the system sending the email (X - originated - IP).<br/>
 
-                            <br><img src="img/Email Header Analysis/X-header.png" name="X-header" width="40%"> <br>
+                            <br><img src="img/Email Header Analysis/X-header.png" name="X-header" class="img-fluid" width="500" height="500"> <br>
                         </p>
                         <br>
                         <h4>B. Phishing email</h4>
                         <p>
                             Here is another email, more suspicious than the previous one, the format is quite different and less professional, but let's analyze it and compare it to the legitimate one. <br>
 
-                            <br><img src="img/Email Header Analysis/apple_phishing_email.png" name="Apple phishing email" width="60%"><br>
+                            <br><img src="img/Email Header Analysis/apple_phishing_email.png" name="Apple phishing email" class="img-fluid" width="700" height="700"><br>
 
                             <br>Starting by the bottom (which means that we are closer to the source), by looking at the received header, we found no apple information. <br>
 
-                            <br><img src="img/Email Header Analysis/Received_header_2.png" name="Suspicious received header" width="40%"><br>
+                            <br><img src="img/Email Header Analysis/Received_header_2.png" name="Suspicious received header" class="img-fluid" width="700" height="700"><br>
 
                             <br>I'm confident that apple will not use rosepointeapartments.com to send their email. <br>
 
-                            <br><img src="img/Email Header Analysis/spf_email.png" name="spf email" width="40%">
+                            <br><img src="img/Email Header Analysis/spf_email.png" name="spf email" class="img-fluid" width="700" height="700">
                             <br><br>
                             Received-spf does not present any information. However, we've seen that apple.com does have spf, which is very suspicious. Let's check Apple SPF to see if there is the ip address of rosepointeapartment.com. If not, it is probably a phishing email. <br>
-                            <br><img src="img/Email Header Analysis/apple_SPF.png" name="apple SPF" width="40%"><br>
-                            <br><img src="img/Email Header Analysis/apple_SPF_2.png" name="apple SPF Ip address" width="40%"> <br>
+                            <br><img src="img/Email Header Analysis/apple_SPF.png" name="apple SPF" class="img-fluid" width="600" height="600"><br>
+                            <br><img src="img/Email Header Analysis/apple_SPF_2.png" name="apple SPF Ip address" class="img-fluid" width="600" height="600"> <br>
                             <br>Since there isn't 50.200.243.68 in the list of ip addresses allowed to send email on behalf of apple.com, we can conclude that this is not a legitimate sender from apple.com. <br>
 
                             <br>Let's check the DNS record of the suspicious email <br>
-                            <br><img src="img/Email Header Analysis/DNS_phishing.png" name="DNS record" width="40%"> <br>
+                            <br><img src="img/Email Header Analysis/DNS_phishing.png" name="DNS record" class="img-fluid" width="600" height="600"> <br>
                             <br>As we can see in the screenshot of the DNS record, there is nothing related to apple, the mail servers are smx1.web-hosting.com, smx2.web-hosting.com, smx3.web-hosting.com. <br>
 
                             <br>By looking at the DKIM information, we see that the message has not been signed. <br>
-                            <br><img src="img/Email Header Analysis/DKIM_phishing.png" name="DKIM" width="40%"><br>
+                            <br><img src="img/Email Header Analysis/DKIM_phishing.png" name="DKIM" class="img-fluid" width="500" height="500"><br>
 
                             <br>The message-id format also looks different from the apple message-id format and also reflect a non apple domain. <br>
-                            <br><img src="img/Email Header Analysis/MessageID_phishing.png" name="MessageID" width="35%"> <br>
+                            <br><img src="img/Email Header Analysis/MessageID_phishing.png" name="MessageID" class="img-fluid" width="500" height="500"> <br>
                             <br>Regarding the Return-Path, we can clearly see that does not belong to apple bounce address. <br>
-                            <br><img src="img/Email Header Analysis/Return-path_phishing.png" name="return path" width="30%"><br>
+                            <br><img src="img/Email Header Analysis/Return-path_phishing.png" name="return path" class="img-fluid" width="400" height="400"><br>
                         </p>
                     </div>
                 </div>

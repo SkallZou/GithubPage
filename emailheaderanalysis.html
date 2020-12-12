@@ -112,10 +112,11 @@
                             <br><img src="img/Email Header Analysis/apple_mail.png" name="apple_mail" class="img-fluid" width="700" height="700"><br>
                             <br><strong>Received header:</strong> There are several received headers, the top one is closer to the destination and the bottom one is closer to the source.<br>
 
-                            <br><img src="img/Email Header Analysis/Received_header.png" name="Received_header" class="img-fluid" width="700" height="700"><br>
+                            <br><img src="img/Email Header Analysis/Received_header.png" name="Received_header" class="img-fluid" width="900"><br>
+
                             <br>In this screenshot, we have some interesting information, we know where it comes from, who received it, and the ip address of the sender. We would like to know who own this ip address. 17.179.250.121. <br>
 
-                            <br><img src="img/Email Header Analysis/Whois.png" name="Whois" class="img-fluid" width="700" height="700"> <br>
+                            <br><img src="img/Email Header Analysis/Whois.png" name="Whois" class="img-fluid" width="900"> <br>
 
                             <br>Since the ip address belongs to Apple, it shows more confidence than an email not coming from a Apple ip address. <br> 
 
@@ -133,11 +134,11 @@
                             <br><strong>Message-ID: </strong>It is a unique identifier, therefore if this message-id has been found before, it might lead to a forgery email. According to RFC 5322, the message-id has to be globally unique. But the structure is not unique, different hosts can generate different message-id.
                             Also if the message-id is sent by a mail server but the message-id format is not the format used by the mail server, it can be a forgery. <br>
 
-                            <br><img src="img/Email Header Analysis/MessageID.png" name="Message-ID" class="img-fluid" width="700" height="700"><br>
+                            <br><img src="img/Email Header Analysis/MessageID.png" name="Message-ID" class="img-fluid" width="800"><br>
 
                             <br><strong>Return-path</strong>, Also known as the evelope sender address or bounce address but not the same as the "from" address.
                             Therefore if the return-path is similar as a recipient address, it might be a forged message. <br>
-                            <br><img src="img/Email Header Analysis/Return-path.png" name="Return-path" class="img-fluid" width="500" height="500"><br>
+                            <br><img src="img/Email Header Analysis/Return-path.png" name="Return-path" class="img-fluid" width="550"><br>
 
                             <br><strong>X-header</strong><br>
                             Mail providers can create a X - header and provide some good information. Sometimes show the name of the organization, the ip address of the system sending the email (X - originated - IP).<br/>

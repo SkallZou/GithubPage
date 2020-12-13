@@ -73,20 +73,20 @@
                             <strong>SPF (Sender Policy Framework):</strong> Defines a mechanism by which a company can specify a server or a list of servers that are allowed to send email on behalf of their domain. If an email fails an SPF check, it can be an easy mechanism we can use to detect spam.
                             <br/>The SPF record is published by the DNS information as a TXT record type. <br/><br/>
 
-                            <img src="img/Email Header Analysis/SPF_dig.png" nom="SPF_dig" class="img-fluid" width="500" height="500">
+                            <img src="img/Email Header Analysis/SPF_dig.png" nom="SPF_dig" class="img-fluid" width="500">
 
                             <br><br>In this example, it shows us the TXT record for google.com. The SPF-record for google.com is "v=spf1 include:_spf.google.com ~all"
                             <br>~all: Reject all email if the sender does not belong to the ip address present in the SPF record
                             <br> Let's dig a little bit deeper.<br><br>
 
-                            <img src="img/Email Header Analysis/SPF_dig_2.png" nom="SPF_dig_2" class="img-fluid" width="1000" height="900">
+                            <img src="img/Email Header Analysis/SPF_dig_2.png" nom="SPF_dig_2" class="img-fluid" width="1000">
 
                             <br><br>
                             By doing this, we find out there are more spf included, all those spf can send email on behalf of google.com
 
                             <br><br>Let's dig a bit deeper again <br><br>
 
-                            <img src="img/Email Header Analysis/SPF_dig_3.png" nom="SPF_dig_3" class="img-fluid" width="1000" height="900">
+                            <img src="img/Email Header Analysis/SPF_dig_3.png" nom="SPF_dig_3" class="img-fluid" width="1000">
 
                             <br><br>dig _netblocks.google.com txt +short (and all the variants as well) give us the list of ip addresses that are allowed to send an email on behalf of google.com.
 
@@ -109,7 +109,7 @@
                         <br>
                         <p>
                             This is the email that we are going to analyze:<br>
-                            <br><img src="img/Email Header Analysis/apple_mail.png" name="apple_mail" class="img-fluid" width="700" height="700"><br>
+                            <br><img src="img/Email Header Analysis/apple_mail.png" name="apple_mail" class="img-fluid" width="700"><br>
                             <br><strong>Received header:</strong> There are several received headers, the top one is closer to the destination and the bottom one is closer to the source.<br>
 
                             <br><img src="img/Email Header Analysis/Received_header.png" name="Received_header" class="img-fluid" width="900"><br>
@@ -121,7 +121,7 @@
                             <br>Since the ip address belongs to Apple, it shows more confidence than an email not coming from a Apple ip address. <br> 
 
                             <br><strong>DKIM-Signature</strong><br>
-                            <br><img src="img/Email Header Analysis/DKIM-Signature.png" name="DKIM-Signature" class="img-fluid" width="700" height="700"><br>
+                            <br><img src="img/Email Header Analysis/DKIM-Signature.png" name="DKIM-Signature" class="img-fluid" width="700"><br>
                             <br>V = version of the DKIM <br>
                                 A = encryption method <br>
                                 D = domain sender <br>
@@ -129,6 +129,8 @@
                                 T = timestamp (epoch time)<br>
                                 Bh = bodyhash (encoded in b64)<br>
                                 B = DKIM signature, calculated based upon the header fileds specified in the h= tag, as well as the bh field <br>
+
+                                <br>On the screeshot above, the domain sender is <i>insideapple.apple.com</i>, an apple email sent by apple.com is better than an apple email sent by X.com. <br>
 
 
                             <br><strong>Message-ID: </strong>It is a unique identifier, therefore if this message-id has been found before, it might lead to a forgery email. According to RFC 5322, the message-id has to be globally unique. But the structure is not unique, different hosts can generate different message-id.
@@ -156,7 +158,7 @@
 
                             <br><img src="img/Email Header Analysis/Received_header_2.png" name="Suspicious received header" class="img-fluid" width="700" height="700"><br>
 
-                            <br>I'm confident that apple will not use rosepointeapartments.com to send their email. <br>
+                            <br>I'm confident that apple will not use <i>rosepointeapartments.com</i> to send their email. <br>
 
                             <br><img src="img/Email Header Analysis/spf_email.png" name="spf email" class="img-fluid" width="700" height="700">
                             <br><br>
@@ -165,16 +167,16 @@
                             <br><img src="img/Email Header Analysis/apple_SPF_2.png" name="apple SPF Ip address" class="img-fluid" width="600" height="600"> <br>
                             <br>Since there isn't 50.200.243.68 in the list of ip addresses allowed to send email on behalf of apple.com, we can conclude that this is not a legitimate sender from apple.com. <br>
 
-                            <br>Let's check the DNS record of the suspicious email <br>
+                            <br>Let's check the <strong>DNS</strong> record of the suspicious email: <i>dig 1.1.1.1 rosepointeapartments.com mx</i> <br>
                             <br><img src="img/Email Header Analysis/DNS_phishing.png" name="DNS record" class="img-fluid" width="600" height="600"> <br>
                             <br>As we can see in the screenshot of the DNS record, there is nothing related to apple, the mail servers are smx1.web-hosting.com, smx2.web-hosting.com, smx3.web-hosting.com. <br>
 
-                            <br>By looking at the DKIM information, we see that the message has not been signed. <br>
+                            <br>By looking at the <strong>DKIM</strong> information, we see that the message has not been signed. <br>
                             <br><img src="img/Email Header Analysis/DKIM_phishing.png" name="DKIM" class="img-fluid" width="500" height="500"><br>
 
-                            <br>The message-id format also looks different from the apple message-id format and also reflect a non apple domain. <br>
+                            <br>The <strong>message-id</strong> format also looks different from the apple message-id format and also reflect a non apple domain. <br>
                             <br><img src="img/Email Header Analysis/MessageID_phishing.png" name="MessageID" class="img-fluid" width="500" height="500"> <br>
-                            <br>Regarding the Return-Path, we can clearly see that does not belong to apple bounce address. <br>
+                            <br>Regarding the <strong>Return-Path</strong>, we can clearly see that does not belong to apple bounce address. <br>
                             <br><img src="img/Email Header Analysis/Return-path_phishing.png" name="return path" class="img-fluid" width="400" height="400"><br>
                         </p>
                     </div>
@@ -186,7 +188,7 @@
                         <h3 class="mb-0">3/ Conclusion</h3>
                         <br>
                         <p>
-                            In this article, you have seen the difference between a legitimate email and a fake one. Obviously, some adversaries might craft fake one which does exactly look like an original one, and that's really hard to distinguish between a legitimate and a fake one. I wanted to show you, how you can investigate on a fake one by using the email header when you have received a suspicious email.
+                            In this article, you have seen the difference between a legitimate email and a fake one. Obviously, some adversaries might craft fake one which does exactly look like an original one, and sometimes it is really difficult to distinguish between a legitimate and a fake one. I wanted to show you, how you can investigate on a not legitimate email by using the email header when you have received a suspicious email. The email header give crucial information to determine the origin of the email and can prove that the email you have received is not a legitimate one.
                         </p>
                     </div>
                 </div>

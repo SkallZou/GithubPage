@@ -61,7 +61,7 @@
                             <br>
                             I start to test some basic SQL injection, <strong>admin' OR 'a'='a'#</strong>, but didn't work. Instead of blocking on that form, below we can create an account. After creating an account, we reach a page with a form. The form is supposed to be used to contact the support in case of a problem. But instead of asking what is the flag the message block, we can look for some vulnerabilities. Let's start by checking if the form has a XSS vulnerability. To do so, I'm going to inject some basic javascript, <strong>"alert();"</strong>.<br>
 
-                            <br><img src="img/InternalSupport/xssvuln.PNG" name="xssvuln" class="img-fluid" width="800"><br>
+                            <br><img src="img/InternalSupport/xssvuln.png" name="xssvuln" class="img-fluid" width="800"><br>
                             <br>
                             The website is reacting to the JavaScript that I've putted in the form. Checking the cookie parameter in the developer tools, the field <strong>"HttpOnly"</strong> is set to false. In that case, it allows an attacker to retrieve any user cookie using <strong>"document.cookie"</strong>. 
                             <br>To find "HttpOnly", access to the developer tools by clicking on F12 then go to storage, find the cookie and in the right panel, you should have the cookie data where you have creation date, domain, HttpOnly... <br>

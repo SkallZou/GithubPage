@@ -58,7 +58,7 @@
                         <p>
                             This challenge is supposed to have corrected the XSS vulnerability that we've found on the previous challenge. Reaching the URL, we are facing the same login page as the first challenge (Internal Support).<br>
 
-                            <br><img src="img/InternalSupport2/loginpage.png" class="img-fluid" width="800"><br>
+                            <br><img src="img/InternalSupport2/loginpage.PNG" class="img-fluid" width="800"><br>
                             <br>The interface is the same as the first challenge, let's see what kind of vulnerability they have corrected. After creating an account, let's enter the same JavaScript to see if there is the same XSS vulnerability. <br>
                             <br><img src="img/InternalSupport2/xsscheck.png" class="img-fluid" width="800"><br>
                             <br>On this case, we have "Malicious code detected", which means that we cannot inject JavaScript code in a simple way, except if we find a way to bypass it. Many web applications check if there is a <strong>script</strong> element in the form, so we can modify it by something like <strong>ScRiPt</strong>. 

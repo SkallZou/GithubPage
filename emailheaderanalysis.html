@@ -82,18 +82,18 @@
                             <img src="img/Email Header Analysis/SPF_dig_2.png" nom="SPF_dig_2" class="img-fluid" width="1000" height="900">
 
                             <br><br>
-                            By doing this, we dig deeper in the google SPF, and we find out, there are more spf included, all those spf can send email on behalf of google.com
+                            By doing this; we find out there are more spf included, all those spf can send email on behalf of google.com
 
                             <br><br>Let's dig a bit deeper again <br><br>
 
                             <img src="img/Email Header Analysis/SPF_dig_3.png" nom="SPF_dig_3" class="img-fluid" width="1000" height="900">
 
-                            <br><br>dig _netblocks.google.com txt +short (and all the variants as well) give us the list of ip addresses that are allowed to send an email on behalf of google.com. You will notice, it can be a range of ip address with the "/" suffix.
+                            <br><br>dig _netblocks.google.com txt +short (and all the variants as well) give us the list of ip addresses that are allowed to send an email on behalf of google.com.
 
                             <br/><br/><strong>DKIM (Domain Keys Identified Mail):</strong> Provides a cryptographic method of verifying a received email actually originated from the sending domain. We can use this to detect forged senders and spam. <br/>
-                            We can find the DKIM information on the DNS information. <br>
-                            The domain will generate a public/private key and publish the public  key in the TXT record of DNS information. Mail server which send the email on behalf of the domain will encrypt the mail  with the private key. This can be considered as the signature of the email. 
-                            When the recipient will receive the email, he will decrypt the email to be able to read the mail
+                            We can find the DKIM information in the DNS information. <br>
+                            The domain will generate a public/private key and publish the public  key in the TXT record of DNS information. Mail server which send the email on behalf of a domain will encrypt the mail  with the private key. This can be considered as the signature of the email. 
+                            When the recipient will receive the email, he will decrypt the email to read the mail
 
                             <br><br>
                             <strong>DMARC (Domain-based Message Authentication, Reporting & Conformance)</strong> is a extension of SPF and DKIM. Actions taken if it doesn't match SPF and DKIM such as reject all the email which doesn't have a valid SPF and a valid DKIM.

@@ -31,7 +31,6 @@
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../index.html#search"><i class="fa fa-search" aria-hidden="true"></i> Search</a></li>
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../ctfpage.html">CTF</a></li>
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../dfirpage.html">DFIR</a></li>
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../binarypage.html">Binary Exploitation</a></li>
@@ -72,11 +71,38 @@
                         	<img src="img/InternalSupport2/request.png" class="img-fluid" width="700">
 
                         	The Http request is composed of several information. Among them, the header <strong>X-Forwarded-For</strong> is used to identify the originating IP address of a client connecting to a web server. On the screenshot above, we also see that the header <strong>origin</strong> and <strong>referer</strong> shows that the administrator reach the website from <strong>127.0.0.1</strong> on the port <strong>5000</strong>, which also means that the administrator is accessing to the web application through the system that hosts that web application. <br>
-                        	<br>Now that we know 
+                        	<br><strong>Burp</strong> can help us to spoof the IP address before sending it to the webserver. Since <strong>Burp</strong> is acting as a proxy and can intercept any request, we can spoof our IP address by modyfing the header <strong>X-Forwarded-For</strong> with <strong>127.0.0.1</strong>. That header will give the information to the webserver that our request come from this IP address. 
+                        	<br><strong>Burp</strong> has a great functionnality that allow anybody to repeat the request and receive directly the response from Burp. It is called <strong>Repeater</strong>. Before sending a request to a web server, you can send it to the <strong>Repeater</strong> and modify the HTTP request as you wish.
+                        	<img src="img/InternalSupport2/burp.png" class="img-fluid" width="600">
 
+                        	However, even after spoofing the IP address, the error stil appears. It means that it is using another protection mechanism that we cannot bypass like this. If we think about how we managed to get the flag on the first challenge, I suspect that the flag is located in the same page because according to the challenge description, it is the same one with additional protections. We are going to do some HTML extraction. The scenario will be that we are injecting some JavaScript in the form then submit the request. Once the administrator click on the ticket, it will send a <strong>POST</strong> request to our pipedream endpoint and we retrieve the HTML code of a targeted webpage.
 
+                        	<img src="img/InternalSupport2/xhrscript.png" class="img-fluid" width="600">
 
+                        	This script will initiate a GET request on the url http://127.0.0.1:5000. When the status of the request has change and the response was fine, then we store the HTML code of that page on the variable “input”. <br>
 
+							<br><strong>readyState</strong> (status of the XMLHttpRequest)<br>
+							0: request not initialized <br>
+							1: server connection established <br>
+							2: request receive<br>
+							3: processing reques<br>
+							4: request finished and response is read<br>
+							<br><strong>status</strong> (HTTP response)<br>
+
+							200 : “OK”<br>
+							403: “Forbidden”<br>
+							404: “Page not found”<br>
+
+							<br>Then, we initiate a POST request and we send the previous HTTP response that was passed in the argument of the function "sendToServer" to our pipedream endpoint. Obviously when we initialize the request with "open" with the XMLHttpRequest object, we have to finalize it, this is why we send to "null" on the "getContentPage" function.
+
+							<img src="img/InternalSupport2/postrequest.png" class="img-fluid" width="700">
+
+							The script is working, our pipedream endpoint has received the POST request, we see that the origin and the referer come from 127.0.0.1 and we have the same x-forwarded-for. Let's take a look at the field "bodyRaw".
+
+							<img src="img/InternalSupport2/bodyraw.png" class="img-fluid" width="700">
+
+							Yes ! We have the flag ! As suspected, the flag is located in the same page as the previous challenge. <br>
+							<br>Therefore, when a website has a XSS vulnerability, it can be really dangerous. In this case, this is a demonstration of data exfiltration. With some JavaScript injections, a basic user can get information of any page that he doesn't have access.
                         </p>
 
                     </div>

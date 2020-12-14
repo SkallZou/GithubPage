@@ -25,7 +25,7 @@
             <div class="d-none d-lg-block description_profile"> <!--d-none is used for responsiveness of the panel when you shring the window -->
                 <h3>Olivier LEUNG</h3>
                 <div class="subheading_panel">Cybersecurity engineer </div>
-                    <div class="subheading_description">Love testing random cyber stuffs ! That's by baking we become a baker</div>
+                    <div class="subheading_description">Love testing random cyber stuff !<br>That's by baking we become a baker</div>
             </div>
             <!-- button collapse panel when small windows, responsive pane -->
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> 
@@ -48,33 +48,33 @@
         </nav>
         <!-- Page Content-->
         <div>
-            <h2 class="header-article"><a href="../ctfpage.html">Capture The Flag </a>> <a href="../dghack2020.html">DGHack 2020 </a>> Internal Support</h2>
+            <nav class="navbar navbar-expand-lg navbar-dark bg-secondary sticky-top">
+            <h3 class="header-article"><a href="../ctfpage.html">Capture The Flag </a>> <a href="../dghack2020.html">DGHack 2020 </a>> Internal Support</h3>
+            </nav>
             
             <section class="article">
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
-                        <h4 class="mb-0">URL: http://internalsupport12.chall.malicecyber.com/</h4>
-                        <br>
                         <p>
-                            Reaching the page, we are facing a login page. <br>
-                            <br><img src="img/InternalSupport/loginpage.PNG" name="loginpage" class="img-fluid" width="800"><br>
-                            <br>
-                            We can start with some basic SQL injection, <strong>admin' OR 'a'='a'#</strong>, however it does not seem to work. Instead of blocking on that form, we can create an account below. After creating an account, we reach a page with a form. The form is supposed to be used to contact the support in case of a problem. But instead of asking what is the flag in the message block, we can look for some vulnerabilities. Let's start by checking if the website has a XSS vulnerability. To do so, I'm going to inject some basic JavaScript in the form such as <strong>"alert();"</strong>.<br>
+                            Reaching the page, we are facing a login page. 
+                            <img src="img/InternalSupport/loginpage.PNG" name="loginpage" class="img-fluid" width="800">
+                            
+                            We can start with some basic SQL injection, <strong>admin' OR 'a'='a'#</strong>, however it does not seem to work. Instead of blocking on that form, we can create an account below. After creating an account, we reach a page with a form. The form is supposed to be used to contact the support in case of a problem. But instead of asking what is the flag in the message block, we can look for some vulnerabilities. Let's start by checking if the website has a XSS vulnerability. <br>To do so, I'm going to inject some basic JavaScript in the form such as <strong>"alert();"</strong>.
 
-                            <br><img src="img/InternalSupport/xssvuln.png" name="xssvuln" class="img-fluid" width="800"><br>
-                            <br>
+                            <img src="img/InternalSupport/xssvuln.png" name="xssvuln" class="img-fluid" width="800">
+                            
                             The website is reacting to the JavaScript that I've putted in the form. Checking the cookie parameter in the developer tools, the field <strong>"HttpOnly"</strong> is set to false. In that case, it allows an attacker to retrieve any user cookie using <strong>"document.cookie"</strong>. 
-                            <br>To find "HttpOnly", access to the developer tools by clicking on F12 then go to storage, find the cookie and in the right panel, you should have the cookie data where you find creation date, domain, HttpOnly... <br>
-                            The scenario is easy here, we know that by submitting a request, it is going to create a ticket, someone from the support will read the ticket, so when this person reach our ticket page, the JavaScript will load and send his cookie to a webserver. Then we'll retrieve his cookie, and set our cookie with his. By doing so, when we'll refresh the page, we are going to be in his session if it is still valid. This is called <strong>cookie stealing</strong> and <strong>session hijacking</strong>.<br>
-                            <br>Pipedream is a serverless integration that can receive web request, this is perfect for us, because we just need a server that can log HTTP events on request. Since the field "HttpOnly" is set to false, we can create a GET request to my Pipedream endpoint with a simple JavaScript function <i>document.location</i>, which is going to redirect the user to our pipedream page when he reach the ticket page. <br>
-                            <br><img src="img/InternalSupport/cookiestealing.png" class="img-fluid" width="800"><br>
-                            <br>This script will redirect any person who reach our ticket page to my pipedream endpoint and set the field cookie with their own cookie thanks to the JavaScript function <strong>document.cookie</strong>.<br>
-                            <br><img src="img/InternalSupport/cookiestolen.png" class="img-fluid" width="800"><br>
-                            <br>On the screenshot above, the field cookie has been filled by the cookie of the user who reach my ticket page. Therefore, copy pasting this value and replacing our cookie with this value should give us access to his session if there is not other security measure.
-                            <br>To replace our cookie, we need to access to the developement tools, go to storage and click on cookie. Once it is done,,refresh the page, and see if the session has changed. <br>
-                            <br><img src="img/InternalSupport/sessionhijacked.png" class="img-fluid" width="800"><br>
-                            <br>Yes! The page content has changed if you look closely the flag is here as well. <br>
-                             <br>Flag: <strong>NoUserValidationIsADangerousPractice</strong>
+                            To find "HttpOnly", access to the developer tools by clicking on F12 then go to storage, find the cookie and in the right panel, you should have the cookie data where you find creation date, domain, HttpOnly... 
+                            The scenario is easy here, we know that by submitting a request, it is going to create a ticket, someone from the support will read the ticket, so when this person reach our ticket page, the JavaScript will load and send his cookie to a webserver. Then we'll retrieve his cookie, and set our cookie with his. By doing so, when we'll refresh the page, we are going to be in his session if it is still valid. This is called <strong>cookie stealing</strong> and <strong>session hijacking</strong>.
+                            Pipedream is a serverless integration that can receive web request, this is perfect for us, because we just need a server that can log HTTP events on request. Since the field "HttpOnly" is set to false, we can create a GET request to my Pipedream endpoint with a simple JavaScript function <i>document.location</i>, which is going to redirect the user to our pipedream page when he reach the ticket page. 
+                            <img src="img/InternalSupport/cookiestealing.png" class="img-fluid" width="800">
+                            This script will redirect any person who reach our ticket page to my pipedream endpoint and set the field cookie with their own cookie thanks to the JavaScript function <strong>document.cookie</strong>.
+                            <img src="img/InternalSupport/cookiestolen.png" class="img-fluid" width="800">
+                            On the screenshot above, the field cookie has been filled by the cookie of the user who reach my ticket page. Therefore, copy pasting this value and replacing our cookie with this value should give us access to his session if there is not other security measure.
+                            To replace our cookie, we need to access to the developement tools, go to storage and click on cookie. Once it is done,,refresh the page, and see if the session has changed. 
+                            <img src="img/InternalSupport/sessionhijacked.png" class="img-fluid" width="800">
+                            Yes! The page content has changed if you look closely the flag is here as well. <br>
+                            <br>Flag: <strong>NoUserValidationIsADangerousPractice</strong>
                         </p>
 
                     </div>

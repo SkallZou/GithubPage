@@ -197,8 +197,11 @@ figure {
 }
 
 img {
+  display: block;
   vertical-align: middle;
   border-style: none;
+  padding-top: 2%;
+  padding-bottom: 2%;
 }
 
 svg {
@@ -6083,7 +6086,7 @@ button.bg-primary:focus {
 }
 
 .bg-secondary {
-  background-color: #6c757d !important;
+  background-color: #ffffff !important;
 }
 
 a.bg-secondary:hover, a.bg-secondary:focus,
@@ -10149,6 +10152,10 @@ section.article {         /*padding for article*/
 
 .bg-primary { /*change color panel*/
   background-color: #bd5d38 !important;
+}
+
+.bg-toppanel{ /*change color top panel*/
+  background-color: #ffffff;
 }
 
 a.title-article{

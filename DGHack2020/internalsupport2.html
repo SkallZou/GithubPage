@@ -25,7 +25,7 @@
             <div class="d-none d-lg-block description_profile"> <!--d-none is used for responsiveness of the panel when you shring the window -->
                 <h3>Olivier LEUNG</h3>
                 <div class="subheading_panel">Cybersecurity engineer </div>
-                    <div class="subheading_description">Love testing random cyber stuffs ! That's by baking we become a baker</div>
+                    <div class="subheading_description">Love testing random cyber stuff !<br>That's by baking we become a baker</div>
             </div>
             <!-- button collapse panel when small windows, responsive pane -->
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> 
@@ -48,28 +48,31 @@
         </nav>
         <!-- Page Content-->
         <div>
-            <h2 class="header-article"><a href="../ctfpage.html">Capture The Flag </a>> <a href="../dghack2020.html">DGHack 2020 </a>> Internal Support 2</h2>
-            
+        	<nav class="navbar navbar-expand-lg navbar-dark bg-secondary sticky-top">
+            <h3 class="header-article"><a href="../ctfpage.html">Capture The Flag </a>> <a href="../dghack2020.html">DGHack 2020 </a>> Internal Support 2</h3>
+            </nav>
             <section class="article">
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
-                        <h4 class="mb-0">URL: http://internalsupport22.chall.malicecyber.com/</h4>
-                        <br>
                         <p>
-                            This challenge is supposed to have corrected the XSS vulnerability that we've found on the previous challenge. Reaching the URL, we are facing the same login page as the first challenge (Internal Support).<br>
+                            This challenge is supposed to have corrected the XSS vulnerability that we've found on the previous challenge. Reaching the URL, we are facing the same login page as the first challenge (Internal Support).
 
-                            <br><img src="img/InternalSupport2/loginpage.PNG" class="img-fluid" width="800"><br>
-                            <br>The interface is the same as the first challenge, let's see what kind of vulnerability they have corrected. After creating an account, let's enter the same JavaScript to see if there is the same XSS vulnerability. <br>
-                            <br><img src="img/InternalSupport2/xsscheck.png" class="img-fluid" width="800"><br>
-                            <br>On this case, we have "Malicious code detected", which means that we cannot inject JavaScript code in a simple way, except if we find a way to bypass it. Many web applications check if there is a <strong>script</strong> element in the form, so we can modify it by something like <strong>ScRiPt</strong>. 
-                        	<br><img src="img/InternalSupport2/alertjs.png" class="img-fluid" width="700"><br>
-                        	<br>And it works ! We bypass the protection by adding some upperletters in the script element. Now, we know that it is possible to inject JavaScript, let's see if the cookie vulnerability is still there
+                            <img src="img/InternalSupport2/loginpage.PNG" class="img-fluid" width="800">
+                            The interface is the same as the first challenge, let's see what kind of vulnerability they have corrected. After creating an account, let's enter the same JavaScript to see if there is the same XSS vulnerability. 
+                            <img src="img/InternalSupport2/xsscheck.png" class="img-fluid" width="800">
+                            On this case, we have "Malicious code detected", which means that we cannot inject JavaScript code in a simple way, except if we find a way to bypass it. Many web applications check if there is a <strong>script</strong> element in the form, so we can modify it by something like <strong>ScRiPt</strong>. 
+                        	<img src="img/InternalSupport2/alertjs.png" class="img-fluid" width="700">
+                        	And it works ! We bypass the protection by adding some upperletters in the script element. Now, we know that it is possible to inject JavaScript, let's see if the cookie vulnerability is still there
                         	In the Developer tools, we see that the field <strong>"HttpOnly"</strong> is set to false, so we can still retrieve user's cookie by using JavaScript document.cookie. So as the first challenge, we are redirecting the user with window.location and getting the user cookie with document.cookie.
 
-                        	<br>We proceed the same way as the first challenge, let's get the user cookie from pipedream and replace our cookie by his. Once I changed the cookie value and refresh the page, I get an error. <br>
-                        	<br><img src="img/InternalSupport2/forbidden.png" class="img-fluid" width="700"> <br>
+                        	We proceed the same way as the first challenge, let's get the user cookie from pipedream and replace our cookie by his. Once I changed the cookie value and refresh the page, I get an error. 
+                        	<img src="img/InternalSupport2/forbidden.png" class="img-fluid" width="700"> 
 
-                        	<br>After changing the IP address by going through a proxy or a VPN, I still managed to log into my account. May be the admin account have a IP address verification so only the IP addresses inside of a whitelist can log into an admin account. To bypass this protection we can used <i>Burp</i> to forge any HTML request, but first, we have to find the IP address used by an administrator. When our pipedream endpoint receive the request, we also have the information regarding the IP address used by the administrator.
+                        	After changing the IP address by going through a proxy or a VPN, I still managed to log into my account. May be there is a IP address verification so only the IP addresses that are inside of a whitelist can log into an admin account. To bypass this protection, <i>Burp</i> can be used to forge any HTML request, but first, it is necessaty to find the IP address used by an administrator. When our pipedream endpoint receive the request, the information regarding the IP address used by the user who've made that request is present.
+                        	<img src="img/InternalSupport2/request.png" class="img-fluid" width="700">
+
+                        	The Http request is composed of several information. Among them, the header <strong>X-Forwarded-For</strong> is used to identify the originating IP address of a client connecting to a web server. On the screenshot above, we also see that the header <strong>origin</strong> and <strong>referer</strong> shows that the administrator reach the website from <strong>127.0.0.1</strong> on the port <strong>5000</strong>, which also means that the administrator is accessing to the web application through the system that hosts that web application. <br>
+                        	<br>Now that we know 
 
 
 

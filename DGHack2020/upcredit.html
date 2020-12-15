@@ -55,20 +55,20 @@
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
                         <p>
-                            The goal of this challenge is to buy the flat at 200€, however our banking account does not have enough money.
+                            The goal of this challenge is to buy the flag at 200€, however our banking account does not have enough money. Reaching the URL, there is a login page.
                             <img src="img/UpCredit/loginpage.png" class="img-fluid" width="700">
                             I've tried some basic SQL injection, but neither of them works. Let's create an account, and see what we can find inside of the website. <br>
                             After creating the account, we reach a page with 3 tabs: "Activity", "My Cards" and "Contact your advisor". It was written in the challenge description that if we are having some issues, we can contact our advisor to get any help from him. <br>
                             <br>On "My Cards" tab, it is possible to transfer money by entering the account number and the amount of money we want to transfer.
                             <img src="img/UpCredit/mycards.png" class="img-fluid" width="700">
-                            Inspecting the element, and clicking on the network tab in the developer tools, we can view the request sent to the server once we have clicked on the button "Send", it is making a POST request with the account number and the amount. We see that the request is sent to "<i>http://upcredit4.chall.malicecyber.com/transfer</i>". <br>
-                            <br>Going to "Contact your advisor" tab, we have a form with two fields to fill if we want to contact our advisor. We can check if there is any XSS vulnerability on that webpage. Injecting some basic JavaScript does not display any result. Moreover, after 10 minutes, the advisor didn't reply. <br>
+                            Inspecting the element, and clicking on the network tab in the developer tools, we can view the request sent to the server once we have clicked on the button "Send", it is making a <strong>POST</strong> request with the account number and the amount. We see that the request is sent to "<i>http://upcredit4.chall.malicecyber.com/transfer</i>". <br>
+                            <br>Going to "Contact your advisor" tab, we have a form with two fields to fill if we want to contact our advisor. We can check if there is any XSS vulnerability on that webpage. Injecting some basic JavaScript code does not display any result. Moreover, after 10 minutes, the advisor still hasn't replied. <br>
                             After several attempts, I notice that when we're submitting a request with a link, the advisor immediately click on it.
                             <img src="img/UpCredit/contactadvisor.png" class="img-fluid" width="700">
                             <img src="img/UpCredit/getrequest.png" class="img-fluid" width="700">
-                            We immediately get a GET request from the advisor. For your information, reaching a website is making a GET request. <br>
+                            We've had a GET request from the advisor as soon as I've submitted the request. For your information, reaching a website is making a GET request. <br>
                             <br>The advisor probably has money on his bank account, we know that when we're putting a link, our advisor will immediately click on the link. Does it sound like CSRF attack ? <br>
-                            A CSRF attack causes the victim user to carry out an action unintentionally. We are creating a webpage with some JavaScript code inside which will generate a POST request to http://upcredit4.chall.malicecyber.com/transfer with our account number and the amount of money to transfer.
+                            A CSRF attack causes the victim user to carry out an action unintentionally. If we are creating a webpage with some JavaScript code inside which will generate a POST request to http://upcredit4.chall.malicecyber.com/transfer with our account number and the amount of money to transfer, we can transfer some money from our advisor banking account to ours.
 
                             <img src="img/UpCredit/htmlcode.png" class="img-fluid" width="600">
                             That HTML code is going to make a POST request to http://upcredit4.chall.malicecyber.com/transfer with two inputs already filled for our needs. The JavaScript code will automatically submit the form when someone reach the page. <br>

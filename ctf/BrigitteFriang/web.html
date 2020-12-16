@@ -53,6 +53,7 @@
             <section class="article">
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
+                        <h3 class="mb-0">1/ Stockos</h3>
                         <p>
                             Jeremy Nitel, web responsible, is sending us some instructions through the "/chat" web page.
                             <img src="img/web/instruction1.png" class="img-fluid" width="700">
@@ -92,6 +93,7 @@
              <section class="article">
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
+                        <h3 class="mb-0">2/ Air Evil</h3>
                         <p>
                             Once we have given the right email address to Jeremy, he asks us to book a plane on the website "AirEvil". To reach the page, Jeremy Nitel, gave us another website. We must book the flight ABDJI6 on the date 26/10/2020 to 28/10/2020 from Bad City to Evil City. The airline company website is: /35e334a1ef338faf064da9eb5f861d3c.
 
@@ -132,6 +134,111 @@
                             After scanning the QRcode, we get the first flag !
 
                             DGSESIEE{2cd992f9b2319860ce3a35db6673a9b8}
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h3 class="mb-0">3/ Capture</h3>
+                        <p>
+                            Jeremy Nitel has a last exercise for us, he managed to intercept a communication from the Evil Group but it is encrypted. Jeremy sent us an .pcap file called "Caputre" and inside of that file, we have the encrypted communication. The goal of this challenge is to find a way to decrypt it.
+                            <img src="img/web/instruction3.png" class="img-fluid" width="700">
+
+                            To analyze a .pcap file, we can use <strong>Wireshark</strong>.
+                            <img src="img/web/wireshark1.png" class="img-fluid" width="700">
+                            There are only two ip addresses 192.168.29.8 and 192.168.29.7
+                            <img src="img/web/wireshark2.png" class="img-fluid" width="700">
+                            As expected since it is an encrypted message, most of the protocols are TCP and SSL.
+                            <img src="img/web/wireshark3.png" class="img-fluid" width="700">
+                            Let’s dig deeper on the Cipher suite used by the protocol. In the Client Hello request, we can see what kind of cipher suite it offers.
+                            <img src="img/web/wireshark4.png" class="img-fluid" width="700">
+                            As you can see on the screenshot above, we have 6 cipher suites that I can be used to encrypt any message using this protocol. Checking the Server Hello packet, we see that the server use <strong>TLS_RSA_WITH_AES_128_CBC_SHA</strong> (0x002f) to encrypt the message.
+                            <br>
+                            TLS = protocol version <br>
+                            RSA = Key exchange algorithm determining the peer authentication <br>
+                            AES_128_CBC = bulk encryption algorithm used for data encryption <br>
+                            SHA = Message Authentication Code which is a cryptographic hash <br>
+                            <br>
+                            <img src="img/web/wireshark5.png" class="img-fluid" width="700">
+                            The server uses an old version of TLS (TLS 1.0) which is vulnerable and not a recommended version.
+                            <br>TLS_RSA_WITH_AES_128_CBC_SHA use symmetric keys, which means that the data are encrypted and decrypted with the same key. Therefore, if we find the encryption key, we might decrypt the encrypted message.
+                            To find the public key, we can extract the certificate which is made with the public key.
+                            <img src="img/web/wireshark7.png" class="img-fluid" width="700">
+                            <strong>TLSv1 record Layer: Change Cipher Spec Protocol: Change Cipher Spec</strong> notifies the server that all the future messages will be encrypted using the algorithm and keys that were just negotiated.
+                            So future message will be encrypted using TLS 1.0 and <strong>TLS_RSA_WITH_AES_128_CBC_SHA</strong> algorithm.
+                            <br>
+                            Let's check the encryption method of the certificate. To do that, we will export the certificate and use “openssl” to get the information of the certificate.
+                            <img src="img/web/wireshark9.png" class="img-fluid" width="700">
+                            
+
+                            <img src="img/web/wireshark10.png" class="img-fluid" width="700">
+                            The encryption used for the certificate is the <strong>RSA 576</strong> bits. It is currently not recommended to use <a href="https://en.wikipedia.org/wiki/RSA_numbers#RSA-576">RSA encryption below 2048 bits</a>.
+                            <br>
+
+                            <img src="img/web/rsa576.png" class="img-fluid" width="700">
+
+                            <strong>2 prime numbers are found to crack the RSA-576</strong>
+
+                            <img src="img/web/rsa576a.png" class="img-fluid" width="700">
+                            <img src="img/web/wireshark11.png" class="img-fluid" width="700">
+
+                            The publicExponent is equal to 65537. <strong>E = 65537</strong>
+                            <br>We have p, q, n and e. It misses d to create the RSA private key. We can use <a href="https://www.wolframalpha.com ">WolframAlpha</a> to calculate it.
+                            <br>d * e == 1 modulo (p-1)(q-1) <=> d = e.modInverse((p-1)(q-1))
+
+                            <img src="img/web/rsa576b.png" class="img-fluid" width="700">
+                            When we have all the number, we will create a file called "rsaconf.txt" and put all the numbers we have calculated.<br>
+                            <br>
+                            <strong>
+                            asn1=SEQUENCE:rsa_key <br>
+
+                            [rsa_key] <br>
+                            version           Version, <br>
+                            modulus           INTEGER,  -- n <br>
+                            publicExponent    INTEGER,  -- e <br>
+                            privateExponent   INTEGER,  -- d <br>
+                            prime1            INTEGER,  -- p <br>
+                            prime2            INTEGER,  -- q <br>
+                            exponent1         INTEGER,  -- d mod (p-1) <br>
+                            exponent2         INTEGER,  -- d mod (q-1) <br>
+                            coefficient       INTEGER,  -- (inverse of q) mod p <br>
+                            <br></strong>
+
+                            Once we had entered all the values, run the command : <strong>openssl asn1parse -genconf rsaconf.txt -out mykey.der</strong>
+
+                            Then to find our private key on this .der file, run the command:
+                            openssl rsa -in mykey.der -inform der -text -check
+
+                            <img src="img/web/rsa576c.png" class="img-fluid" width="700">
+                            Copy the private key and paste it in a new file, called mykey.pem
+
+
+                            On wireshark, go to <strong>Edit > Preference > Protocol > SSL > RSA keys list</strong> and put the private key to decrypt the message encrypted by TLS.
+
+
+                            <img src="img/web/wireshark12.png" class="img-fluid" width="700">
+                            Once the rsa private key is in Wireshark, it decrypts the message
+                            <img src="img/web/wireshark13.png" class="img-fluid" width="700">
+                            And we just have to follow the SSL stream
+                            <img src="img/web/wireshark14.png" class="img-fluid" width="400">
+                            We have: /7a144cdc500b28e80cf760d60aca2ed3 and password = test 
+
+                            Let's see what we can find by appending it to the challenge URL:
+                            https://challengecybersec.fr/7a144cdc500b28e80cf760d60aca2ed3
+
+                            It redirects us to the login page of the challenge. So all of that, was to have access to the challenge, and there are differents challenges.
+
+
+                            <img src="img/web/challengebf.png" class="img-fluid" width="700">
+
+                            <u>All of that was to access to the real challenge page.</u>
+
+
+
+
+
                         </p>
                     </div>
                 </div>

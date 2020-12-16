@@ -56,7 +56,82 @@
                         <p>
                             Jeremy Nitel, web responsible, is sending us some instructions through the "/chat" web page.
                             <img src="img/web/instruction1.png" class="img-fluid" width="700">
-                            
+                            He finds a web platform where different dangerous products were ordered and asks us to find the customer email. By finding that emai, we will know who order those dangerous products. The link of the web platform is “/4e9033c6eacf38dc2a5df7a14526bec1”. “/” gives us the indication of a URL directory, so let’s try to append it to the CTF URL <i>https://challengecybersec.fr/4e9033c6eacf38dc2a5df7a14526bec1</i>.<br>
+                            <br>
+                            Reaching the URL, we are facing a login page.
+                            <img src="img/web/stockos1.png" class="img-fluid" width="700">
+
+                            Jeremy Nitel informs us that Stockos user’s password were leaked and some were using very simple password. After a few attempts, the combination admin/admin works. You could also use <strong>hydra</strong> to brute force the login page using a file gathering the most used username and password.
+
+                            <br>On the next page, we reach a page with some clickable element on the left panel. Clicking on the 2nd element, we can search for some objects in the inventory of the company. Searching some objects means requesting the database. Does it sound like injection SQL ? <br>
+                            <br>
+                            Using a very simple SQL injection, we see that the website is vulnerable. When I search with “sqlinjection‘ OR ‘a’ = ‘a’ #”, we managed to get some results.
+                            <img src="img/web/stockos4.png" class="img-fluid" width="700">
+
+                            Moreover, looking at what the customer "Evil Gouv" purchases tell us that this customer has ordered some dangerous products. We must find that customer email. <br>
+                            <br>
+                            Let's do some advanced SQL injection:
+                            <strong>“sqlinjection’ OR ‘a’=’a’ ORDER BY email DESC #</strong> does not give any error, so the email field should exist in the table of the database. We need to find the different tables name of that database. <strong>“sqlinjection”' OR 'a'='a' UNION SELECT 1,1,1,1, table_name from information_schema.tables #"</strong> can retrieve all the tables of the database.
+                            <img src="img/web/stockos3.png" class="img-fluid" width="700">
+
+                            The table "customer" seems very interesting to dig into. We can print all the elements from that table with this query "<strong>' OR 'a'='a' UNION SELECT * from customer #</strong>" and see what it returns.
+                            But it would be better to know what are the columns of the customer table. Let's see if we can retrieve all the columns of all the tables with this query "<strong>' or 'a'='a' UNION SELECT 1,1,1,table_name, column_name from information_schema.columns #</strong>"
+                            <img src="img/web/stockos5.png" class="img-fluid" width="700">
+                            It works! the "customer" table has 5 columns: delivery address, email, id, name, signup_date
+                            <br>Since we have all the columns of the customer table, we can make a accurate query by adding a condition where name is equal to <i>Evil Gouv</i>. The SQL query would be "<strong>' OR 'a'='a' UNION SELECT * from customer where name="Evil Gouv"#</strong>"
+
+                            <img src="img/web/stockos6.png" class="img-fluid" width="700">
+
+                            We got the email! <strong>agent.malice@secret.evil.gov.ev</strong><br>
+                            <br>
+                            Let's reply back to Jeremy Nitel with that email address.
+                        </p>
+                    </div>
+                </div>
+            </section>
+             <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <p>
+                            Once we have given the right email address to Jeremy, he asks us to book a plane on the website "AirEvil". To reach the page, Jeremy Nitel, gave us another website. We must book the flight ABDJI6 on the date 26/10/2020 to 28/10/2020 from Bad City to Evil City. The airline company website is: /35e334a1ef338faf064da9eb5f861d3c.
+
+                            <img src="img/web/instruction2.png" class="img-fluid" width="500">
+
+                            Let’s append it to the CTF URL: https://challengecybersec.fr/35e334a1ef338faf064da9eb5f861d3c <br>
+                            <br>
+                            Reaching the page, we are facing a classic airline website, in the middle, there are the information to fill in order to book plane.
+                            <img src="img/web/airevil.png" class="img-fluid" width="800">
+                            Let's try to book the plane by adding the flight information given by Jeremy Nitel. It redirects us to a login webpage, the login is composed of two field (email address and password), we probably need to find the password of agent.malice@secret.evil.gov.ev. Clicking on "Password forgotten", we can check if the user exists or not in the database.
+                            <img src="img/web/airevil2.png" class="img-fluid" width="400">
+                            We don't get the error when we've put the email address "agent.malice@secret.evil.gov.ev".
+                            Let's create an account and see what we can do after being logged. I've created an account, tried to book the ticket by entering the information given by Jeremy. However, it tells me that I don't have the right to book a flight. So I guess, we must find out how to get the password from the email agent.malice@secret.evil.gov.ev.
+                            <br>
+                            Let’s reset our password. To find out what kind of email, and link will be used when an account wants to reset their password.
+                            <img src="img/web/airevil3.png" class="img-fluid" width="600">
+                            I've received an email to my email address and tell to view my password. The link is "<strong>https://challengecybersec.fr/35e334a1ef338faf064da9eb5f861d3c/reset/YW50aG9ueS5lbHlhaHVkQGdtYWlsLmNvbQ==</strong>".
+                            <img src="img/web/airevil4.png" class="img-fluid" width="600">
+
+                            They are really printing the password ! Looking at the url, <strong>YW50aG9ueS5lbHlhaHVkQGdtYWlsLmNvbQ==</strong> seems to be encoded in base64, we should decode the base64 to see what's the decoded information.
+
+                            To decode b64, many tools on internet can be used, such as <a href="https://gchq.github.io/CyberChef/">CyberChef</a>, otherwise you can use Linux and type "<strong>base64 -d [encoded_message]</strong>"
+
+                            <img src="img/web/cyberchef.png" class="img-fluid" width="700">
+
+                            So the base64 is actually our email address! Good to know, because now, it's really easy. We are going to put the email agent.malice@secret.evil.gov.ev on the forgotten password and then encode <strong>agent.malice@secret.evil.gov.ev</strong> in base64, which give us "<i>YWdlbnQubWFsaWNlQHNlY3JldC5ldmlsLmdvdi5ldg==</i>"
+
+                            <img src="img/web/airevil5.png" class="img-fluid" width="700">
+
+                            Then let's open the url https://challengecybersec.fr/35e334a1ef338faf064da9eb5f861d3c/reset/YWdlbnQubWFsaWNlQHNlY3JldC5ldmlsLmdvdi5ldg==
+
+                            <img src="img/web/airevil6.png" class="img-fluid" width="700">
+
+                            We get the password ! We can book the flight now.
+                            Once connected, I’ve tried to book a flight, but it said the flight is already booked. So, I checked which flight it is booked by clicking on “Mes reservations”.
+
+                            <img src="img/web/airevil7.png" class="img-fluid" width="700">
+                            After scanning the QRcode, we get the first flag !
+
+                            DGSESIEE{2cd992f9b2319860ce3a35db6673a9b8}
                         </p>
                     </div>
                 </div>

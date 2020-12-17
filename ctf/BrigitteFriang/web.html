@@ -17,12 +17,12 @@
     </head>
     <body id="page-top">
         <!-- Navigation-->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
+        <nav class="navbar navbar-expand-xl navbar-dark bg-primary fixed-top" id="sideNav">
             <a class="navbar-brand js-scroll-trigger" href="../../index.html"> <!--change path if file has been moved to another folder-->
-                <span class="d-block d-lg-none">Olivier LEUNG</span>
-                <span class="d-none d-lg-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="../../assets/img/profile.jpg" alt="" /></span> <!--change path if file has been moved to another folder-->
+                <span class="d-block d-xl-none">Olivier LEUNG</span>
+                <span class="d-none d-xl-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="../../assets/img/profile.jpg" alt="" /></span> <!--change path if file has been moved to another folder-->
             </a>
-            <div class="d-none d-lg-block description_profile"> <!--d-none is used for responsiveness of the panel when you shring the window -->
+            <div class="d-none d-xl-block description_profile"> <!--d-none is used for responsiveness of the panel when you shring the window -->
                 <h3>Olivier LEUNG</h3>
                 <div class="subheading_panel">Cybersecurity engineer </div>
                     <div class="subheading_description">Love testing random cyber stuff !<br>That's by baking we become a baker</div>
@@ -39,7 +39,7 @@
                 </ul>
             </div>
 
-            <div class="d-none d-lg-block social-icons">
+            <div class="d-none d-xl-block social-icons">
                 <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/olivierleung"><i class="fab fa-linkedin-in"></i></a>
                 <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://github.com/SkallZou"><i class="fab fa-github"></i></a>
                 <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://twitter.com/olivier_leung"><i class="fab fa-twitter"></i></a>
@@ -47,7 +47,7 @@
         </nav>
         <!-- Page Content-->
         <div>
-            <nav class="navbar navbar-expand-lg navbar-dark bg-secondary sticky-top">
+            <nav class="navbar navbar-expand-xl navbar-dark bg-secondary sticky-top">
             <h3 class="header-article"><a href="../../ctfpage.html">Capture The Flag </a>> <a href="../brigittefriang.html">Brigitte Friang Challenge </a>> Service Web</h3><!--change path if file has been moved to another folder-->
             </nav>
             <section class="article">
@@ -157,8 +157,8 @@
                             As you can see on the screenshot above, we have 6 cipher suites that I can be used to encrypt any message using this protocol. Checking the Server Hello packet, we see that the server use <strong>TLS_RSA_WITH_AES_128_CBC_SHA</strong> (0x002f) to encrypt the message.
                             <br>
                             TLS = protocol version <br>
-                            RSA = Key exchange algorithm determining the peer authentication <br>
-                            AES_128_CBC = bulk encryption algorithm used for data encryption <br>
+                            RSA = Key exchange axlorithm determining the peer authentication <br>
+                            AES_128_CBC = bulk encryption axlorithm used for data encryption <br>
                             SHA = Message Authentication Code which is a cryptographic hash <br>
                             <br>
                             <img src="img/web/wireshark5.png" class="img-fluid" width="700">
@@ -166,8 +166,8 @@
                             <br>TLS_RSA_WITH_AES_128_CBC_SHA use symmetric keys, which means that the data are encrypted and decrypted with the same key. Therefore, if we find the encryption key, we might decrypt the encrypted message.
                             To find the public key, we can extract the certificate which is made with the public key.
                             <img src="img/web/wireshark7.png" class="img-fluid" width="700">
-                            <strong>TLSv1 record Layer: Change Cipher Spec Protocol: Change Cipher Spec</strong> notifies the server that all the future messages will be encrypted using the algorithm and keys that were just negotiated.
-                            So future message will be encrypted using TLS 1.0 and <strong>TLS_RSA_WITH_AES_128_CBC_SHA</strong> algorithm.
+                            <strong>TLSv1 record Layer: Change Cipher Spec Protocol: Change Cipher Spec</strong> notifies the server that all the future messages will be encrypted using the axlorithm and keys that were just negotiated.
+                            So future message will be encrypted using TLS 1.0 and <strong>TLS_RSA_WITH_AES_128_CBC_SHA</strong> axlorithm.
                             <br>
                             Let's check the encryption method of the certificate. To do that, we will export the certificate and use “openssl” to get the information of the certificate.
                             <img src="img/web/wireshark9.png" class="img-fluid" width="700">

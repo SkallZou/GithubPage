@@ -9937,11 +9937,11 @@ h3 {
     size: a3;
   }
   body {
-    min-width: 992px !important;
+    min-width: 1200px !important;
   }
 
   .container {
-    min-width: 992px !important;
+    min-width: 1200px !important;
   }
 
   .navbar {
@@ -9985,7 +9985,7 @@ body {
   color: #6c757d;
 }
 
-@media (min-width: 992px) {
+@media (min-width: 1200px) { /*[RESPONSIVE] text move to left because sidebar move to topbar*/
   body {
     padding-top: 0;
     padding-left: 17rem;
@@ -10026,7 +10026,7 @@ p.lead {
   outline-color: #d48a6e;
 }
 
-@media (min-width: 992px) {
+@media (min-width: 1200px) { /*[RESPONSIVE] sidenav into topnav*/
   #sideNav {
     text-align: center;
     position: fixed;
@@ -10123,7 +10123,7 @@ section.article {         /*padding for article*/
     min-height: 100vh;
   }
 }
-@media (min-width: 992px) {
+@media (min-width: 1200px) { /*[RESPONSIVE]*/
   section.resume-section {
     padding-left: 3rem;
     padding-right: 3rem;
@@ -10171,4 +10171,10 @@ h2.header-article{
   padding-left: 2%;
   padding-bottom: 3%;
   padding-top: 2%;
+}
+
+@media (max-width: 1200px) { /*[RESPONSIVE] title article sticky into static*/
+  .sticky-top{
+    position:static;
+  }
 }

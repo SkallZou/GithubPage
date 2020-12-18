@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>DG'hack 2020</title>
+        <title>Brigitte Friang - Forensic</title>
         <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
         <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
@@ -84,6 +84,74 @@
                             The IP address (179.97.58.61) that appear only one time in the log, this IP address is probably the one used by the attacker when he has infiltrated our system. <br>
                             <br>
                             Let's reply to Alphonse Bertillon with that IP address.
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h3 class="mb-0">2/ Evil Country Landscape</h3>
+                        <p>
+                            Alphonse has another exercise for us, he found an image in a email attachment, he would like us to find what is the content of that file.
+
+                            <img src="img/forensic/instruction2.png" class="img-fluid" width="700">
+
+                            So Alphonse send to us a .jpg file from the chat. According to the red message, the attachment file might contain a malware, so it would be better if we do that in our VM.
+
+                            <strong>curl -O https://challengecybersec.fr/chat/public/uploads/evil_country_landscape.jpg</strong><br>
+                            <br>
+                            This curl command is a tool to transfer data from or to a server. With the -O parameter, the command will download a file remotely. <br>
+                            <br>
+
+                            Since it might be a malicious file, let's get more information about the file by extracting the file metadata. The tool <strong>exif</strong> can be used to extract image metadata.
+                            <img src="img/forensic/exif.png" class="img-fluid" width="700">
+                            The data is corrupted. Data corruption is when the data become unusable, unreadable or not accessible by an application. 
+                            <img src="img/forensic/filesize.png" class="img-fluid" width="700">
+                            The file is more than 300mb, it is huge for a .jpg which is a compressed file... I wonder what do we have inside. <br>
+                            <br>
+                            Binwalk is a tool that will look for binary image for embedded file and executable code.
+                            <img src="img/forensic/binwalk.png" class="img-fluid" width="700">
+                            The .jpg file contains two .zip files, let's use <strong>unzip</strong> to decompress the .jpg file.
+                            <img src="img/forensic/unzip.png" class="img-fluid" width="700">
+                            After getting those two images file, let's find out if we can get more information on those files.
+                            <img src="img/forensic/binwalk2.png" class="img-fluid" width="700">
+                            Both files are Linux EXT file system, we will mount them to see what data they contain. <br>
+                            <strong>Parted</strong> command displays the details of the partition.
+                            <img src="img/forensic/parted.png" class="img-fluid" width="700">
+                            No information regarding those .img files. <br>
+                            <br>
+                            Before mounting the image file, we need to find which loop device it will be associated, run <strong>losetup -f</strong> to find which loop device is available.
+                            <img src="img/forensic/losetup1.png" class="img-fluid" width="700">
+                            When the image file is associated to a loop device, we can mount the loop device in a mount point. First, let's create a mount point. The mount point will be a folder in /mnt. <br>
+                            "<strong>mkdir /mnt/disk1</strong>" <br>
+                            "<strong>mount /dev/loop</strong>"
+                            <img src="img/forensic/mount1.png" class="img-fluid" width="700">
+                            It is telling us that the filesytem type is "linux_raid_member". This filesystem is part of a software RAID meaning you need at least two disks to read the data in a normal state. <br>
+                            To know what kind of RAID level the disk has, the command "<strong>mdadm</strong>" will help us. <br>
+                            <img src="img/forensic/mdadm1.png" class="img-fluid" width="700">
+                            The raid level used is raid5, it means that the disk use striping with parity. When the data is written to a RAID 5 drive, the system calculates parity and writes that parity into the drive. On the screeshot, it is showing that <strong>raid devices</strong> is 3, meaning that the raid 5 need 3 disks to function correctly. According to <a href="https://www.ibm.com/support/knowledgecenter/TI0003N/p8ebk/recover_five_single.htm">IBM support</a>, RAID 5 protects the data with parity information distributed on all member disks. The data can be recovered from the remaining disks if one disk fails. <br>
+                            So I guess the challenge is to recover the data even if we are missing one disk. 
+                            The option "--assemble" of the command mdadm, will assemble the disk to reactivate the raid5. In that case we will assemble /dev/md6 with the two img file. The device mds are used for RAID. 
+                            <img src="img/forensic/mdadm2.png" class="img-fluid" width="700">
+                            Once it is associated, we can mount the mirror device to a mount point. 
+                            After mounting it, it contains a .zip file, we unzip it, but an error appear: <br>
+                            <strong>dump.vmem: wirte error (disk full?). Continue? (y/n/^C)</strong> <br>
+                            According to the error the mounting point is full, let's move it to another folder and unzip it.
+                            <img src="img/forensic/unzip2.png" class="img-fluid" width="700">
+                            inside of that .zip file, there is a .vmem file which is memory file from a virtual machine. We can analyze it with <strong>Volatility</strong>. <br>
+                            <br>First thing to do before Volatility 3, get the suggested profile, run the command "<strong>volatility -f dump.vmem imageinfo</strong>"
+                            <img src="img/forensic/imageinfo.png" class="img-fluid" width="700">
+                            We see that the memery come from Windows Server 2008 R2, or Windows 7. Now we have that information, we might check the list of process, run the command "<strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 pslist / pstree / psscan</strong>" I have a preference in pstree because we can see clearly the parent process.
+                            <img src="img/forensic/pstree.png" class="img-fluid" width="700">
+                            From the pstree, we see two <i>vmtoolsd.exe</i>, the suspicious one is the one that run ipconfig.exe its parent process is svchost.exe. Suspicious process: PID 1584. We can also check the dll used by this process with dlllist
+                            <img src="img/forensic/dlllist.png" class="img-fluid" width="700">. Most of the dll files seems fine, we can still dump the process by running the command: <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 procdump -p 1584 --dump-dir .</strong>
+                            <br>In output, we have a file called executable.1584.exe, run <strong>sha256sum executable.1584.exe</strong> to get the file hash: b62e45b8916d86f4189486d5c17900de744c9d8aca4d003187cca09052c6c231. Then I put the file on Virus Total, if it is a known file in antivirus database.
+                            <img src="img/forensic/virustotal.png" class="img-fluid" width="700">
+                            It seems it is a legitimate process. Let's see what we can find with others pluggins in Volatility. 
+
+
+
                         </p>
                     </div>
                 </div>

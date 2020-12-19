@@ -148,21 +148,22 @@
                             <img src="img/forensic/dlllist.png" class="img-fluid" width="700">. Most of the dll files seems fine, we can still dump the process by running the command: <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 procdump -p 1584 --dump-dir .</strong>
                             <br>In output, we have a file called executable.1584.exe, run <strong>sha256sum executable.1584.exe</strong> to get the file hash: b62e45b8916d86f4189486d5c17900de744c9d8aca4d003187cca09052c6c231. Then I put the file on Virus Total, if it is a known file in antivirus database.
                             <img src="img/forensic/virustotal.png" class="img-fluid" width="700">
-                            It seems it is a legitimate process. Let's see what we can find with others plugins in Volatility. Windows system has a file named <strong>Master File Table</strong>, and it contains all the files in the disk of the system. According to Alphonse, the agent wanted to contact us, we need to find his message, so let's check for .txt file. The plugin "<strong>MFTparser</strong>" can extract the data inside the Master File Table. <br>
+                            It seems it is a legitimate process... <br>
+                            Let's see what we can find with others plugins in Volatility. Windows system has a file named <strong>Master File Table</strong>, and it contains all the files in the disk of the system. According to Alphonse, the agent wanted to contact us, we need to find his message, so let's check for .txt file. The plugin "<strong>MFTparser</strong>" can extract the data inside the Master File Table. <br>
                             <br>
                             <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 mftparser | grep txt</strong>
                             <img src="img/forensic/mftparser.png" class="img-fluid" width="700">
-                            We notice that some files have a strange extension (.txt.evil) and a .lnk file which is a shortcut of the text file informations_attaque.txt. My assumption is that many files of the system are encrypted, probably they have faced a ransomware. Let's use the plugin "<strong>Filescan</strong>" to look for the file "<i>informations_attaque.txt</i>". <br>
+                            We notice that some files have a strange extension (.txt.evil) and a .lnk file which is a shortcut of the text file informations_attaque.txt. My assumption is that many files of the system are encrypted, a ransomware has certainly spread in the system. Let's use the plugin "<strong>Filescan</strong>" to look for the file "<i>informations_attaque.txt</i>". <br>
                             <br>
                             <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 filescan | grep informations_attanck</strong>
                             <img src="img/forensic/filescan.png" class="img-fluid" width="700">
-                            With filescan, we have the file location in the memory thanks to the address. The plugin "<strong>Dumpfile</strong>" will help us to extract the file, it needs as argument the memory address of the file. <br>
+                            Filescan also displays the file location in memory by printing the address. The plugin "<strong>Dumpfile</strong>" will help us to extract the file, it needs as argument the memory address of the file. <br>
                             <br>
                             <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 dumpfiles -Q 0x000000001715ed50 -D ./ -n</strong>
                             <img src="img/forensic/dumpfiles.png" class="img-fluid" width="900">
                             Once extracted, let's see what is the content of that file.
                             <img src="img/forensic/encrypted.png" class="img-fluid" width="900">
-                            As expected, the file is encrypted. The extension .evil is certainly encrypting files. We must find the initial infection vector of the ransomware, which executable has installed the ransomware. Sometimes, ransomware come from a user behavior, click on a malicious link and download a file. So let's check user's file, by default the user's folders are found in "C:\Users". 
+                            As expected, the file is encrypted. The extension .evil is certainly encrypting files. We must find the initial infection vector of the ransomware, which executable has installed the ransomware. Sometimes, ransomware come from a user behavior, click on a malicious link and download a file. The path of the file is located in the "Users" folder, so let's scan the user's folders.
                             <img src="img/forensic/filescan2.png" class="img-fluid" width="900">
                             The file "firefox.exe" seems suspicious to me since that the default folder of Firefox.exe should be "C:\Program Files\Mozilla Firefox". The folder AppData is created for each users to store user data and settings from unwanted change. It contains 3 sub-folders (Roaming, Local, LocalLow), Roaming folder is used to save the user configuration even if the user is using a different laptop (Domain account). <br>
                             <br>
@@ -188,7 +189,15 @@
                             <br>It seems that drpbx.exe.dat and firefox.exe.dat have the same hash. And now we can even check on VirusTotal if those files are known to be malicious.
                             <img src="img/forensic/jigsaw1.png" class="img-fluid" width="900">
                             <img src="img/forensic/jigsaw2.png" class="img-fluid" width="900">
-                            Both files are seen malicious, and as expected both are seen as jigsaw ransomware executable. The question now is, how do we decrypt the file ?
+                            Both files are seen malicious, and as expected both are seen as jigsaw ransomware executable. When the Jigraw ransomware is encrypting a file, it will add the filename to a list of ecrypted file located at "<strong>AppData\Roaming\System32Work\EncryptedFileList.txt</strong>
+
+                            <img src="img/forensic/encryptedfilelist.png" class="img-fluid" width="700">
+                            The file is also present, after I've extract it, there are a big amount of file encrypted.
+                            I downloaded the <a href="https://www.bleepingcomputer.com/download/jigsaw-decrypter/">Jigsaw decryptor</a> from <a href="https://twitter.com/demonslay335">Michael Gillespie</a> but it is not decrypting any of the files. <br>
+                            <br>
+                            The Jigsaw extensions are .fun, .kkk, .btc, .gws, .porno, .pornoransom, .payransom, .paybtcs, .AFD, .payms, .pays, .paym, .paymrss, .payrms, .paymts, .paymds, .paymrts, .epic<br>, there is no .evil extension.  Let's reverse the program to see if we can find any key to decrypt the file.
+
+
 
 
                         </p>

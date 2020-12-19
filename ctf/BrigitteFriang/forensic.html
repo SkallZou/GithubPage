@@ -148,22 +148,47 @@
                             <img src="img/forensic/dlllist.png" class="img-fluid" width="700">. Most of the dll files seems fine, we can still dump the process by running the command: <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 procdump -p 1584 --dump-dir .</strong>
                             <br>In output, we have a file called executable.1584.exe, run <strong>sha256sum executable.1584.exe</strong> to get the file hash: b62e45b8916d86f4189486d5c17900de744c9d8aca4d003187cca09052c6c231. Then I put the file on Virus Total, if it is a known file in antivirus database.
                             <img src="img/forensic/virustotal.png" class="img-fluid" width="700">
-                            It seems it is a legitimate process. Let's see what we can find with others plugins in Volatility. Windows system has a file named <strong>Master File Table</strong>, and it contains all the files of the system. According to Alphonse, the agent wanted to contact us, we need to find his message, so let's check for .txt file. The plugin "<strong>MFTparser</strong>" can extract the data inside the Master File Table. <br>
+                            It seems it is a legitimate process. Let's see what we can find with others plugins in Volatility. Windows system has a file named <strong>Master File Table</strong>, and it contains all the files in the disk of the system. According to Alphonse, the agent wanted to contact us, we need to find his message, so let's check for .txt file. The plugin "<strong>MFTparser</strong>" can extract the data inside the Master File Table. <br>
                             <br>
                             <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 mftparser | grep txt</strong>
                             <img src="img/forensic/mftparser.png" class="img-fluid" width="700">
-                            We notice that some files have a strange extension (.txt.evil) and a .lnk file which is a shortcut for the text file informations_attaque.txt. My assumption is that many files of the system are encrypted, probably they have faced a ransomware. Let's use the plugin "<strong>Filescan</strong>" to look for the file "<i>informations_attaque.txt</i>". <br>
+                            We notice that some files have a strange extension (.txt.evil) and a .lnk file which is a shortcut of the text file informations_attaque.txt. My assumption is that many files of the system are encrypted, probably they have faced a ransomware. Let's use the plugin "<strong>Filescan</strong>" to look for the file "<i>informations_attaque.txt</i>". <br>
                             <br>
                             <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 filescan | grep informations_attanck</strong>
                             <img src="img/forensic/filescan.png" class="img-fluid" width="700">
                             With filescan, we have the file location in the memory thanks to the address. The plugin "<strong>Dumpfile</strong>" will help us to extract the file, it needs as argument the memory address of the file. <br>
                             <br>
-                            <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 -Q 0x000000001715ed50 -D ./ -n dumpfiles</strong>
-                            <img src="img/forensic/dumpfiles.png" class="img-fluid" width="700">
+                            <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 dumpfiles -Q 0x000000001715ed50 -D ./ -n</strong>
+                            <img src="img/forensic/dumpfiles.png" class="img-fluid" width="900">
                             Once extracted, let's see what is the content of that file.
-                            <img src="img/forensic/encrypted.png" class="img-fluid" width="700">
-                            As expected, the file is encrypted. The extension .evil is certainly encrypting files. We must find the initial infection vector of the ransomware, which executable has installed the ransomware.
+                            <img src="img/forensic/encrypted.png" class="img-fluid" width="900">
+                            As expected, the file is encrypted. The extension .evil is certainly encrypting files. We must find the initial infection vector of the ransomware, which executable has installed the ransomware. Sometimes, ransomware come from a user behavior, click on a malicious link and download a file. So let's check user's file, by default the user's folders are found in "C:\Users". 
+                            <img src="img/forensic/filescan2.png" class="img-fluid" width="900">
+                            The file "firefox.exe" seems suspicious to me since that the default folder of Firefox.exe should be "C:\Program Files\Mozilla Firefox". The folder AppData is created for each users to store user data and settings from unwanted change. It contains 3 sub-folders (Roaming, Local, LocalLow), Roaming folder is used to save the user configuration even if the user is using a different laptop (Domain account). <br>
+                            <br>
+                            After making some research, I found that this is an <strong>indicator of compromise</strong> for the ransomware <u>Jigsaw</u>. Here are ransomware file:
+                            <ul>
+                                <li>appdata\roaming\frfx\firefox.exe (6c92e26b1c25a7a453fe61ca9c0d07f1)</li>
+                                <li>appdata\local\drpbx\drpbx.exe (3cad3391255a1142c5f0724fcf8cca35) </li>
+                                <li>appdata\roaming\frfx\firefox.exe (33fcc8abbc885083646a4079903971bb)</li>
+                            </ul>
+                            <img src="img/forensic/filescan3.png" class="img-fluid" width="900">
 
+                            With the regular expression, it allows us to retrieve only the file containaing "firefox" or "drpbx" in the filename. We have found 3 files, let's extract them with the plugin <i>Dumpfiles</i> in volatility. If we look at the previous screenshot displaying the process list running, the process "drpbx.exe" was running. <br>
+                            <br>
+                            <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 dumpfiles -Q 0x000000000eb012e0 -D ./ -n</strong><br>
+                            <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 dumpfiles -Q 0x000000003db6ee60 -D ./ -n</strong><br>
+                            <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 dumpfiles -Q 0x000000003fc11770 -D ./ -n</strong><br>
+                            <br>
+                            Then we calculate the sha256 hash of each file: <br>
+                            7f9e1547ef5f3f2baa069e9f7a6bfd3580e0d07c1c86dd92be5503d9500e7b9f  file.None.0xfffffa8000e88ea0.drpbx.exe.img
+                            cc9550541ca5ac5f22a597e707b9ce9e593b65cd0c88143bd0c240cb5d8d0655  file.None.0xfffffa8001a29f10.drpbx.exe.dat
+                            cc9550541ca5ac5f22a597e707b9ce9e593b65cd0c88143bd0c240cb5d8d0655  file.None.0xfffffa800cffff10.firefox.exe.dat
+                            <br>
+                            <br>It seems that drpbx.exe.dat and firefox.exe.dat have the same hash. And now we can even check on VirusTotal if those files are known to be malicious.
+                            <img src="img/forensic/jigsaw1.png" class="img-fluid" width="900">
+                            <img src="img/forensic/jigsaw2.png" class="img-fluid" width="900">
+                            Both files are seen malicious, and as expected both are seen as jigsaw ransomware executable. The question now is, how do we decrypt the file ?
 
 
                         </p>

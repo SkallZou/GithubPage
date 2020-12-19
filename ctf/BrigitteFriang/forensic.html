@@ -139,8 +139,8 @@
                             <strong>dump.vmem: wirte error (disk full?). Continue? (y/n/^C)</strong> <br>
                             According to the error the mounting point is full, let's move it to another folder and unzip it.
                             <img src="img/forensic/unzip2.png" class="img-fluid" width="700">
-                            inside of that .zip file, there is a .vmem file which is memory file from a virtual machine. We can analyze it with <strong>Volatility</strong>. <br>
-                            <br>First thing to do before Volatility 3, get the suggested profile, run the command "<strong>volatility -f dump.vmem imageinfo</strong>"
+                            inside of that .zip file, there is a .vmem file which is memory file from a virtual machine. We can analyze it with <strong><a href="../../tutorialpage.html">Volatility</a></strong>. <br>
+                            <br>First thing to do in Volatility, get the suggested profile, run the command "<strong>volatility -f dump.vmem imageinfo</strong>"
                             <img src="img/forensic/imageinfo.png" class="img-fluid" width="700">
                             We see that the memery come from Windows Server 2008 R2, or Windows 7. Now we have that information, we might check the list of process, run the command "<strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 pslist / pstree / psscan</strong>" I have a preference in pstree because we can see clearly the parent process.
                             <img src="img/forensic/pstree.png" class="img-fluid" width="700">
@@ -148,8 +148,15 @@
                             <img src="img/forensic/dlllist.png" class="img-fluid" width="700">. Most of the dll files seems fine, we can still dump the process by running the command: <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 procdump -p 1584 --dump-dir .</strong>
                             <br>In output, we have a file called executable.1584.exe, run <strong>sha256sum executable.1584.exe</strong> to get the file hash: b62e45b8916d86f4189486d5c17900de744c9d8aca4d003187cca09052c6c231. Then I put the file on Virus Total, if it is a known file in antivirus database.
                             <img src="img/forensic/virustotal.png" class="img-fluid" width="700">
-                            It seems it is a legitimate process. Let's see what we can find with others pluggins in Volatility. 
-
+                            It seems it is a legitimate process. Let's see what we can find with others pluggins in Volatility. Windows system has a file named <strong>Master File Table</strong>, and it contains all the files of the system. According to Alphonse, the agent wanted to contact us, we need to find his message, so let's check for .txt file. The pluggin "<strong>MFTparser</strong>" can extract the data inside the Master File Table. <br>
+                            <br>
+                            <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 mftparser | grep txt</strong>
+                            <img src="img/forensic/mftparser.png" class="img-fluid" width="700">
+                            We notice that some files have a strange extension (.txt.evil) and a .lnk file which is a shortcut for the text file informations_attaque.txt. My assumption is that many files of the system are encrypted, probably they have faced an ransomware. Let's use the pluggin "<strong>Filescan</strong>" to look for the file "<i>informations_attaque.txt</i>". <br>
+                            <br>
+                            <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 filescan | grep informations_attanck</strong>
+                            <img src="img/forensic/filescan.png" class="img-fluid" width="700">
+                            With filescan, we have the file location in the memory thanks to the address, let's dump it to analyze it.
 
 
                         </p>

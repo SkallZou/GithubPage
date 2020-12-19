@@ -148,15 +148,22 @@
                             <img src="img/forensic/dlllist.png" class="img-fluid" width="700">. Most of the dll files seems fine, we can still dump the process by running the command: <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 procdump -p 1584 --dump-dir .</strong>
                             <br>In output, we have a file called executable.1584.exe, run <strong>sha256sum executable.1584.exe</strong> to get the file hash: b62e45b8916d86f4189486d5c17900de744c9d8aca4d003187cca09052c6c231. Then I put the file on Virus Total, if it is a known file in antivirus database.
                             <img src="img/forensic/virustotal.png" class="img-fluid" width="700">
-                            It seems it is a legitimate process. Let's see what we can find with others pluggins in Volatility. Windows system has a file named <strong>Master File Table</strong>, and it contains all the files of the system. According to Alphonse, the agent wanted to contact us, we need to find his message, so let's check for .txt file. The pluggin "<strong>MFTparser</strong>" can extract the data inside the Master File Table. <br>
+                            It seems it is a legitimate process. Let's see what we can find with others plugins in Volatility. Windows system has a file named <strong>Master File Table</strong>, and it contains all the files of the system. According to Alphonse, the agent wanted to contact us, we need to find his message, so let's check for .txt file. The plugin "<strong>MFTparser</strong>" can extract the data inside the Master File Table. <br>
                             <br>
                             <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 mftparser | grep txt</strong>
                             <img src="img/forensic/mftparser.png" class="img-fluid" width="700">
-                            We notice that some files have a strange extension (.txt.evil) and a .lnk file which is a shortcut for the text file informations_attaque.txt. My assumption is that many files of the system are encrypted, probably they have faced an ransomware. Let's use the pluggin "<strong>Filescan</strong>" to look for the file "<i>informations_attaque.txt</i>". <br>
+                            We notice that some files have a strange extension (.txt.evil) and a .lnk file which is a shortcut for the text file informations_attaque.txt. My assumption is that many files of the system are encrypted, probably they have faced a ransomware. Let's use the plugin "<strong>Filescan</strong>" to look for the file "<i>informations_attaque.txt</i>". <br>
                             <br>
                             <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 filescan | grep informations_attanck</strong>
                             <img src="img/forensic/filescan.png" class="img-fluid" width="700">
-                            With filescan, we have the file location in the memory thanks to the address, let's dump it to analyze it.
+                            With filescan, we have the file location in the memory thanks to the address. The plugin "<strong>Dumpfile</strong>" will help us to extract the file, it needs as argument the memory address of the file. <br>
+                            <br>
+                            <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 -Q 0x000000001715ed50 -D ./ -n dumpfiles</strong>
+                            <img src="img/forensic/dumpfiles.png" class="img-fluid" width="700">
+                            Once extracted, let's see what is the content of that file.
+                            <img src="img/forensic/encrypted.png" class="img-fluid" width="700">
+                            As expected, the file is encrypted. The extension .evil is certainly encrypting files. We must find the initial infection vector of the ransomware, which executable has installed the ransomware.
+
 
 
                         </p>

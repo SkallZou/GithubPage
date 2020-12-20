@@ -199,10 +199,18 @@
                             The Jigsaw ransomware uses an AES encryption algorithm to encrypt these files and add an extension to the end of each encrypted file.The Jigsaw extensions are .fun, .kkk, .btc, .gws, .porno, .pornoransom, .payransom, .paybtcs, .AFD, .payms, .pays, .paym, .paymrss, .payrms, .paymts, .paymds, .paymrts, .epic<br>, there is no .evil extension. <br>
                             <br>The Advanced Ecryption Standard is a symmetric-key algorithm, meaning that the same key is used for both encrypting and decrypting the data.
 
-                            Since the program will use the same key to encrypt and to decrypt, let's reverse the program to see if we can find a key. We will start with some static analysis by analyzing the strings. <strong>Radare2</strong> is a reverse engineering tool. Rabin2 is a command part of radare2 and can analyze the strings of a program with the option <u>-zz</u>. 
+                            Since the program will use the same key to encrypt and to decrypt, let's reverse the program to see if we can find a key. We will start with some static analysis by analyzing the strings. <strong>Radare2</strong> is a reverse engineering tool. Rabin2 is a command part of radare2 and can analyze the strings of a program with the option <u>-zz</u>. <br>
+                            <strong>rabin2 -zz file.None.0xfffffa8001a29f10.drpbx.exe.dat | less</strong>
+                            After checking 400 lines in the program, some data start to be readable, the text of the program is mostly written in french.   
+                            <br>Analyzing the strings, we've managed to find the text written in the program describing the ransomware. We also retrieve the payment URL: "http://evil.gouv.ransom.ev/api/v1/coin/info" and others IOCs previously seen without that analysis (Frfx\firefox.exe, Drpbx\drpbx.exe, .evil, EncrytedFileList.txt).
+
+                            <img src="img/forensic/rabin2.png" class="img-fluid" width="700">
+
+                            A base64 word is present. RXZpbERlZmF1bHRQYXNzIQ== is equal to EvilDefaultPass! <br>
+                            It might be the encryption / decryption key. Let's find out.
 
 
-
+                        
 
                         </p>
                     </div>

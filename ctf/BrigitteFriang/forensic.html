@@ -182,11 +182,12 @@
                             <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 dumpfiles -Q 0x000000003fc11770 -D ./ -n</strong><br>
                             <br>
                             Then we calculate the sha256 hash of each file: <br>
-                            7f9e1547ef5f3f2baa069e9f7a6bfd3580e0d07c1c86dd92be5503d9500e7b9f  file.None.0xfffffa8000e88ea0.drpbx.exe.img
-                            cc9550541ca5ac5f22a597e707b9ce9e593b65cd0c88143bd0c240cb5d8d0655  file.None.0xfffffa8001a29f10.drpbx.exe.dat
-                            cc9550541ca5ac5f22a597e707b9ce9e593b65cd0c88143bd0c240cb5d8d0655  file.None.0xfffffa800cffff10.firefox.exe.dat
-                            <br>
-                            <br>It seems that drpbx.exe.dat and firefox.exe.dat have the same hash. And now we can even check on VirusTotal if those files are known to be malicious.
+                            <ul>
+                                <li class="longword">file.None.0xfffffa8000e88ea0.drpbx.exe.img: 7f9e1547ef5f3f2baa069e9f7a6bfd3580e0d07c1c86dd92be5503d9500e7b9f </li>
+                                <li class="longword">file.None.0xfffffa8001a29f10.drpbx.exe.dat: cc9550541ca5ac5f22a597e707b9ce9e593b65cd0c88143bd0c240cb5d8d0655</li>
+                                <li class="longword">file.None.0xfffffa800cffff10.firefox.exe.dat: cc9550541ca5ac5f22a597e707b9ce9e593b65cd0c88143bd0c240cb5d8d0655</li>
+                            </ul>                            
+                            It seems that drpbx.exe.dat and firefox.exe.dat have the same hash. And now we can even check on VirusTotal if those files are known to be malicious.
                             <img src="img/forensic/jigsaw1.png" class="img-fluid" width="900">
                             <img src="img/forensic/jigsaw2.png" class="img-fluid" width="900">
                             Both files are seen malicious, and as expected both are seen as jigsaw ransomware executable. When the Jigraw ransomware is encrypting a file, it will add the filename to a list of ecrypted file located at "<strong>AppData\Roaming\System32Work\EncryptedFileList.txt</strong>
@@ -197,7 +198,7 @@
                             <br>
                             The Jigsaw extensions are .fun, .kkk, .btc, .gws, .porno, .pornoransom, .payransom, .paybtcs, .AFD, .payms, .pays, .paym, .paymrss, .payrms, .paymts, .paymds, .paymrts, .epic<br>, there is no .evil extension. <br>
                             <br>
-                            We will reverse the program to see if we can find any key to decrypt the file. We will start with some static analysis, so let's check for the strings
+                            We will reverse the program to see if we can find any key to decrypt the file. We will start with some static analysis, so let's check for the strings. To reverse the program, I'm going to use <strong>Radare2</strong>, we can analyze the strings with the option <u>-zz</u>. 
 
 
 

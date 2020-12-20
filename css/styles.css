@@ -10175,6 +10175,10 @@ h2.header-article{
   padding-top: 2%;
 }
 
+.longword{
+  word-break: break-all;
+}
+
 @media (max-width: 1200px) { /*[RESPONSIVE] title article sticky into static*/
   .sticky-top{
     position:static;

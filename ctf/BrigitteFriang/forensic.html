@@ -196,9 +196,10 @@
                             The file is also present, after I've extract it, there are a big amount of file encrypted.
                             I downloaded the <a href="https://www.bleepingcomputer.com/download/jigsaw-decrypter/">Jigsaw decryptor</a> from <a href="https://twitter.com/demonslay335">Michael Gillespie</a> but it is not decrypting any of the files. <br>
                             <br>
-                            The Jigsaw extensions are .fun, .kkk, .btc, .gws, .porno, .pornoransom, .payransom, .paybtcs, .AFD, .payms, .pays, .paym, .paymrss, .payrms, .paymts, .paymds, .paymrts, .epic<br>, there is no .evil extension. <br>
-                            <br>
-                            We will reverse the program to see if we can find any key to decrypt the file. We will start with some static analysis, so let's check for the strings. To reverse the program, I'm going to use <strong>Radare2</strong>, we can analyze the strings with the option <u>-zz</u>. 
+                            The Jigsaw ransomware uses an AES encryption algorithm to encrypt these files and add an extension to the end of each encrypted file.The Jigsaw extensions are .fun, .kkk, .btc, .gws, .porno, .pornoransom, .payransom, .paybtcs, .AFD, .payms, .pays, .paym, .paymrss, .payrms, .paymts, .paymds, .paymrts, .epic<br>, there is no .evil extension. <br>
+                            <br>The Advanced Ecryption Standard is a symmetric-key algorithm, meaning that the same key is used for both encrypting and decrypting the data.
+
+                            Since the program will use the same key to encrypt and to decrypt, let's reverse the program to see if we can find a key. We will start with some static analysis by analyzing the strings. <strong>Radare2</strong> is a reverse engineering tool. Rabin2 is a command part of radare2 and can analyze the strings of a program with the option <u>-zz</u>. 
 
 
 

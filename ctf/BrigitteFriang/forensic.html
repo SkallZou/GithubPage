@@ -144,7 +144,7 @@
                             <img src="img/forensic/imageinfo.png" class="img-fluid" width="700">
                             We see that the memery come from Windows Server 2008 R2, or Windows 7. Now we have that information, we might check the list of process, run the command "<strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 pslist / pstree / psscan</strong>" I have a preference in pstree because we can see clearly the parent process.
                             <img src="img/forensic/pstree.png" class="img-fluid" width="700">
-                            From the pstree, we see two <i>vmtoolsd.exe</i>, the suspicious one is the one that run ipconfig.exe its parent process is svchost.exe. Suspicious process: PID 1584. We can also check the dll used by this process with dlllist
+                            From pstree, we see two <i>vmtoolsd.exe</i>, the suspicious one seems to be the one that run ipconfig.exe and having svchost.exe as parent process. Suspicious process: PID 1584. We can also check the dll used by this process with dlllist
                             <img src="img/forensic/dlllist.png" class="img-fluid" width="700">. Most of the dll files seems fine, we can still dump the process by running the command: <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 procdump -p 1584 --dump-dir .</strong>
                             <br>In output, we have a file called executable.1584.exe, run <strong>sha256sum executable.1584.exe</strong> to get the file hash: b62e45b8916d86f4189486d5c17900de744c9d8aca4d003187cca09052c6c231. Then I put the file on Virus Total, if it is a known file in antivirus database.
                             <img src="img/forensic/virustotal.png" class="img-fluid" width="700">

@@ -132,7 +132,7 @@
                             <img src="img/forensic/mdadm1.png" class="img-fluid" width="700">
                             The raid level used is raid5, it means that the disk use striping with parity. When the data is written to a RAID 5 drive, the system calculates parity and writes that parity into the drive. On the screeshot, it is showing that <strong>raid devices</strong> is 3, meaning that the raid 5 need 3 disks to function correctly. According to <a href="https://www.ibm.com/support/knowledgecenter/TI0003N/p8ebk/recover_five_single.htm">IBM support</a>, RAID 5 protects the data with parity information distributed on all member disks. The data can be recovered from the remaining disks if one disk fails. <br>
                             So I guess the challenge is to recover the data even if we are missing one disk. 
-                            The option "--assemble" of the command mdadm, will assemble the disk to reactivate the raid5. In that case we will assemble /dev/md6 with the two img file. The device mds are used for RAID. 
+                            The option "--assemble" of the command mdadm, will assemble the disk to reactivate the raid5. In that case we will assemble /dev/md0 with the two img file. The device mds are used for RAID. 
                             <img src="img/forensic/mdadm2.png" class="img-fluid" width="700">
                             Once it is associated, we can mount the mirror device to a mount point. 
                             After mounting it, it contains a .zip file, we unzip it, but an error appear: <br>
@@ -145,11 +145,11 @@
                             We see that the memery come from Windows Server 2008 R2, or Windows 7. Now we have that information, we might check the list of process, run the command "<strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 pslist / pstree / psscan</strong>" I have a preference in pstree because we can see clearly the parent process.
                             <img src="img/forensic/pstree.png" class="img-fluid" width="700">
                             From pstree, we see two <i>vmtoolsd.exe</i>, the suspicious one seems to be the one that run ipconfig.exe and having svchost.exe as parent process. Suspicious process: PID 1584. We can also check the dll used by this process with dlllist
-                            <img src="img/forensic/dlllist.png" class="img-fluid" width="700">. Most of the dll files seems fine, we can still dump the process by running the command: <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 procdump -p 1584 --dump-dir .</strong>
+                            <img src="img/forensic/dlllist.png" class="img-fluid" width="700">. Most of the dll files seem fine, we can still dump the process by running the command: <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 procdump -p 1584 --dump-dir .</strong>
                             <br>In output, we have a file called executable.1584.exe, run <strong>sha256sum executable.1584.exe</strong> to get the file hash: b62e45b8916d86f4189486d5c17900de744c9d8aca4d003187cca09052c6c231. Then I put the file on Virus Total, if it is a known file in antivirus database.
                             <img src="img/forensic/virustotal.png" class="img-fluid" width="700">
                             It seems it is a legitimate process... <br>
-                            Let's see what we can find with others plugins in Volatility. Windows system has a file named <strong>Master File Table</strong>, and it contains all the files in the disk of the system. According to Alphonse, the agent wanted to contact us, we need to find his message, so let's check for .txt file. The plugin "<strong>MFTparser</strong>" can extract the data inside the Master File Table. <br>
+                            Let's see what we can find with others plugins in Volatility. Windows system has a file named <strong>Master File Table</strong>, and it contains all the files in a disk of the system. According to Alphonse, the agent wanted to contact us, we need to find his message, so let's check for .txt file. The plugin "<strong>MFTparser</strong>" can extract the data inside the Master File Table. <br>
                             <br>
                             <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 mftparser | grep txt</strong>
                             <img src="img/forensic/mftparser.png" class="img-fluid" width="700">
@@ -196,10 +196,10 @@
                             The file is also present, after I've extract it, there are a big amount of file encrypted.
                             I downloaded the <a href="https://www.bleepingcomputer.com/download/jigsaw-decrypter/">Jigsaw decryptor</a> from <a href="https://twitter.com/demonslay335">Michael Gillespie</a> but it is not decrypting any of the files. <br>
                             <br>
-                            The Jigsaw ransomware uses an AES encryption algorithm to encrypt these files and add an extension to the end of each encrypted file.The Jigsaw extensions are .fun, .kkk, .btc, .gws, .porno, .pornoransom, .payransom, .paybtcs, .AFD, .payms, .pays, .paym, .paymrss, .payrms, .paymts, .paymds, .paymrts, .epic<br>, there is no .evil extension. <br>
+                            The Jigsaw ransomware uses an AES encryption algorithm to encrypt these files and add an extension to the end of each encrypted file.The Jigsaw extensions are .fun, .kkk, .btc, .gws, .porno, .pornoransom, .payransom, .paybtcs, .AFD, .payms, .pays, .paym, .paymrss, .payrms, .paymts, .paymds, .paymrts, .epic.<br>There is not <strong>.evil</strong> extension in the list. <br>
                             <br>The Advanced Ecryption Standard is a symmetric-key algorithm, meaning that the same key is used for both encrypting and decrypting the data.
 
-                            Since the program will use the same key to encrypt and to decrypt, let's reverse the program to see if we can find a key. We will start with some static analysis by analyzing the strings. <strong>Radare2</strong> is a reverse engineering tool. Rabin2 is a command part of radare2 and can analyze the strings of a program with the option <u>-zz</u>. <br>
+                            Since the program will use the same key to encrypt and to decrypt, let's reverse the program to see if we can find a key. We will start with some static analysis by analyzing the strings. <strong>Radare2</strong> is a reverse engineering tool and <strong>rabin2</strong> is a command part of radare2 that can analyze the strings of a program with the option <u>-zz</u>. <br>
                             <br>
                             <strong>rabin2 -zz file.None.0xfffffa8001a29f10.drpbx.exe.dat | less</strong> <br>
                             <br>
@@ -214,11 +214,11 @@
                             Radare2 does not support .NET program, so we need to find another tool to reverse a .NET program. <strong><a href="https://github.com/dnSpy/dnSpy">dnSpy</a></strong> is a wonderful tool that supports decompilation, simple deobfuscation, modification and debugging of .NET applications.
 
                             <img src="img/forensic/dnspy.png" class="img-fluid" width="700">
-                            dnSpy has managed to retrieve the source code of the program. We have the classes, the function. On the screenshot above, I've checked the function "DecryptFile" and we see that it is using AESCryptoServiceProvider object and the key attribute is similar as the base64 we have found. Another attribute for the aesCryptoServiceProvider object is "IV" and it contains 16 bytes. In AES encryption, "IV" usually means <u>initialization vector</u> and is a unique binary sequence which is used to initiate the encryption method for CBC.
+                            dnSpy has managed to retrieve the source code of the program, we've got the classes, the functions... On the screenshot above, I've checked the function "DecryptFile" and we see that it is using AESCryptoServiceProvider object and the key attribute is similar as the base64 we have previously found. Another attribute for the aesCryptoServiceProvider object is "IV" which contains 16 bytes. In AES encryption, "IV" usually means <u>initialization vector</u> and is a unique binary sequence used to initiate the encryption method for CBC.
 
                             <img src="img/forensic/cbc.png" class="img-fluid" width="500">
                         
-                            Since that the IV has a size of 16 bytes (0103530100206760), if we convert it in bits, it is 16*8 = 128bits. Therefore the algorithm used by the program to encrypt data is AES-128-CBC.
+                            Since that the IV has a size of 16 bytes (0103530100206760), if we convert it in bits, it is 16*8 = 128bits. Therefore, the algorithm used by the program to encrypt data is AES-128-CBC.
                             <br>
                             We have all the parameters to decrypt a encrypted message:
                             <ul>

@@ -144,8 +144,10 @@
                             <img src="img/forensic/imageinfo.png" class="img-fluid" width="700">
                             We see that the memery come from Windows Server 2008 R2, or Windows 7. Now we have that information, we might check the list of process, run the command "<strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 pslist / pstree / psscan</strong>" I have a preference in pstree because we can see clearly the parent process.
                             <img src="img/forensic/pstree.png" class="img-fluid" width="700">
-                            From pstree, we see two <i>vmtoolsd.exe</i>, the suspicious one seems to be the one that run ipconfig.exe and having svchost.exe as parent process. Suspicious process: PID 1584. We can also check the dll used by this process with dlllist
-                            <img src="img/forensic/dlllist.png" class="img-fluid" width="700">. Most of the dll files seem fine, we can still dump the process by running the command: <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 procdump -p 1584 --dump-dir .</strong>
+                            From pstree, we see two <i>vmtoolsd.exe</i>, the suspicious one seems to be the one that run ipconfig.exe and having svchost.exe as parent process. <br>
+                            Suspicious process: PID 1584. <br>
+                            We can also check the dll used by this process with dlllist.
+                            <img src="img/forensic/dlllist.png" class="img-fluid" width="700"> Most of the dll files seem fine, we can still dump the process by running the command: <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 procdump -p 1584 --dump-dir .</strong>
                             <br>In output, we have a file called executable.1584.exe, run <strong>sha256sum executable.1584.exe</strong> to get the file hash: b62e45b8916d86f4189486d5c17900de744c9d8aca4d003187cca09052c6c231. Then I put the file on Virus Total, if it is a known file in antivirus database.
                             <img src="img/forensic/virustotal.png" class="img-fluid" width="700">
                             It seems it is a legitimate process... <br>
@@ -167,7 +169,7 @@
                             <img src="img/forensic/filescan2.png" class="img-fluid" width="900">
                             The file "firefox.exe" seems suspicious to me since that the default folder of Firefox.exe should be "C:\Program Files\Mozilla Firefox". The folder AppData is created for each users to store user data and settings from unwanted change. It contains 3 sub-folders (Roaming, Local, LocalLow), Roaming folder is used to save the user configuration even if the user is using a different laptop (Domain account). <br>
                             <br>
-                            After making some research, I found that this is an <strong>indicator of compromise</strong> for the ransomware <u>Jigsaw</u>. Here are ransomware file:
+                            After making some researches, I found that this is an <strong>indicator of compromise</strong> for the ransomware <u>Jigsaw</u>. Here are ransomware file:
                             <ul>
                                 <li>appdata\roaming\frfx\firefox.exe (6c92e26b1c25a7a453fe61ca9c0d07f1)</li>
                                 <li>appdata\local\drpbx\drpbx.exe (3cad3391255a1142c5f0724fcf8cca35) </li>

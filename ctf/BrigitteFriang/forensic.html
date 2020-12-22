@@ -159,7 +159,7 @@
                             <br>
                             <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 filescan | grep informations_attanck</strong>
                             <img src="img/forensic/filescan.png" class="img-fluid" width="700">
-                            Filescan also displays the file location in memory by printing the address. The plugin "<strong>Dumpfile</strong>" will help us to extract the file, it needs as argument the memory address of the file. <br>
+                            Filescan also displays the file location in memory by printing the address. The plugin "<strong>Dumpfile</strong>" will help us to extract the file, it needs the memory address of the file as argument. <br>
                             <br>
                             <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 dumpfiles -Q 0x000000001715ed50 -D ./ -n</strong>
                             <img src="img/forensic/dumpfiles.png" class="img-fluid" width="900">

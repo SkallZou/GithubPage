@@ -165,7 +165,7 @@
                             <img src="img/forensic/dumpfiles.png" class="img-fluid" width="900">
                             Once extracted, let's see what is the content of that file.
                             <img src="img/forensic/encrypted.png" class="img-fluid" width="900">
-                            As expected, the file is encrypted. The extension .evil is certainly encrypting files. We must find the initial infection vector of the ransomware, which executable has installed the ransomware. Sometimes, ransomware come from a user behavior, click on a malicious link and download a file. The path of the file is located in the "Users" folder, so let's scan the user's folders.
+                            As expected, the file is encrypted. The extension .evil is certainly encrypting files. We must find the initial infection vector of the ransomware, which executable has installed the ransomware. Sometimes, ransomware comes from an user behavior, where the user clicks on a malicious link and downloads a file. Moreover, the path of the file is located in the "Users" folder, so let's scan the user's folders.
                             <img src="img/forensic/filescan2.png" class="img-fluid" width="900">
                             The file "firefox.exe" seems suspicious to me since that the default folder of Firefox.exe should be "C:\Program Files\Mozilla Firefox". The folder AppData is created for each users to store user data and settings from unwanted change. It contains 3 sub-folders (Roaming, Local, LocalLow), Roaming folder is used to save the user configuration even if the user is using a different laptop (Domain account). <br>
                             <br>
@@ -177,7 +177,7 @@
                             </ul>
                             <img src="img/forensic/filescan3.png" class="img-fluid" width="900">
 
-                            With the regular expression, it allows us to retrieve only the file containaing "firefox" or "drpbx" in the filename. We have found 3 files, let's extract them with the plugin <i>Dumpfiles</i> in volatility. If we look at the previous screenshot displaying the process list running, the process "drpbx.exe" was running. <br>
+                            With the regular expression, it allows us to retrieve only the file containaing "firefox" or "drpbx" in the filename. We have found 3 files, let's extract them with the plugin <i>Dumpfiles</i> in volatility. If we look at the previous screenshot displaying the process list, we can see that "drpbx.exe" was running. <br>
                             <br>
                             <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 dumpfiles -Q 0x000000000eb012e0 -D ./ -n</strong><br>
                             <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 dumpfiles -Q 0x000000003db6ee60 -D ./ -n</strong><br>
@@ -192,7 +192,7 @@
                             It seems that drpbx.exe.dat and firefox.exe.dat have the same hash. And now we can even check on VirusTotal if those files are known to be malicious.
                             <img src="img/forensic/jigsaw1.png" class="img-fluid" width="900">
                             <img src="img/forensic/jigsaw2.png" class="img-fluid" width="900">
-                            Both files are seen malicious, and as expected both are seen as jigsaw ransomware executable. When the Jigraw ransomware is encrypting a file, it will add the filename to a list of ecrypted file located at "<strong>AppData\Roaming\System32Work\EncryptedFileList.txt</strong>
+                            Both files are seen malicious, and as expected both are seen as jigsaw ransomware executable. When the Jigraw ransomware is encrypting a file, it will add the filename to a list of ecrypted file located at <div class="longword"> <strong>AppData\Roaming\System32Work\EncryptedFileList.txt</strong></div>
 
                             <img src="img/forensic/encryptedfilelist.png" class="img-fluid" width="700">
                             The file is also present, after I've extract it, there are a big amount of file encrypted.

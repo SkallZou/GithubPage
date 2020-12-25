@@ -7373,6 +7373,12 @@ button.bg-dark:focus {
     top: 0;
     z-index: 1020;
   }
+  .sticky-bottom{
+    position: -webkit-sticky;
+    position: sticky;
+    bottom: 0;
+    z-index: 1020;
+  }
 }
 
 .sr-only {
@@ -10158,6 +10164,12 @@ section.article {         /*padding for article*/
 
 .bg-toppanel{ /*change color top panel*/
   background-color: #ffffff;
+}
+
+.footerpage{
+  background-color: white;
+  color:black;
+  position:static;
 }
 
 a.title-article{

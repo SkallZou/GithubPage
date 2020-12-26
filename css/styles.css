@@ -10167,9 +10167,11 @@ section.article {         /*padding for article*/
 }
 
 .footerpage{
-  background-color: white;
+  background-color: #bd5d38;
   color:black;
   position:static;
+  font-size: 10px;
+  padding-top: 5%;
 }
 
 a.title-article{

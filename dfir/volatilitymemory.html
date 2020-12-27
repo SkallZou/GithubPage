@@ -59,12 +59,115 @@
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
                         <p>
-                            <u>Question 1</u> : Find the running rogue (malicious) process. The flag is the MD5 hash of its PID. <br>
-                            <u>Question 2</u> : Find the running rogue (malicious) process and dump its memory to disk. You'll find the 32-character flag within that process's memory. <br>
-                            <u>Question 3</u> : What is the MAC address of this machine's default gateway? The flag is the MD5 hash of that MAC address in uppercase with dashes (-) as delimiters. Example: 01-00-A4-FB-AF-C2. <br>
-                            <u>Question 4</u> : Find the full path of the browser cache created when an analyst visited "www.13cubed.com." The path will begin with "Users\." Convert the path to uppercase. The flag is the MD5 hash of that string. <br>
+                            <a href="https://github.com/volatilityfoundation/volatility">Volatility</a> is one of the most popular memory analyzer. This tools can help every digital forensic investigators to inspect a volatile memory dump from an infected computer. During this exercise, we will use this tool to find several flags. <br>
+                            <br>
+                            <u>Flag 1</u> : Find the running rogue (malicious) process. The flag is the MD5 hash of its PID. <br>
+                            <u>Flag 2</u> : Find the running rogue (malicious) process and dump its memory to disk. You'll find the 32-character flag within that process's memory. <br>
+                            <u>Flag 3</u> : What is the MAC address of this machine's default gateway? The flag is the MD5 hash of that MAC address in uppercase with dashes (-) as delimiters. Example: 01-00-A4-FB-AF-C2. <br>
+                            <u>Flag 4</u> : Find the full path of the browser cache created when an analyst visited "www.13cubed.com." The path will begin with "Users\." Convert the path to uppercase. The flag is the MD5 hash of that string. <br>
                             <br>
                             Memory file can be found in <a href="https://drive.google.com/drive/folders/1E-i2RTUBXBGUd_Xz0k67kFOpHcr6WX8J?usp=sharing">https://drive.google.com/drive/folders/1E-i2RTUBXBGUd_Xz0k67kFOpHcr6WX8J?usp=sharing</a>
+                        </p>
+                    </div>
+                </div>
+            </section>
+             <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <ul>
+                            <li><h4 class="mb-0">Find the running rogue (malicious) process. The flag is the MD5 hash of its PID</h4></li>
+                        </ul>
+                        <p>
+                            Using <strong>Volatility v2.6.1</strong>, the first thing to check is the system profil. We want to know to have more information regarding the memory dump. <br>
+                            <div class="squarebox">Vol.py –f memdump.mem imageinfo</div>
+                            <img src="img/Volatility Memory/imageinfo.png" class="img-fluid" width="1000">
+                            That Volatility command is showing us that the operating system used in the memorydump is a Windows 10 v.17134. Let's list the process running during the memory dump. <br>
+                            <div class="squarebox">Vol.py –f memdump.mem --profile=Win10x64_17134 pslist</div>
+                            <img src="img/Volatility Memory/pslist.png" class="img-fluid" width="800">
+                            The command "<i>pstree</i>" lists the process running but give a better view by also showing the parent process.
+                            <div class="squarebox">Vol.py –f memdump.mem --profile=Win10x64_17134 pstree</div>
+                            <img src="img/Volatility Memory/pstree.png" class="img-fluid" width="800">
+                            Some svchost.exe processes have explorer.exe as parent process, some are also called "svchost.exe.ex" which are, in both cases, very suspicious. <br>
+                            <br>
+                            According to Find Evil.pdf from SANS DFIR, svchost.exe should always run from %SystemRoot%\System32, should always have services.exe as its parent and should host at least one service.
+                            <img src="img/Volatility Memory/findevil.png" class="img-fluid" width="400">
+                            Psxview, contrary to pslist or pstree can list hidden processes. It can be useful to see if some processes are hidden and cannot be found with pslist or pstree. Psscan allows us to find if the process has ended or is still running during the memory dump. Both tools are excellent tools to get more information on running processes. <br>
+                            The PID of the process "explorer.exe" is 4824, to get all the PID of the svchost as child process of explorer.exe, we can filter on the PID 4824 and the process name "svchost".
+
+                            <div class="squarebox">Vol.py –f memdump.mem –profile=Win10x64_17134 pstree | grep 4824 | grep svchost </div>
+
+                            Looking at pstree, the process ID 8560 is the only process having threads, which means that the process is currently still running during the memory dump. 
+
+                            Explorer.exe is the process managing the Windows start menu, taskbar, desktop and file explorer. Windows also use explorer.exe to start process, all programs started by the user running in the user desktop are explorer's children process. Let's look at system command line to see if we can find out how the process has been called.
+                            <br>
+
+                            <div class="squarebox">
+                                vol.py -f memdump.mem --profile=Win10x64_17134 cmdline | grep -A 1 8560 <br>
+                                Volatility Foundation Volatility Framework 2.6.1 <br>
+                                svchost.exe pid:   8560 <br>
+                                Command line : "C:\Windows\svchost.exe" <br>
+                            </div>
+                            <br>
+                            The PID 8560, svchost.exe is called from C:\Windows.  By default svchost.exe should be only located on C:\Windows\System32. <br>
+                            <br>
+                            The flag is the MD5 hash of the running malicious PID. <br>
+                            <div class="squarebox">
+                                echo -n "8560" | md5sum
+                            </div>
+
+                            <img src="img/Volatility Memory/flag1.png" class="img-fluid" width="400">
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <ul>
+                            <li><h4 class="mb-0">Find the running rogue (malicious) process and dump its memory to disk. You'll find the 32-character flag within that process's memory</h4></li>
+                        </ul>
+                        <p>
+                            To dump the memory of a process, use the command memdump in Volatility. <br>
+                            <div class="squarebox">
+                                vol.py -f memdump.mem --profile=Win10x64_17134 memdump -p 8560 --dump-dir dump_directory
+                            </div>
+                            <br>
+                            The flag is inside of the process's memory, let's check the strings. <br>
+                            <div class="squarebox">Strings –n 32 8560.dmp | less</div> <br>
+                            After scrolling the strings, we've managed to find something which might be potentially the flag.
+                            <img src="img/Volatility Memory/strings.png" class="img-fluid" width="800">
+                            However, the number of characters is not 32. <br>
+                            <div class="squarebox">$ echo -n "M2ExOTY5N2YyOTA5NWJjMjg5YTk2ZTQ1MDQ2Nzk2ODA=" | wc -c <br>
+                                44 <br>
+                            </div>
+                            That string seems to be a base64 encoded, let's decode it to see what content we can find.
+
+                            <img src="img/Volatility Memory/flag2.png" class="img-fluid" width="600">
+
+
+
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <ul>
+                            <li><h4 class="mb-0">What is the MAC address of this machine's default gateway? The flag is the MD5 hash of that MAC address in uppercase with dashes (-) as delimiters. Example: 01-00-A4-FB-AF-C2</h4></li>
+                        </ul>
+                        <p>
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <ul>
+                            <li><h4 class="mb-0">Find the full path of the browser cache created when an analyst visited "www.13cubed.com." The path will begin with "Users\." Convert the path to uppercase. The flag is the MD5 hash of that string</h4></li>
+                        </ul>
+                        <p>
                         </p>
                     </div>
                 </div>

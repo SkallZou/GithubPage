@@ -157,6 +157,36 @@
                             <li><h4 class="mb-0">What is the MAC address of this machine's default gateway? The flag is the MD5 hash of that MAC address in uppercase with dashes (-) as delimiters. Example: 01-00-A4-FB-AF-C2</h4></li>
                         </ul>
                         <p>
+                            To find the MAC address of a system, we can dump the registry of the system from volatility. <br>
+                            Most of the supporting files for the hives are in the %SystemRoot%\System32\Config directory. <br>
+                            Let's use the command <strong>hivelist</strong> to print the registry hives of the system.
+                            <div class="squarebox">vol.py -f memdump.mem --profile=Win10x64_17134 hivelist | egrep "^Virtual|SystemRoot"</div>
+
+                            <i>
+                            0xffffd38986bc4000 0x000000010a102000 \SystemRoot\System32\Config\SAM <br>
+                            0xffffd38986dc6000 0x000000010fc29000 \SystemRoot\System32\Config\BBI <br>
+                            0xffffd38986a96000 0x0000000109aef000 \SystemRoot\System32\Config\DEFAULT <br>
+                            0xffffd38986bba000 0x0000000103ef2000 \SystemRoot\System32\Config\SECURITY <br>
+                            0xffffd38985eb3000 0x0000000105738000 \SystemRoot\System32\Config\SOFTWARE <br> 
+                            </i> <br>
+                            Le registre Windows contient une base de données hiérarchique contenant la configuration du système où se trouvent les informations relatives aux accès sans fil.
+                            Windows register is a database regarding the system configuration, we can find the information about network configuration in <strong>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ NetworkList\Signatures\Unmanaged</strong>. <br>
+                            The registry key storing the MAC address of the default gateway is <strong>DefaultGatewayMac</strong>
+
+                            To display the registry key, we can use the command <strong>printkey</strong>
+                            <div class="squarebox">vol.py –f memdump.mem –profile=Win10x64_17134 –o 0xffffd38985eb3000 printkey –K “Microsoft\Windows NT\ CurrentVersion\ NetworkList\Signatures\Unmanaged”</div>
+                            <img src="img/Volatility Memory/printkey.png" class="img-fluid" width="800">
+                            The subkey contained in that registry key is the identity of the unmanaged. Let's check that subkey to see if we have the subkey "DefaultGatewayMac".
+                            <img src="img/Volatility Memory/printkey2.png" class="img-fluid" width="800">
+
+                            DefaultGatewayMac : 00 50 56 fe d8 07
+
+                            The third flag is the MD5 of the MAC address in upper case with dash (-), let’s find the md5 of <strong>00-50-56-FE-D8-07</strong>:
+
+                            <img src="img/Volatility Memory/flag3.png" class="img-fluid" width="370">
+
+
+
                         </p>
                     </div>
                 </div>

@@ -94,9 +94,10 @@
                             Psxview, contrary to pslist or pstree can list hidden processes. It can be useful to see if some processes are hidden and cannot be found with pslist or pstree. Psscan allows us to find if the process has ended or is still running during the memory dump. Both tools are excellent tools to get more information on running processes. <br>
                             The PID of the process "explorer.exe" is 4824, to get all the PID of the svchost as child process of explorer.exe, we can filter on the PID 4824 and the process name "svchost".
 
-                            <div class="squarebox">Vol.py –f memdump.mem –profile=Win10x64_17134 pstree | grep 4824 | grep svchost </div>
+                            <div class="squarebox">Vol.py –f memdump.mem –profile=Win10x64_17134 pslist | grep 4824 | grep svchost</div>
+                            <img src="img/Volatility Memory/pslist2.png" class="img-fluid" width="800">
 
-                            Looking at pstree, the process ID 8560 is the only process having threads, which means that the process is currently still running during the memory dump. 
+                            Looking at pslist, the process ID 8560 is the only process having threads, which means that the process is currently still running during the memory dump. Moreover, there is not terminated time 
 
                             Explorer.exe is the process managing the Windows start menu, taskbar, desktop and file explorer. Windows also use explorer.exe to start process, all programs started by the user running in the user desktop are explorer's children process. Let's look at system command line to see if we can find out how the process has been called.
                             <br>
@@ -161,14 +162,8 @@
                             Most of the supporting files for the hives are in the %SystemRoot%\System32\Config directory. <br>
                             Let's use the command <strong>hivelist</strong> to print the registry hives of the system.
                             <div class="squarebox">vol.py -f memdump.mem --profile=Win10x64_17134 hivelist | egrep "^Virtual|SystemRoot"</div>
+                            <img src="img/Volatility Memory/hivelist.png" class="img-fluid" width="800">
 
-                            <i>
-                            0xffffd38986bc4000 0x000000010a102000 \SystemRoot\System32\Config\SAM <br>
-                            0xffffd38986dc6000 0x000000010fc29000 \SystemRoot\System32\Config\BBI <br>
-                            0xffffd38986a96000 0x0000000109aef000 \SystemRoot\System32\Config\DEFAULT <br>
-                            0xffffd38986bba000 0x0000000103ef2000 \SystemRoot\System32\Config\SECURITY <br>
-                            0xffffd38985eb3000 0x0000000105738000 \SystemRoot\System32\Config\SOFTWARE <br> 
-                            </i> <br>
                             Le registre Windows contient une base de données hiérarchique contenant la configuration du système où se trouvent les informations relatives aux accès sans fil.
                             Windows register is a database regarding the system configuration, we can find the information about network configuration in <strong>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ NetworkList\Signatures\Unmanaged</strong>. <br>
                             The registry key storing the MAC address of the default gateway is <strong>DefaultGatewayMac</strong>
@@ -198,6 +193,44 @@
                             <li><h4 class="mb-0">Find the full path of the browser cache created when an analyst visited "www.13cubed.com." The path will begin with "Users\." Convert the path to uppercase. The flag is the MD5 hash of that string</h4></li>
                         </ul>
                         <p>
+                            On this one, we will see how to scan for internet cache and history using volatility. Let us first check the process list again of the memory file, to see if there are any browser instances. <br>
+                            Browser that we know: Internet Explorer, Google Chrome, Mozilla Firefox, Microsoft Edge, Opera, Safari <br>
+
+                            <div class="squarebox">Vol.py –f memdump.mem –profile=Win10x64_17134 pslist | egrep “(?i)Iexplorer|Chrome|Firefox|Edge|Opera|Safari”</div>
+
+                            <img src="img/Volatility Memory/pslist3.png" class="img-fluid" width="800">
+                            Let's attempt with the yarascan plugging to get something regarding the file history and cache of the process Microsoft Edge.
+
+                            <div class="squarebox">Vol.py –f memdump.mem –profile=Win10x64_17134 –p 6524,6552 yarascan</div>
+
+                            However, nothing came out of that command… <br>
+                            <br>
+                            The NTFS file system contains a file called the master file table, or MFT. There is at least one entry in the MFT for every file on an NTFS file system volume, including the MFT itself. All information about a file, including its size, time and date stamps, permissions, and data content, is stored either in MFT entries, or in space outside the MFT that is described by MFT entries.
+                            <br>
+                            Since that the MFT has the list of all the files and folders on disk, we might retrieve some file located on the disk of the system by using the plugging MTFparser on volatility.
+
+                            <div class="squarebox">Vol.py –f memdump.mem –profile=Win10x64_17134 mftparser > mftcontent.txt</div>
+                            With this command, we store the result of the command <strong>mftparser</strong> on a text file called “mftcontent.txt”.
+                            The browser cache folder for Microsoft Edge is located in <i>C:\users\USERNAME\AppData\local\MicrosoftEdge\user\Default</i>. <br>
+
+                            <div class="squarebox">Cat mftcontent.txt | grep “AppData\local\MicrosoftEdge\user\Default”</div>
+                            This command shows no result... <br>
+                            <br>
+                            Let's filter on "13cubed" to see if we have any result.
+                            <div class="squarebox">cat mftcontent.txt | grep “13cubed”</div>
+
+                            <img src="img/Volatility Memory/mftcontent.png" class="img-fluid" width="1000">
+
+                            An HTM file is an HTML webpage used by browsers such as Google Chrome, Microsoft Edge, Mozilla Firefox...<br>
+                            To get the flag, we must convert it in uppercase, we can use python with the function <strong>upper()</strong> to convert any string in uppercase string.
+
+                            <img src="img/Volatility Memory/upper.png" class="img-fluid" width="1000">
+
+                            And finally, use the command <strong>md5sum</strong> to calculate the MD5 of that path to get the fourth flag.
+
+                            <img src="img/Volatility Memory/flag4.png" class="img-fluid" width="800">
+
+
                         </p>
                     </div>
                 </div>

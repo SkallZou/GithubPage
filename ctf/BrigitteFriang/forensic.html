@@ -162,7 +162,7 @@
                             <img src="img/forensic/mftparser.png" class="img-fluid" width="700">
                             We notice that some files have a strange extension (.txt.evil) and a .lnk file which is a shortcut of the text file informations_attaque.txt. My assumption is that many files of the system are encrypted, a ransomware has certainly spread in the system. Let's use the plugin "<strong>Filescan</strong>" to look for the file "<i>informations_attaque.txt</i>". <br>
                             <br>
-                            <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 filescan | grep informations_attanck</strong>
+                            <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 filescan | grep informations_attaque</strong>
                             <img src="img/forensic/filescan.png" class="img-fluid" width="700">
                             Filescan also displays the file location in memory by printing the address. The plugin "<strong>Dumpfile</strong>" will help us to extract the file, it needs the memory address of the file as argument. <br>
                             <br>

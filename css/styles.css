@@ -10159,15 +10159,25 @@ section.article {         /*padding for article*/
   }
 
 .bg-primary { /*change color panel*/
-  background-color: #bd5d38 !important;
+ /* background-color: #bd5d38 !important;*/
+   background-color: #bd5d38 !important;
 }
 
 .bg-toppanel{ /*change color top panel*/
   background-color: #ffffff;
 }
 
+.bg-image{
+  background-image: url('../assets/img/background.jpeg');
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  filter: blur(8px);
+  -webkit-filter: blur(8px);
+}
+
 .footerpage{
-  background-color: #bd5d38;
   color:black;
   position:static;
   font-size: 10px;

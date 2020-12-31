@@ -61,10 +61,52 @@
                     <div class="flex-grow-1">
                         <h3 class="mb-0">Introduction</h3>
                         <p>
-                            After getting several alerts from FireEye regarding suspicious .dll file coming from the process csc.exe, I decided dig into that subject. After doing an Enterprise Search in FireEye for the process name "csc.exe", I've found that PowerShell.exe is ofen the parent process of csc.exe. According to some researches, by dynamically compiling a C# code through PowerShell, it can also be used to evade detection.  For instance, compiling malware this way can evade Symantec’s “reputation 1” detection of new and untrusted softwares. It also have been seen that it can evade detection from Device Guard since Code Integrity is not performed. <br>
+                            After getting several alerts from FireEye regarding suspicious .dll file coming from the process csc.exe, I decided dig into that subject. After doing an Enterprise Search in FireEye for the process name "csc.exe", I've found that PowerShell.exe is often the parent process of csc.exe. According to some researches, by dynamically compiling a C# code through PowerShell, it can also be used to evade detection.  For instance, compiling malware this way can evade Symantec’s “reputation 1” detection of new and untrusted softwares. It also has been seen that it can evade detection from Device Guard since Code Integrity is not performed. <br>
                             <br>
                             This article is to understand how can we exploit that vulnerability and to discover FireEye rule logic for when csc.exe use is “normal” and when it is an attack.
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h3 class="mb-0">What is csc.exe ?</h3>
+                        <p>
+                            The process <strong>Csc.exe</strong> is a C# compiler and is part of Microsoft .NET Framework. A compiler is used to translate a programming language (high-level language understood by human) into machine code (machine code or assembly). We can invoke the C# compiler by typing csc.exe at a command prompt. <br>
+                            The default location of csc.exe is "C:\Windows\Microsoft.NET\Framework\<<i>Version</i>>", the version of the framework for Microsoft.NET might vary. To know the location of csc.exe, you can type this command in the windows command line: 
+                            <div class="squarebox">dir /s %WINDIR%\csc.exe</div>
+                            <img src="img/PowerShell .NET/csclocation.png" class="img-fluid" width="400">
+                            In the case where csc.exe is located in C:\Windows or in C:\Windows\System32, an investigation will be necessary. A potential malicious csc.exe is present. Many malwares try to dissimulate itself by having the same name as a legitimate program. 
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h3 class="mb-0">Compiling C# with PowerShell</h3>
+                        <p>
+                            In PowerShell, when the cmdlet “<strong>Add-type</strong>>” is executed, it will run the csc.exe to compile the C# code into an machine language. A temporary file <i>XXXX.cmdline</i> is created in AppData\local\temp and this file will be passed as argument to the C# compiler csc.exe to reate XXXX.0.cs in AppData\local\temp. <br>
+                            <br>
+                            <strong>Device Guard</strong> is a functionality developed by Microsoft, available only on <i>Windows 10 Enterprise</i>. It allows to lock any device to only run signed and allowed applications and scripts. Device Guard uses a technology called "<strong>Code Integrity</strong>” which will verify the integrity of the Windows kernel before running any script. Therefore, it become harder to run a malicious code because it might be blocked by Device Guard. The Code Integrity is based on the virtualization and when the system is booting, Hyper-V Code Integrity verifies that every script and driver running on the system are signed. <br>
+                            However, by compiling C# with PowerShell, the Code Integrity checks are not performed on any code that compiles C# dynamically with csc.exe. <br>
+                            <br>
+                            <u>What does dynamically compile means?</u><br>
+                            Delaying compilation of a program, it can be done at program load, or on demand as code is executed. During execution, the program may be compiled into native code to improve its performance.
 
+
+
+
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h3 class="mb-0">POC: Analyzing PowerShell calling csc.exe</h3>
+                        <p>
                         </p>
                         <br>
                     </div>

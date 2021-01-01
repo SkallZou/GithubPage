@@ -10167,7 +10167,7 @@ section.article {         /*padding for article*/
   background-color: #ffffff;
 }
 
-.bg-image{
+/*.bg-image{
   background-image: url('../assets/img/background.jpeg');
   height: 100%;
   background-position: center;
@@ -10175,7 +10175,7 @@ section.article {         /*padding for article*/
   background-size: cover;
   filter: blur(8px);
   -webkit-filter: blur(8px);
-}
+}*/
 
 .footerpage{
   color:black;

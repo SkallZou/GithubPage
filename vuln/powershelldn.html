@@ -93,11 +93,7 @@
                             However, by compiling C# with PowerShell, the Code Integrity checks are not performed on any code that compiles C# dynamically with csc.exe. <br>
                             <br>
                             <u>What does dynamically compile means?</u><br>
-                            Delaying compilation of a program, it can be done at program load, or on demand as code is executed. During execution, the program may be compiled into native code to improve its performance.
-
-
-
-
+                            Delaying compilation of a program, it can be done at program load, or on demand as code is executed. During execution, the program may be compiled into native code to improve its performance. Since, it is compiling the code when the program has been executed, it means that we can run malicious C# code through PowerShell.
                         </p>
                     </div>
                 </div>
@@ -107,6 +103,22 @@
                     <div class="flex-grow-1">
                         <h3 class="mb-0">POC: Analyzing PowerShell calling csc.exe</h3>
                         <p>
+                            In this part, we are going to create a PowerShell script with Add-Type cmlet to compile a C# code. After executing the cmdlet Add-Type, PowerShell will run csc.exe. <br>
+                            First, let’s create a #C code to create a .NET application.
+
+                            <img src="img/PowerShell .NET/program.png" class="img-fluid" width="500">
+
+                            This C# code will simply display "Hello World !". <br>
+                            Let's create a PowerShell script calling that program with the cmdlet Add-Type to compile dynamically this code.
+
+                            <img src="img/PowerShell .NET/powershell.png" class="img-fluid" width="500">
+
+
+
+
+                            To view the file creation and all others file modification, let’s use “procmon”. Procmon (process monitor) is a troubleshooting too from Windows Sysinternals that display the file and registry that applications access in real-time.
+
+
                         </p>
                         <br>
                     </div>

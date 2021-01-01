@@ -113,10 +113,27 @@
 
                             <img src="img/PowerShell .NET/powershell.png" class="img-fluid" width="500">
 
-
-
-
                             To view the file creation and all others file modification, let’s use “procmon”. Procmon (process monitor) is a troubleshooting too from Windows Sysinternals that display the file and registry that applications access in real-time.
+
+                            <img src="img/PowerShell .NET/procmon.png" class="img-fluid" width="500">
+
+                            Using Procmon, we will filter on the program PowerShell.exe, and it will record every file created by the program, or track the activity of that process. Press <i>crtl+L</i> or navigate to "<i>Filter</i>" and click on "<i>Filter...</i>". 
+
+                            <img src="img/PowerShell .NET/procmon_filter.png" class="img-fluid" width="500">
+
+                            Make sure that procmon is capturing the event, by clicking on the “Capturing” icon.
+
+                            <img src="img/PowerShell .NET/capture.png" class="img-fluid" width="500">
+
+                            We can clear the existing events by pressing ctrl+X or click on the button “clear”. Once we have cleaned the events, let’s run the script with PowerShell. 
+
+                            <div class="squarebox">.\powershell_script.ps1 -ExecutionPolicy Bypass</div>
+                            The option ExecutionPolicy Bypass allows us to run any script, signed or unsigned. It is made for testing purpose. 
+
+                            <img src="img/PowerShell .NET/filecreated.png" class="img-fluid" width="900">
+
+                            Before PowerShell is calling "csc.exe", there are some files created in the folder C:\Users\<USERNAME>\AppData\Local\Temp. 6 files are created, a .tmp, .0.cs, .dll, .cmdline, .out and .err files.
+
 
 
                         </p>

@@ -80,13 +80,17 @@
                            <br>
                            The first column display the client IP address, Alphonse Bertillon said that somebody has commited an intrusion in our system, which means that the IP address used by this person shouldn't appear many times in the log.
                             <br>
-                            We will count the number of each IP address and find the one that doesn't appear several times. In Linux, the command awk allows us to display a specific column. Since the IP address column is the first column, we can use the command <strong>awk '{print $1}' access.log</strong>. Then to make the reading easier, we will delete the duplicate and count how many occurences each IP address appears in the log file. The command <strong>awk '{print $1}' access.log | sort | uniq -c</strong> can do that. <br>
+                            We will count the number of each IP address and find the one that doesn't appear several times. In Linux, the command <strong>awk</strong> allows us to display a specific column. 
+                            <div class="squarebox">awk '{print $1}' access.log</div>
+                            <i><strong>print $1</strong> will print the first column.</i> <br>
                             <br>
-                            <strong>sort</strong> will sort the data in ascending order by default. <br>
-                            <strong>uniq -c</strong> will erase duplicate and count the number of occurrences. Also, uniq detect repeated lines unless they are adjacent. That's the reason why I have used "<i>sort</i>" before <i>uniq</i> to be sure that it will remove all duplicates.
+                            Then to make the reading easier, we will delete the duplicate and count how many occurences each IP address appears in the log file. 
+                            <div class="squarebox">awk '{print $1}' access.log | sort | uniq -c</div>
+                            <strong>sort</strong> sorts the data in ascending order by default. <br>
+                            <strong>uniq -c</strong> erases duplicates and count the number of occurrences. Also, uniq detect repeated lines unless they are adjacent. That's the reason why I have used "<i>sort</i>" before <i>uniq</i> to be sure that it will remove all duplicates.
 
                             <img src="img/forensic/suspiciousip.png" class="img-fluid" width="700">
-                            The IP address (179.97.58.61) that appear only one time in the log, this IP address is probably the one used by the attacker when he has infiltrated our system. <br>
+                            The IP address (179.97.58.61) appears only one time in the log, this IP address is probably the one used by the attacker when he has infiltrated our system. <br>
                             <br>
                             Let's reply to Alphonse Bertillon with that IP address.
                         </p>
@@ -104,9 +108,8 @@
 
                             So Alphonse send to us a .jpg file from the chat. According to the red message, the attachment file might contain a malware, so it would be better if we do that in our VM.
 
-                            <strong>curl -O https://challengecybersec.fr/chat/public/uploads/evil_country_landscape.jpg</strong><br>
-                            <br>
-                            This curl command is a tool to transfer data from or to a server. With the -O parameter, the command will download a file remotely. <br>
+                            <div class="squarebox">curl -O https://challengecybersec.fr/chat/public/uploads/evil_country_landscape.jpg</div>
+                            This <strong>curl</strong> command is a tool to transfer data from or to a server. With the -O parameter, the command will download a file remotely. <br>
                             <br>
 
                             Since it might be a malicious file, let's get more information about the file by extracting the file metadata. The tool <strong>exif</strong> can be used to extract image metadata.
@@ -129,8 +132,8 @@
                             Before mounting the image file, we need to find which loop device it will be associated, run <strong>losetup -f</strong> to find which loop device is available.
                             <img src="img/forensic/losetup1.png" class="img-fluid" width="700">
                             When the image file is associated to a loop device, we can mount the loop device in a mount point. First, let's create a mount point. The mount point will be a folder in /mnt. <br>
-                            "<strong>mkdir /mnt/disk1</strong>" <br>
-                            "<strong>mount /dev/loop</strong>"
+                            <div class="squarebox">mkdir /mnt/disk1</div>
+                            <div class="squarebox">mount /dev/loop</div>
                             <img src="img/forensic/mount1.png" class="img-fluid" width="700">
                             It is telling us that the filesytem type is "linux_raid_member". This filesystem is part of a software RAID meaning you need at least two disks to read the data in a normal state. <br>
                             To know what kind of RAID level the disk has, the command "<strong>mdadm</strong>" will help us. <br>
@@ -140,33 +143,36 @@
                             The option "--assemble" of the command mdadm, will assemble the disk to reactivate the raid5. In that case we will assemble /dev/md0 with the two img file. The device mds are used for RAID. 
                             <img src="img/forensic/mdadm2.png" class="img-fluid" width="700">
                             Once it is associated, we can mount the mirror device to a mount point. 
-                            After mounting it, it contains a .zip file, we unzip it, but an error appear: <br>
-                            <strong>dump.vmem: wirte error (disk full?). Continue? (y/n/^C)</strong> <br>
-                            According to the error the mounting point is full, let's move it to another folder and unzip it.
+                            After mounting it, it contains a .zip file, we unzip it, but an error appear: 
+                            <u><i>dump.vmem: wirte error (disk full?). Continue? (y/n/^C)</i></u> <br>
+                            <br>According to the error the mounting point is full, let's move it to another folder and unzip it.
                             <img src="img/forensic/unzip2.png" class="img-fluid" width="700">
-                            inside of that .zip file, there is a .vmem file which is memory file from a virtual machine. We can analyze it with <strong><a href="../../tutorialpage.html">Volatility</a></strong>. <br>
-                            <br>First thing to do in Volatility, get the suggested profile, run the command "<strong>volatility -f dump.vmem imageinfo</strong>"
+                            Inside of that .zip file, there is a .vmem file which is memory file from a virtual machine. We can analyze it with <strong><a href="../../tutorialpage.html">Volatility</a></strong>. <br>
+                            <br>First thing to do in Volatility, get the suggested profile, run the command:
+                            <div class="squarebox">volatility -f dump.vmem imageinfo</div>
                             <img src="img/forensic/imageinfo.png" class="img-fluid" width="700">
-                            We see that the memery come from Windows Server 2008 R2, or Windows 7. Now we have that information, we might check the list of process, run the command "<strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 pslist / pstree / psscan</strong>" I have a preference in pstree because we can see clearly the parent process.
+                            We see that the memery come from Windows Server 2008 R2, or Windows 7. Now we have that information, we might check the list of process, run the command:
+                            <div class="squarebox">volatility -f dump.vmem --profile=Win2008R2SP0x64 pslist / pstree / psscan</div> 
+                            I have a preference in pstree because we can see clearly the parent process.
                             <img src="img/forensic/pstree.png" class="img-fluid" width="700">
                             From pstree, we see two <i>vmtoolsd.exe</i>, the suspicious one seems to be the one that run ipconfig.exe and having svchost.exe as parent process. <br>
                             Suspicious process: PID 1584. <br>
                             We can also check the dll used by this process with dlllist.
-                            <img src="img/forensic/dlllist.png" class="img-fluid" width="700"> Most of the dll files seem fine, we can still dump the process by running the command: <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 procdump -p 1584 --dump-dir .</strong>
-                            <br>In output, we have a file called executable.1584.exe, run <strong>sha256sum executable.1584.exe</strong> to get the file hash: b62e45b8916d86f4189486d5c17900de744c9d8aca4d003187cca09052c6c231. Then I put the hash on Virus Total to see if it is a known file in antivirus database.
+                            <img src="img/forensic/dlllist.png" class="img-fluid" width="700"> Most of the dll files seem fine, we can still dump the process by running the command: <br>
+                            <div class="squarebox">volatility -f dump.vmem --profile=Win2008R2SP0x64 procdump -p 1584 --dump-dir .</div>
+                            In output, we have a file called executable.1584.exe, run <strong>sha256sum executable.1584.exe</strong> to get the file hash: b62e45b8916d86f4189486d5c17900de744c9d8aca4d003187cca09052c6c231. Then let's put the hash on Virus Total to see if it is a known file in antivirus database.
                             <img src="img/forensic/virustotal.png" class="img-fluid" width="700">
                             It seems it is a legitimate process... <br>
-                            Let's see what we can find with others plugins in Volatility. Windows system has a file named <strong>Master File Table</strong>, and it contains all the files in a disk of the system. According to Alphonse, the agent wanted to contact us, we need to find his message, so let's check for .txt file. The plugin "<strong>MFTparser</strong>" can extract the data inside the Master File Table. <br>
-                            <br>
-                            <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 mftparser | grep txt</strong>
+                            Let's see what we can find with others plugins in Volatility. Windows system has a file named <strong>Master File Table</strong>, and it contains all the files in a disk of the system. According to Alphonse, the agent wanted to contact us, we need to find his message, so let's check for .txt file. The plugin "<strong>MFTparser</strong>" can extract the data inside the Master File Table. 
+                            <div class="squarebox">volatility -f dump.vmem --profile=Win2008R2SP0x64 mftparser | grep txt</div>
                             <img src="img/forensic/mftparser.png" class="img-fluid" width="700">
                             We notice that some files have a strange extension (.txt.evil) and a .lnk file which is a shortcut of the text file informations_attaque.txt. My assumption is that many files of the system are encrypted, a ransomware has certainly spread in the system. Let's use the plugin "<strong>Filescan</strong>" to look for the file "<i>informations_attaque.txt</i>". <br>
                             <br>
-                            <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 filescan | grep informations_attaque</strong>
+                            <div class="squarebox">volatility -f dump.vmem --profile=Win2008R2SP0x64 filescan | grep informations_attaque</div>
                             <img src="img/forensic/filescan.png" class="img-fluid" width="700">
                             Filescan also displays the file location in memory by printing the address. The plugin "<strong>Dumpfile</strong>" will help us to extract the file, it needs the memory address of the file as argument. <br>
                             <br>
-                            <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 dumpfiles -Q 0x000000001715ed50 -D ./ -n</strong>
+                            <div class="squarebox">volatility -f dump.vmem --profile=Win2008R2SP0x64 dumpfiles -Q 0x000000001715ed50 -D ./ -n</div>
                             <img src="img/forensic/dumpfiles.png" class="img-fluid" width="900">
                             Once extracted, let's see what is the content of that file.
                             <img src="img/forensic/encrypted.png" class="img-fluid" width="900">
@@ -184,9 +190,9 @@
 
                             With the regular expression, it allows us to retrieve only the file containaing "firefox" or "drpbx" in the filename. We have found 3 files, let's extract them with the plugin <i>Dumpfiles</i> in volatility. If we look at the previous screenshot displaying the process list, we can see that "drpbx.exe" was running. <br>
                             <br>
-                            <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 dumpfiles -Q 0x000000000eb012e0 -D ./ -n</strong><br>
-                            <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 dumpfiles -Q 0x000000003db6ee60 -D ./ -n</strong><br>
-                            <strong>volatility -f dump.vmem --profile=Win2008R2SP0x64 dumpfiles -Q 0x000000003fc11770 -D ./ -n</strong><br>
+                            <div class="squarebox">volatility -f dump.vmem --profile=Win2008R2SP0x64 dumpfiles -Q 0x000000000eb012e0 -D ./ -n</div>
+                            <div class="squarebox">volatility -f dump.vmem --profile=Win2008R2SP0x64 dumpfiles -Q 0x000000003db6ee60 -D ./ -n</div>
+                            <div class="squarebox">volatility -f dump.vmem --profile=Win2008R2SP0x64 dumpfiles -Q 0x000000003fc11770 -D ./ -n</div>
                             <br>
                             Then we calculate the sha256 hash of each file: <br>
                             <ul>
@@ -207,9 +213,7 @@
                             <br>The Advanced Ecryption Standard is a symmetric-key algorithm, meaning that the same key is used for both encrypting and decrypting the data.
 
                             Since the program will use the same key to encrypt and to decrypt, let's reverse the program to see if we can find a key. We will start with some static analysis by analyzing the strings. <strong>Radare2</strong> is a reverse engineering tool and <strong>rabin2</strong> is a command part of radare2 that can analyze the strings of a program with the option <u>-zz</u>. <br>
-                            <br>
-                            <strong>rabin2 -zz file.None.0xfffffa8001a29f10.drpbx.exe.dat | less</strong> <br>
-                            <br>
+                            <div class="squarebox">rabin2 -zz file.None.0xfffffa8001a29f10.drpbx.exe.dat | less</div>
                             After checking 400 lines in the program, some data start to be readable, the text of the program is mostly written in french.   
                             <br>Analyzing the strings, we've managed to find the text written in the program describing the ransomware. We also retrieve the payment URL: "http://evil.gouv.ransom.ev/api/v1/coin/info" and others IOCs previously seen without that analysis (Frfx\firefox.exe, Drpbx\drpbx.exe, .evil, EncrytedFileList.txt).
 
@@ -236,16 +240,14 @@
                             </ul>
 
                            <div class="longword">
-                               <strong>openssl enc -aes-128-cbc -d -K EvilDefaultPass! -iv 0103530100206760 -in file.None.0xfffffa800e9fec60.informations_attaque.txt.evil.dat -out information_attaque.txt</strong>
-                           </div><br>
-                           <br>
+                               <div class="squarebox">openssl enc -aes-128-cbc -d -K EvilDefaultPass! -iv 0103530100206760 -in file.None.0xfffffa800e9fec60.informations_attaque.txt.evil.dat -out information_attaque.txt</div>
+                           </div>
 
                            However it gave me an error: 
                            <img src="img/forensic/openssl.png" class="img-fluid" width="700">
 
                            Since the error said that there is an issue in the "hex key value", let's convert the string key in hex. <br>
                            EvilDefaultPass! => 4576696c44656661756c745061737321 <br>
-                           <br>
 
                            <img src="img/forensic/decrypted.png" class="img-fluid" width="700">
                            We got the decrypted message ! <br>

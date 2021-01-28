@@ -62,7 +62,24 @@
                     <div class="flex-grow-1">
                         <h4 class="mb-0">1/ Memory Layout</h4>
                         <p>
-                            The memory can be represented by several layer. It is composed by the text segment, the initialized data segment, the uninitialized data segment, the stack and the heap.
+                            The memory can be represented by several layers. It is composed by the <strong>text</strong> segment, the <strong>initialized data segment</strong> (data), the <strong>uninitialized data segment</strong> (bss), the <strong>heap</strong> and the <strong>stack</strong>. <br>
+                            <img src="img/UnderstandStack/memorylayout.png" class="img-fluid" width="300">
+
+                            <ul>
+                                <li>Text Segment : The text segment contains the machine code or the program instruction. It is located at the bottom of the memory layout to avoid overwriting the instructions in case of stack or heap overflows.</li>
+                                <li>Initialized Data Segment: The segment is also called data, it contains global variable and static variable that are initialized in the program. </li>
+                                <li>Uninitialized Data Segment: Also called BSS, it contains the global and static variable that are not initialized in the program. </li>
+                                <li>The heap: The heap is the layer of the memory layout where dynamic memory allocation takes place.</li>
+                                <li>The stack: It contains local variables of a function.</li>
+                            </ul>
+                                In this tutorial, the focus is on the functioning of the stack. We will analyze it step by step to make the understanding easier.
+                            <br>
+                        </p>
+                        <h4 class="mb-0">2/ Understanding the stack</h4>
+                        <p>
+                            The code below will be served as an example.
+
+                            <img src="img/UnderstandStack/instructions.png" class="img-fluid" width="600">
                         </p>
                         <br>
                     </div>

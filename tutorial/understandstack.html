@@ -81,7 +81,7 @@
 
                             <img src="img/UnderstandStack/instructions.png" class="img-fluid" width="600">
 
-                            For this example, we will monitore 3 registers (eip, esp, ebp). <br>
+                            For this example, we will monitor 3 registers (eip, esp, ebp). <br>
                             <ul>
                                 <li>eip: It stands for Extended Instruction Pointer, and it is used to tell the computer what is the next intruction in the program.</li>
                                 <li>esp: Stack pointer</li>
@@ -91,65 +91,130 @@
 
                             The base and stack pointer represent the limit of a stack frame, a new stackf rame is created when the program is calling a function. <br>
                             <br>
-                            Before reaching the instruction, all registers are pointing to an address. We suppose that those pointers take the following addresses: <br>
+                            Before reaching the instruction, all registers are pointing to an address. Those registers take the following addresses: <br>
                             eip = 0xb7eadc70 <br>
-                            esp = 0xbffff7e4 <br>
                             ebp = 0xbffff900 <br>
+                            esp = 0xbffff7e4 <br>
                             <br>
                             In our example, at the beginning, the stack looks like this:
 
-                            <img src="img/UnderstandStack/stack_1.png" class="img-fluid" width="250">
+                            <img src="img/UnderstandStack/stack_1.png" class="img-fluid" width="300">
 
-                            First instruction: 0xb7eadc73 <__libc_start_main+227>: call 0x080483f4 &ltmain&gt <br>
+                            <li>First instruction: <i>0xb7eadc73 <__libc_start_main+227>: call 0x080483f4 &ltmain&gt</i></li>
+                            Reaching the first instruction, eip will store the address of the first instruction. <br>
                             <br>
-                            Reaching the first line, eip will store the address of the first instruction. eip = 0xb7eadc73 <br>
-                            <br>
-                            Call function will also push the address of the next instruction to the stack. The value of the address of the top of the stack is <strong>0xb7eadc76</strong>. The register esp is the stack pointer, so it always points to the top of the stack, <strong>esp = 0xbffff7dc</strong> and then we jump to the address of the function (0x80483f4). <br>
-                            <br>
-                            Registers information: <br>
-                            eip = 0x080483f4 <br>
-                            esp = 0xbffff7dc <br>
+                            <u>Registers information:</u><br>
+                            eip = 0xb7eadc73 <br>
                             ebp = 0xbffff900 <br>
-
-                            Why esp = 0xbffff7dc ? Remember the memory layout presented on the top of the page, the stack goes from high address to low address. Each memory address is a single byte, since the program is storing the address of the next instruction at the top of the stack, then esp has a lower address.
+                            esp = 0xbffff7e4 <br>
+                            <br>
+                            Calling a function will also push the address of the next instruction to the stack. The value of the address of the top of the stack is <strong>0xb7eadc76</strong>. The register esp is the stack pointer, so it always points to the top of the stack, <strong>esp = 0xbffff7dc</strong> and then we jump to the address of the function (0x80483f4). <br>
+                            <br>
+                            <u>Registers information:</u> <br>
+                            eip = 0x080483f4 <br>
+                            ebp = 0xbffff900 <br>
+                            esp = 0xbffff7dc <br>
+                            <br>
+                            Why esp = 0xbffff7dc ? Remember the memory layout presented on the top of the page, the stack goes from high address to low address. Each memory address is a single byte and since the program is storing the address of the next instruction at the top of the stack, esp will have a lower address.
 
                             <div class="squarebox">esp - 8 = 0xbffff7e4 - 8 = 0xbffff7dc</div>
 
-                             <img src="img/UnderstandStack/stack_2.png" class="img-fluid" width="250">
+                            <img src="img/UnderstandStack/stack_2.png" class="img-fluid" width="300">
 
-                             Second line: 0xb7eadc76 <__libc_start_main+230>: mov DWORD PTR [esp], eax <br>
-                             This second line means that DWORD PTR [esp] take the value of the register eax. DWORD means double word (32 bits) so 4 bytes. But we are not reaching this command, because we jump first to the address 0x080483f4 after the instruction call. <br>
-                             <br>
-                            Third line: 0x080483f4 &ltmain+0&gt: push ebp <br>
-                            It is the first instruction of the main function “main+0”, push ebp means that we are putting the value of ebp on the top of the stack. Since ebp has been pushed on the top of the stack, esp value has changed because the stack pointer is pointing to the address of the top of the stack. Therefore, by doing push ebp, we are saving in the new stack frame the address of the new ebp. <br>
+                            <li>Second instruction: <i>0xb7eadc76 <__libc_start_main+230>: mov DWORD PTR [esp], eax</i></li>
+                            This second instruction means that DWORD PTR [esp] take the value of the register eax. DWORD means double word (32 bits) so 4 bytes. But it is not reaching this command, because it will first jump to the address 0x080483f4 after the instruction call. <br>
                             <br>
-                            Registers information:<br>
+                            <li>Third instruction: <i>0x080483f4 &ltmain+0&gt: push ebp</i></li>
+                            It is the first instruction of the main function “main+0”, push ebp means that it is putting the value of ebp on the top of the stack. Since ebp has been pushed on the top of the stack, esp value has changed because the stack pointer is pointing to the address of the top of the stack. Therefore, by doing push ebp, it is saving in the new stack frame the address of the new ebp. <br>
+                            <br>
+                            <u>Registers information:</u><br>
                             eip = 0x080483f5 <br>
-                            esp = 0xbffff7d8 <br>
                             ebp = 0xbffff900 <br>
-
-                            <img src="img/UnderstandStack/stack_3.png" class="img-fluid" width="200">
-
-                            Fourth line: 0x080483f5 &ltmain+1&gt: mov ebp, esp <br>
-                            In this instruction, the base pointer will take the value of the stack pointer, ebp = esp. <br>
-                            <br>
-                            Registers information: <br>
-                            eip = 0x080483f7 <br>
                             esp = 0xbffff7d8 <br>
-                            ebp = 0xbffff7d8 <br>
 
-                            <img src="img/UnderstandStack/stack_4.png" class="img-fluid" width="250">
-                            
-                            Fifth line: 0x080483f7 &ltmain+3&gt: and esp, 0xfffffff0 <br>
-                            Bitwise AND between the stack pointer and 0xfffffff0, the last bit of the stack pointer will be set to 0. It is used to round the stack pointer down to the nearest multiple of 16. <br>
-                            Difference between Bitwise AND and logical operator AND: Logical return 1 (true) or 0 (false) whereas Bitwise is doing a bit by bit checking (1011 & 0101 = 0001) <br>
+                            <img src="img/UnderstandStack/stack_3.png" class="img-fluid" width="300">
+
+                            <li>Fourth instruction: <i>0x080483f5 &ltmain+1&gt: mov ebp, esp</i></li>
+                            In this instruction, the base pointer will take the value of the stack pointer.
+                            <div class="squarebox">ebp = esp</div>
                             <br>
-                            Register information: <br>
+                            <u>Registers information:</u> <br>
                             eip = 0x080483f7 <br>
-                            esp = 0xbffff7d0 <br>
                             ebp = 0xbffff7d8 <br>
-                            
+                            esp = 0xbffff7d8 <br>
 
+                            <img src="img/UnderstandStack/stack_4.png" class="img-fluid" width="300">
+                            
+                            <li>Fifth instruction: <i>0x080483f7 &ltmain+3&gt: and esp, 0xfffffff0</i></li>
+                            Bitwise AND between the stack pointer and 0xfffffff0, the last bit of the stack pointer will be set to 0. It is used to round the stack pointer down to the nearest multiple of 16. <br>
+                            Difference between Bitwise AND and logical operator AND: Logical return 1 (true) or 0 (false) whereas Bitwise is doing a bit by bit checking (1011 & 0101 = 0001).
+
+                            <div class="squarebox">esp & 0xfffffff0 = 0xbffff7d8 & 0xfffffff0 = 0xbffff7d0 <br>
+                            To manually calculate bitwise, convert the hexadecimal number into binary, then proceed to the <strong>bitwise AND</strong> calculation. <br>
+                            10111111111111111111011111011000 <br>
+                            11111111111111111111111111110000 <br>
+                            -------------------------------- <br>
+                            10111111111111111111011111010000 = BFFFF7D0 </div>
+                            <br>
+                            <u>Register information:</u><br>
+                            eip = 0x080483f7 <br>
+                            ebp = 0xbffff7d8 <br>
+                            esp = 0xbffff7d0 <br>
+                            <br>
+                            <li>Sixth instruction: <i>0x080483fa &ltmain+6&gt: sub esp,0x60</i></li>
+                            The subtraction between the stack register and a value. 
+                            <div class="squarebox">esp = esp – 0x60</div>
+                            This correspond to the size of the stack, after subtracting esp, it has created a new stack frame, the base pointer (ebp) will be pointing to the beginning of the stack whereas the stack pointer (esp) is pointing to the address at the top of the stack. The computer is allocating memory space for the function and every local variable will be store in that memory space called stack frame. <br>
+                            <br>
+                            <u>Registers information:</u> <br>
+                            eip = 0x080483fd <br>
+                            ebp = 0xbffff7d8 <br>
+                            esp = 0xbffff770 <br>
+                            
+                            <img src="img/UnderstandStack/stack_5.png" class="img-fluid" width="300">
+
+                            <li>Seventh instruction: <i>0x080483fd &ltmain+9&gt: mov DWORD PTR [esp+0x5c],0x0</i></li>
+                            It is setting the value 0x0 on the content of the address “esp+0x5c” as a double word. <br>
+                            <br>
+                            <u>Registers information:</u> <br>
+                            eip = 0x080483fd <br>
+                            ebp = 0xbffff7d8 <br>
+                            esp = 0xbffff770 <br>
+
+                            <img src="img/UnderstandStack/stack_6.png" class="img-fluid" width="300">
+                            
+                            <li>Eighth instruction: <i>0x08048433 &ltmain+63&gt: leave</i></li>
+                            The instruction “leave” has two parts, first it will set esp to ebp. The registers esp and ebp will get the same value and destroy the stack frame as consequences. This explains why we cannot use local variable of a function in another function, all memory inside of the stack frame is erased, which means that all data does not exist anymore. The instruction is <strong>mov esp, ebp</strong>. <br>
+                            <br>
+                            <u>Registers information:</u> <br>
+                            eip = 0x080483fd <br>
+                            ebp = 0xbffff770 <br>
+                            esp = 0xbffff770 <br>
+                            <br>
+                            <img src="img/UnderstandStack/stack_7.png" class="img-fluid" width="300">
+                            The second part takes off the top of the stack and put the content in ebp. The instruction is <strong>pop ebp</strong>. If you remember the value of ebp at the beginning, it has the same value, therefore we come back to the previous stack frame, the register ebp is pointing back to the beginning of the old base pointer. <br>
+                            <br>
+                            <u>Registers information:</u> <br>
+                            eip = 0x080483fd <br>
+                            ebp = 0xbffff900 <br>
+                            esp = 0xbffff7d8 <br>
+                            <img src="img/UnderstandStack/stack_8.png" class="img-fluid" width="300">
+
+                            <li>Ninth instruction: <i>0x08048434 &ltmain+64&gt: ret</i></li>
+                            The ret instruction is similar as <strong>pop eip</strong>. It is going to store the value of the top of the stack to eip. So eip is modified and the program will jump to that address. If you notice the instruction of that address is the instruction after calling the function "main". <i>(second instruction)</i> <br>
+                            <br>
+                            <u>Registers information:</u> <br>
+                            eip = 0xb7eadc76 <br>
+                            ebp = 0xbffff900 <br>
+                            esp = 0xbffff7e4 <br>
+
+                            Same as the first instruction, but this time by deleting a memory address from the stack, it add 8 bits to the register esp address.
+
+                            <div class="squarebox">esp + 8 = 0xbffff7d8 + 8 = 0xbffff7e4</div>
+
+                            <img src="img/UnderstandStack/stack_1.png" class="img-fluid" width="300">
+
+                            After that, the program run the instruction store in the register eip: <i>0xb7eadc76 <__libc_start_main+230>: mov DWORD PTR [esp], eax</i>.
                         </p>
                         <br>
                     </div>

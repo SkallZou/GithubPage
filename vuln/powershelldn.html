@@ -151,11 +151,30 @@
                             When Add-Type cmdlet is executed, the C# compiler (csc.exe) is invoked by PowerShell to compile this class definition into an assembly (.dll) with the .NET type to be used by the PS script. This .dll file is created in the folder C:\Users\[USERNAME]\AppData\Local\Temp. Another temporary file is created, with the extension .cmdline, this file is passed as argument to csc.exe and contains direction to compile a C# program which generate a .0.cs file.
                             The .0.cs file contains the C# code classes, namespace, function passed in argument to the cmdlet Add-Type.
                             In that case, .dll files provide some information to the Common Language Runtime including the language because the Common Language Runtime is the program managing the execution of the application. The programming languages such as Visual Basic, Visual C++ and C# compile their code and translate it to a Common Intermediate Language executable by the CLR. <br>
-                            <br>
-                            <strong>TO BE CONTINUED...</strong>
-
                         </p>
                         <br>
+                    </div>
+                </div>
+            </section>
+             <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h3 class="mb-0">Downloading and execute C# assembly in PowerShell</h3>
+                        <p>
+                            After analyzing, how we can compile a C# code in PowerShell, I want to go further. Let's find out how to download a file from a URL and run the file on the system.
+
+                            <a href="https://github.com/GhostPack/Seatbelt">GhostPack - Seatbelt</a> is a C# project that performs a number of security oriented host-survey "safety checks" relevant from both offensive and defensive security perspectives. <br>
+                            We will use this tool in this exercise to see if we can run scanning check on a computer with our script. Let's download the C# project file.
+
+                            <div class="squarebox"> git clone https://github.com/GhostPack/Seatbelt</div>
+                            <img src="img/PowerShell .NET/seatbeltmaster.png" class="img-fluid" width="500">
+
+                            Open the SLN file with your C# IDE, and build the solution to get the assembly. Once the program is built, you will have the executable file of the program in the <strong>bin\Debug</strong> of the C# solution file.
+
+                            <img src="img/PowerShell .NET/seatbeltcompiled.png" class="img-fluid" width="500">
+
+
+                        </p>
                     </div>
                 </div>
             </section>

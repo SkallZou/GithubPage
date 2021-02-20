@@ -63,7 +63,12 @@
                             Reaching the page, we are facing a login page. 
                             <img src="img/InternalSupport/loginpage.PNG" name="loginpage" class="img-fluid" width="800">
                             
-                            We can start with some basic <strong>SQL injection</strong>, <i>admin' OR 'a'='a'#</i>, however it doesn't seem to work. Instead of blocking on that form, we can create an account below and see what we can find inside the website. After creating an account, we reach a page with a form, which is used to contact the support in case of a problem. But instead of asking what is the flag in the message block, we can look for some vulnerabilities. Let's start by checking if the website has a <strong>XSS (Cross Site Scripting)</strong> vulnerability. <br>To do so, I'm going to inject some basic <strong>JavaScript</strong> in the form such as <i>"alert();"</i>.
+                            Let's start with some basic <strong>SQL injection</strong>.
+
+                            <div class="squarebox">admin' OR 'a'='a'#</div>
+                            However it doesn't seem to work. Instead of blocking on that form, we can create an account below and see what we can find inside the website. After creating an account, we reach a page with another form, which is used to contact the support in case of a problem. Let's start by checking if the website has a <strong>XSS (Cross Site Scripting)</strong> vulnerability. <br>To do so, I'm going to inject some basic JavaScript in the form.
+
+                            <div class="squarebox">"alert();"</div>.
 
                             <img src="img/InternalSupport/xssvuln.png" name="xssvuln" class="img-fluid" width="800">
                             
@@ -76,7 +81,7 @@
                             This script will redirect any person who reach our ticket page to my Pipedream endpoint and set the field cookie with their own cookie thanks to the JavaScript function <strong>document.cookie</strong>.
                             <img src="img/InternalSupport/cookiestolen.png" class="img-fluid" width="800">
                             On the screenshot above, the field cookie has been filled by the cookie of the user who reach my ticket page. Therefore, copy pasting this value and replacing our cookie with this value should give us access to his session if there is not other security measure.
-                            To replace our cookie, we need to access to the Developement Tools, go to storage, click cookie and paste the value. Once it is done, refresh the page, and see if the session has changed. 
+                            To replace our cookie, access to the Developement Tools, go to storage, click cookie and paste the value. Once it is done, refresh the page, and see if the session has changed. 
                             <img src="img/InternalSupport/sessionhijacked.png" class="img-fluid" width="800">
                             Yes! The page content has changed and if you look closely the flag is here as well. <br>
                             <br>Flag: <strong>NoUserValidationIsADangerousPractice</strong>

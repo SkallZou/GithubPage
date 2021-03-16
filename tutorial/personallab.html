@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Create your personal lab</title>
+        <link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="../css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-xl navbar-dark bg-primary fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger" href="../index.html">
+                <span class="d-block d-xl-none">Olivier LEUNG</span>
+                <span class="d-none d-xl-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="../assets/img/profile.jpg" alt="" /></span>
+            </a>
+            <div class="d-none d-xl-block description_profile"> <!--d-none is used for responsiveness of the panel when you shring the window -->
+                <h3>Olivier LEUNG</h3>
+                <div class="subheading_panel">Cybersecurity engineer </div>
+                    <div class="subheading_description">Love testing random cyber stuff !<br>That's by baking we become a baker</div>
+            </div>
+            <!-- button collapse panel when small windows, responsive pane -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> 
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../ctfpage.html">CTF</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../dfirpage.html">DFIR</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../vulnpage.html">Vuln Exploitation</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../reversepage.html">Reverse Engineering</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../tutorialpage.html">Tutorial</a></li>
+                </ul>
+            </div>
+
+            <div class="d-none d-xl-block social-icons">
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/olivierleung"><i class="fab fa-linkedin-in"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://github.com/SkallZou"><i class="fab fa-github"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://twitter.com/olivier_leung"><i class="fab fa-twitter"></i></a>
+            </div>
+        <footer class="d-none d-xl-block">
+            <div class="container">
+              <p class="m-0 text-center footerpage">Copyright &copy; 2020 Olivier Leung<br>All rights reserved.</p>
+            </div>
+        </footer>
+        </nav>
+        <!-- Page Content-->
+        <div>
+            <nav class="navbar navbar-expand-xl navbar-dark bg-secondary sticky-top">
+            <h3 class="header-article"><a href="../tutorialpage.html">Tutorial & Cheatseet </a>> Create your personal lab</h3>
+            </nav>
+            
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h3 class="mb-0">Lab design</h3>
+                        <p>
+                            Setting up a lab has many advantages and benefits when it comes to do some researches and testing. Being able to virtualize any machine is a big opportunity, you can create many systems without spending a lot of money. You can monitore and control your infrastructure as if you were in a small company. Testing things and doing researches are always better to do it in a development environment than in production. Therefore as a cybersecurity engineer or software engineer or network engineer, it is always good to have a lab to do some testings. <br>
+                            <br>
+                            Here is the lab we are going to create, it will be the foundation and others systems can be added later to create a more advanced lab : <br>
+
+                            <img src="img/PersonalLab/infra.png" class="img-fluid" width="700">
+
+                            <br>
+                            <h3 class="mb-0">1/ Firewall</h3>
+
+                            Let's install our first virtual machine, which will be used as the firewall. Let's install pfSense, a free and open source firewall to control the traffic of our network. Any company must use a firewall to monitor the inbound and outbound network traffic. <br>
+                            <br>
+                            Download pfSense on this link, remember to always check the link before downloading a file: <a href="https://www.pfsense.org/download/">https://www.pfsense.org/download</a> <br>
+                            Or if you want to download with a command line, wget or curl can always help you out.
+                            <div class="squarebox">wget https://frafiles.netgate.com/mirror/downloads/pfSense-CE-2.5.0-RELEASE-amd64.iso.gz</div>
+
+                            The file downloaded is a .gz file. It is using Gzip compression algorithm that reduce the amount of space needed to store data. To decompress a .gz file, you can use the gzip utility. 
+                            <div class="squarebox">gzip -d pfSense-CE-2.5.0-RELEASE-amd64.iso.gz</div>
+                            Gzip is natively installed on Ubuntu, you can have ubuntu console in Windows 10 by enabling WSL on Windows. I invite you to read this Microsoft <a href="https://docs.microsoft.com/en-gb/windows/wsl/install-win10">WSL tutorial</a> to guide you through the installation of WSL if you need.
+
+                            <img src="img/PersonalLab/gzip.png" class="img-fluid" width="600">
+
+                            Let's create a new virtual machine on VMware.
+
+                            <img src="img/PersonalLab/newVM.png" class="img-fluid" width="600">
+
+                            Follow the instruction by giving a name to your virtual machine, add the .iso file etc. About the configuration of the VM, you don't need a lot of power to run pfSense. <br>
+                            <ul>
+                                <li>CPU: 1 virtual core is enough</li>
+                                <li>Memory: Between 512Mb to 1Gb is good, to get better performance, I suggest to put 1Gb of memory</li>
+                                <li>Hard Disk: 8Gb to 20Gb, it doesn't need a lot of storage</li>
+                            </ul>
+                            With the virtual machine, you have the flexibility to scale up the performance of your machines. Therefore if you think that it is a little bit slow, you can always add more memories or virtual cores. <br>
+                            <br>
+                            In the network settings, we are going to add one network adapter. Our firewall needs to have 2 network adapter because it need to get 2 ip addresses. One ip addresses for your "Home network" and a ip address for the private virtual network protected by the firewall. This is also where will be located the others systems. <br>
+                            <br>
+                            Once the configuration is done, it's time to install pfSense. Make sure to boot with the .iso file, otherwise the installation will not start.
+
+                            <img src="img/PersonalLab/pfsense_install.png" class="img-fluid" width="600">
+
+                            Then follow the instructions. Once it is done, make sure to have 2 network adapters so 2 ip addresses on the menu of pfSense.
+                            <img src="img/PersonalLab/pfsense_installed.png" class="img-fluid" width="600">
+
+                            To be sure that the network interfaces are correctly configured, check your networking settings on VMware and find the MAC address of each network adapter.
+
+                            <img src="img/PersonalLab/pfsense_network.png" class="img-fluid" width="600">
+                            Once you retrieve the MAC address of each network interface, go to pfSense and assign the interface to the correct network. Assigning the interface, you will see the MAC address of each interface and you can compare it with the one you retrieved from the VMware network settings.
+                            <img src="img/PersonalLab/pfsense_interface.png" class="img-fluid" width="600">
+
+                            Once you have set up the correct interface for the WAN and LAN then you should be able to ping your own system. If you have set up the WAN network interface of your pfSense as NAT, you can check the NAT gateway in the advanced network settings in VMWare.
+                            Click on Edit -> Virtual Network Editor to access to the advanced network settings.
+
+                            After configuring the interfaces, make sure you can ping the NAT gateway, and internet to check if everything works well.
+                            <img src="img/PersonalLab/pfsense_internet.png" class="img-fluid" width="600">
+
+                            <br>
+                            <h3 class="mb-0">2/ Active Directory</h3>
+                            In this lab, the operating system for the active directory is Windows Server 2012 R2. For every system located in the After installing the Windows Server, we need to install some windows features  and roles for Active Directory. <br>
+                            First let's use a static ip address for the server. An Active Directory is acting like a DNS server, and many systems must communicate with the DNS server to join the domain or to request any DNS query.
+
+                            <img src="img/PersonalLab/ad_ip.png" class="img-fluid" width="600">
+
+                            Once setting up the static ip address, and specify the default gateway ip address as the pfSense ip address, check your connection. You should be able to ping the firewall and also ping google.com. If this is not the case, please check the firewall rules by connecting to the web interface of pfSense.
+
+                            <img src="img/PersonalLab/ad_internet.png" class="img-fluid" width="600">
+
+                            First role and feature to add will be the DNS server, Active Directory works with DNS. To add a feature, get on the dashboard and click on "Add role and features".
+
+                            <img src="img/PersonalLab/ad_installrole.png" class="img-fluid" width="600">
+
+                            Then select your server, and click on DNS server for the role you want to add to the Windows server. About the features, we can let it by default on this installation.
+                            Once the DNS server is installed, you can proceed to install the Active Directory Domain Services.
+                            After the installation, promote the server as a domain controller and you're done with the installation of the Active Directory. <br>
+
+                            <br>
+                            <h3 class="mb-0">3/ Windows 10</h3>
+
+                            This part will show you how to join a windows system in the Active Directory. There is nothing complicated in the process but there are key points to be aware:
+                            <ul>
+                                <li>Make sure that the system is correctly pointing to the DC in the DNS server settings</li>
+                                <li>You must have a domain account that is part of the domain admin group to join the system</li>
+                            </ul>
+
+                            <img src="img/PersonalLab/win10_dns.png" class="img-fluid" width="600">
+
+                            To join the domain, go to system, click on advanced settings, click on the button "modify" to change the computer domain and enter the domain name.
+
+                            <img src="img/PersonalLab/win10_domain.png" class="img-fluid" width="600">
+
+                            Then, you will be asked to enter the credentials of a domain admin. Once done that, you will finally have a message saying that your system has been correctly integrated.
+
+                            <img src="img/PersonalLab/win10_integrated.png" class="img-fluid" width="300">
+
+
+                        </p>
+                        <br>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

@@ -70,7 +70,7 @@
                             <br>
                             <h3 class="mb-0">1/ Firewall</h3>
 
-                            Let's install our first virtual machine, which will be used as the firewall. Let's install pfSense, a free and open source firewall to control the traffic of our network. Any company must use a firewall to monitor the inbound and outbound network traffic. <br>
+                            Let's install our first virtual machine, which will be used as the firewall. Let's install pfSense, a free and open source firewall to control the traffic of our network. Any company must use a firewall to monitore the inbound and outbound network traffic. <br>
                             <br>
                             Download pfSense on this link, remember to always check the link before downloading a file: <a href="https://www.pfsense.org/download/">https://www.pfsense.org/download</a> <br>
                             Or if you want to download with a command line, wget or curl can always help you out.
@@ -78,11 +78,11 @@
 
                             The file downloaded is a .gz file. It is using Gzip compression algorithm that reduce the amount of space needed to store data. To decompress a .gz file, you can use the gzip utility. 
                             <div class="squarebox">gzip -d pfSense-CE-2.5.0-RELEASE-amd64.iso.gz</div>
-                            Gzip is natively installed on Ubuntu, you can have ubuntu console in Windows 10 by enabling WSL on Windows. I invite you to read this Microsoft <a href="https://docs.microsoft.com/en-gb/windows/wsl/install-win10">WSL tutorial</a> to guide you through the installation of WSL if you need.
+                            Gzip is natively installed on Ubuntu, you can have Ubuntu console in Windows 10 by enabling WSL on Windows. I invite you to read this Microsoft <a href="https://docs.microsoft.com/en-gb/windows/wsl/install-win10">WSL tutorial</a> to guide you through the installation of WSL if you need.
 
                             <img src="img/PersonalLab/gzip.png" class="img-fluid" width="600">
 
-                            Let's create a new virtual machine on VMware.
+                            From this point, you have retrieved the .iso file, it's time to create a new virtual machine on VMware.
 
                             <img src="img/PersonalLab/newVM.png" class="img-fluid" width="600">
 
@@ -92,37 +92,40 @@
                                 <li>Memory: Between 512Mb to 1Gb is good, to get better performance, I suggest to put 1Gb of memory</li>
                                 <li>Hard Disk: 8Gb to 20Gb, it doesn't need a lot of storage</li>
                             </ul>
-                            With the virtual machine, you have the flexibility to scale up the performance of your machines. Therefore if you think that it is a little bit slow, you can always add more memories or virtual cores. <br>
+                            With a virtual machine, you have the flexibility to scale up the performance of your machines. Therefore if you think that it is a little bit slow, you can always add more memories or virtual cores. <br>
                             <br>
-                            In the network settings, we are going to add one network adapter. Our firewall needs to have 2 network adapter because it need to get 2 ip addresses. One ip addresses for your "Home network" and a ip address for the private virtual network protected by the firewall. This is also where will be located the others systems. <br>
+                            In the network settings, we are going to add one more network adapter. Our firewall needs to have 2 network adapters because it need to get 2 IP addresses. One IP addresses for your "Home network" and another for the private virtual network which will be protected by the firewall. This is also where the others systems will be located. <br>
                             <br>
                             Once the configuration is done, it's time to install pfSense. Make sure to boot with the .iso file, otherwise the installation will not start.
 
                             <img src="img/PersonalLab/pfsense_install.png" class="img-fluid" width="600">
 
-                            Then follow the instructions. Once it is done, make sure to have 2 network adapters so 2 ip addresses on the menu of pfSense.
+                            Then follow the instructions and make sure to have 2 network adapters displayed on the menu of pfSense.
                             <img src="img/PersonalLab/pfsense_installed.png" class="img-fluid" width="600">
 
                             To be sure that the network interfaces are correctly configured, check your networking settings on VMware and find the MAC address of each network adapter.
 
                             <img src="img/PersonalLab/pfsense_network.png" class="img-fluid" width="600">
-                            Once you retrieve the MAC address of each network interface, go to pfSense and assign the interface to the correct network. Assigning the interface, you will see the MAC address of each interface and you can compare it with the one you retrieved from the VMware network settings.
+                            When you have retrieved the MAC address of each network interface, go to pfSense and assign each interface to the correct network. Assigning the interface, you will see the MAC address of each interface and in case you forget which interface belongs to which network adapter, you can compare it with the MAC address you've retrieved from the VMware network settings.
                             <img src="img/PersonalLab/pfsense_interface.png" class="img-fluid" width="600">
 
-                            Once you have set up the correct interface for the WAN and LAN then you should be able to ping your own system. If you have set up the WAN network interface of your pfSense as NAT, you can check the NAT gateway in the advanced network settings in VMWare.
-                            Click on Edit -> Virtual Network Editor to access to the advanced network settings.
+                            Once you have set up the correct interface for the WAN and LAN then you should be able to ping your own system. If you have set up the WAN network interface of your pfSense as NAT, you can check the NAT gateway in the advanced network settings in VMWare. <br>
+                            Click on <strong>Edit -> Virtual Network Editor -> Select the NAT network -> Click on NAT settings -> Get the Gateway IP address</strong> to access to the advanced network settings.
+
+                            <img src="img/PersonalLab/natsetting.png" class="img-fluid" width="500">
 
                             After configuring the interfaces, make sure you can ping the NAT gateway, and internet to check if everything works well.
                             <img src="img/PersonalLab/pfsense_internet.png" class="img-fluid" width="600">
+                            Your Firewall has been installed. Then, it is necessary to configure it by adding some firewall rules to control your network traffic. <br>
 
                             <br>
                             <h3 class="mb-0">2/ Active Directory</h3>
-                            In this lab, the operating system for the active directory is Windows Server 2012 R2. For every system located in the After installing the Windows Server, we need to install some windows features  and roles for Active Directory. <br>
-                            First let's use a static ip address for the server. An Active Directory is acting like a DNS server, and many systems must communicate with the DNS server to join the domain or to request any DNS query.
+                            In this lab, the operating system for the active directory is Windows Server 2012 R2. Create a new virtual machine and change the network adapter settings to put it in the private network. After installing the Windows Server, we need to install some windows features  and roles for Active Directory. <br>
+                            First let's use a static ip address for the server, an Active Directory is a DNS server, and many systems must communicate with the DNS server to join the domain or to request any DNS query.
 
                             <img src="img/PersonalLab/ad_ip.png" class="img-fluid" width="600">
 
-                            Once setting up the static ip address, and specify the default gateway ip address as the pfSense ip address, check your connection. You should be able to ping the firewall and also ping google.com. If this is not the case, please check the firewall rules by connecting to the web interface of pfSense.
+                            When the static IP address has been set up, and the default gateway IP address is the Firewall's IP address, check your connection. You should be able to ping the firewall and also ping google.com. If this is not the case, please check the firewall rules by connecting to the web interface of pfSense.
 
                             <img src="img/PersonalLab/ad_internet.png" class="img-fluid" width="600">
 
@@ -153,7 +156,7 @@
 
                             <img src="img/PersonalLab/win10_integrated.png" class="img-fluid" width="300">
 
-                            This is the foundation of the lab. From there, you can add any system to increase the complexity, for example, I plan to add a squid proxy, sysmon and a siem such as splunk or ELK to gather the logs of differents systems. <br>
+                            This is the foundation of the lab. From there, you can add any system to increase the complexity, for example, I plan to add a squid proxy, sysmon and a siem such as splunk or ELK to gather the logs of different systems. <br>
                             Something similar as the following architecture.
 
                             <img src="img/PersonalLab/infra_2.png" class="img-fluid" width="600">

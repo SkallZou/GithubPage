@@ -34,7 +34,7 @@
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#ctf">CTF</a></li>
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#dfir">DFIR</a></li>
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#vuln">Vuln Exploitation</a></li>
-                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#reverse">Reverse Engineering</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#malware">Malware Analysis</a></li>
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#tutorial">Tutorial</a></li>
                 </ul>
             </div>
@@ -58,21 +58,18 @@
                     <h2 class="mb-5"><a class="title-article" href="ctfpage.html">Capture The Flag</a></h2>
                     <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                         <div class="flex-grow-1">
-                            <h3 class="mb-0"> <a href="ctf/dghack2020.html">DG'hack 2020</a></h3>
-                            <div class="subheading mb-3">Capture the flag organized by the DGA </div>
-                            <p>This cybersecurity challenge was organized by the DGA (Direction Générale de l'Armement) in November 2020. The challenges was around web, cryptography, digital investigation, reverse engineering and exploitation.</p>
+                            <p>Capture The Flag (CTF) is a famous game mode where attaquant has to steal the ennemy flag and bring it back to their own base. Most of the cases, in a CTF, you have two teams fighting against each other. Each team has to defend their flag to not get it stolen by the adversary. In Cybersecurity, CTF organiser set up an environment with differents riddles where the players have to infiltrate the system with different means to retrieve the hidden flag. This has for goal to train pentesters, cyber analysts, or simply cyber passionates to simulate an cyber intrusion. In real world, a intrusion inside of an information system is strictly illegal without any authorization signed by a legal authorized representative. Without that consent, the intrusion is reprehensible and the sentence can be severe, going up to a huge fine and many years imprisonment. <br>
+                            <br>
+                            A CTF involve to find some vulnerabilities in the system, some vulnerabilities are made on purpose so that the players can find them and exploit them like in a real pentesting. The idea is to retrieve the flag which simulate a data exfiltration. A CTF, is usually composed of several exercices, ordered by difficulties, it is made for beginners as well as experts. Cybersecurity is a mix of domain, therefore a CTF will also have many trials in different domains such as Networking, cryptography, steganography, web, forensics etc. <br>
+                            <br>
+                            In this section, the articles will present the CTFs that I have participated. You will see in details what kind of exercises you can encountered when participating to a CTF.
+                            <br>
+                            <br>
+                                <a href="ctfpage.html">Click here to see the articles</a>
+                             </p>
                         </div>
-                        <div class="flex-shrink-0"><span class="text-primary">November 2020</span></div>
                     </div>
-                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
-                        <div class="flex-grow-1">
-                            <h3 class="mb-0"><a href="ctf/brigittefriang.html">Challenge Brigitte Friang</a></h3>
-                            <div class="subheading mb-3">Capture the flag organized by the DGSE and ESIEE</div>
-                            <p>The DGSE (Direction Générale de la Sécurité Extérieure) and the engineer school ESIEE organized a cybersecurity challenge in October 2020. It was called Brigitte Friang challenge. There were several exercises to resolve including cryptography, web, cracking, steganography, electronic... In this challenge, participants were asked to embody a secret agent to resolve different riddles.</p>
-                        </div>
-                        <div class="flex-shrink-0"><span class="text-primary">October 2020</span></div>
-                    </div>
-                </div>  
+                </div>
             </section>
 
             <hr class="m-0" />
@@ -82,19 +79,16 @@
                     <h2 class="mb-5"><a class="title-article" href="dfirpage.html">Digital Forensics and Incident Response</a></h2>
                     <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                         <div class="flex-grow-1">
-                            <h3 class="mb-0"><a href="dfir/psdnassemblyusage.html">PowerShell .NET Assembly Usage</a></h3>
-                            <div class="subheading mb-3">Investigation - FireEye HX detection</div>
-                            <p>As a cybersecurity analyst, I'm facing numerous of alerts from detections rules. System detections are the one where you can really dig into it and change them into challenges.</p>
+                            <p>Digital Forensics and Incident Response focuses on examining and understand the behavior of a digital equipment or a company user when a suspicious activity were raise by some cybersecurity appliances. Computer forensics required some technical skills to perform a great investigation when an incident has been identified, it is necessary to determine if illegal actions were made or if an intruder is present in your company environment. After an cyber intrusion, adversaries can leave footprints anywhere in the company network, they also would like to come back another time, so they most likely leave a backdoor in the infected system. Once an attacker has infected one machine, spreading the malware in another system is very common, this has for goal to retain access on the network company after gaining a initial access  in the company environment. <br>
+                            <br>
+                            Digital forensics and incident responses includes many IT fields since adversaries can use different methods to get a foothold in the targeted sytem. Disk analysis, memory analysis, log analysis and other technical knowledges are necessary to lead a great investigation. <br>
+                            <br>
+                            In this section, the articles shows you some forensic investigations that I have performed, either during at work as a cyber analyst or during a CTF. 
+                            <br>
+                            <br>
+                             <a href="dfirpage.html">Click here to see the articles</a>
+                            </p>
                         </div>
-                        <div class="flex-shrink-0"><span class="text-primary">Decembre 2020</span></div>
-                    </div>
-                     <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
-                        <div class="flex-grow-1">
-                            <h3 class="mb-0"><a href="dfir/volatilitymemory.html">Volatility - Memory challenge</a></h3>
-                            <div class="subheading mb-3">Forensic challenge organised by 13cubed</div>
-                            <p>13cubed is a YouTube channel, and a website producing a lot of Digital Forensics and Incident Response contents. It is a project developed by Richard Davis, SANS instructor teaching digital forensics. He offers us an opportunity to do some memory investigations using Volatility.</p>
-                        </div>
-                        <div class="flex-shrink-0"><span class="text-primary">August 2020</span></div>
                     </div>
                 </div>
             </section>
@@ -105,27 +99,34 @@
                     <h2 class="mb-5"><a class="title-article" href="vulnpage.html">Vulnerability Exploitation</a></h2>
                     <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                         <div class="flex-grow-1">
-                            <h3 class="mb-0"> <a href="vuln/powershelldn.html">PowerShell & .NET</a></h3>
-                            <div class="subheading mb-3">FireEye HX Detection </div>
-                            <p>After getting several alerts from FireEye HX regarding suspicious .dll file coming from the process csc.exe, I decided to dig into that subject. After doing an Enterprise Search in FireEye for the process name "csc.exe", I've found that PowerShell.exe is often its parent process. This article is to understand what are the possible exploits by compiling C# code with PowerShell. </p>
+                            <p>A security vulnerability is a error or a flaw found in the system that can be potentially exploited by a threat agent to compromise a company network. Those security vulnerabilities can happen during development or during the design of the solution. It can be exploited by a person to force the software to perform tasks that are not supposed to perform, and bypass the current security defenses. <br>
+                            When a vulnerability has been discovered, it is registered as a Common vulnerabilities and Exposure in the <a href="https://cve.mitre.org/">MITRE CVE</a> database, and evaluate the risk that your company is exposed. <br>
+                            It exists many exploits in information security, such as memory overflows that allow a threat agent to execute some malicious instructions by overwriting data to a memory space. The most common ones remain web vulnerabilities with code injection with SQL injection and Cross-site Scripting (XSS). SQL injection might allow a malevolant person the disclosure of all data of the system database by inserting a malicious SQL query. XSS allows a hacker to execute any malicious JavaScript code to users who reach the page. <br>
+                            <br>
+                            In this section, the articles will focus on exploiting some cyber vulnerabilities and demonstrate how dangerous a misconfiguration or a poor security practice can be.
+                            <br><br>
+                            <a href="vulnpage.html">Click here to see the articles</a>
+                            </p>
                         </div>
-                        <div class="flex-shrink-0"><span class="text-primary">January 2021</span></div>
-                    </div>
-                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
-                        <div class="flex-grow-1">
-                            <h3 class="mb-0"> <a href="ctf/dghack2020.html">DGHack 2020</a></h3>
-                            <div class="subheading mb-3">Capture the flag organized by DGA </div>
-                            <p>This cybersecurity challenge was organized by the DGA (Direction Générale de l'Armement) in November 2020. The challenges was around web, cryptography, digital investigation, reverse engineering and exploitation.</p>
-                        </div>
-                        <div class="flex-shrink-0"><span class="text-primary">November 2020</span></div>
                     </div>
                 </div>
             </section>
             <hr class="m-0" />
-            <!--Reverse Engineering section-->
-            <section class="resume-section" id="reverse">
+            <!--Malware Analysis section-->
+            <section class="resume-section" id="malware">
                 <div class="resume-section-content">
-                	<h2 class="mb-5"><a class="title-article" href="reversepage.html">Reverse Engineering</a></h2>
+                	<h2 class="mb-5"><a class="title-article" href="malwarepage.html">Malware analysis</a></h2>
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div class="flex-grow-1">
+                            <p>Malware, or malicious software is used by threat agent and is designed to disrupt, damage or gain unauthorized access to a computer system. Any software that is designed to cause harm to a computer, network is considered as a malware. Viruses, worms, trojan horse, rootkits and many others are different malware types. The best-known malware type is a worm and very used by threat agent because it has the ability to spread in the company network by copying itself to other devices present in the network. <br>
+                            Malware analysis is to understand how the malware works, how to identify and find the indicator to detect and eleminate it. Some simple techniques are enough to identify the threat of malware, others will need more technical aptitude such as reverse engineering.
+                            <br><br>
+                            In this section, the articles will focus on analysing malwares, and introduce the tools and methods to perform a malware analysis.
+                            <br><br>
+                            <a href="malwarepage.html">Click here to see the articles</a>
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </section>
             <hr class="m-0" />
@@ -136,19 +137,14 @@
 
                     <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                         <div class="flex-grow-1">
-                        <h3 class="mb-0"><a href="tutorial/understandstack.html">Memory - Stack</a></h3>
-                        <div class="subheading mb-3">Programming / Assembly</div>
-                        <p>Before getting into some binary exploitations, it is necessary to have a good understanding about the functioning of the stack. This tutorial is composed of a small program and we are going to analyze step by step the memory, from allocating the memory space to erasing that space.</p>
+                        <p>
+                            This section gathers different cybersecurity field, the goal is to give as much theoretical and practical knowledges about different cyber security domains. This is meant to develop your knowledge and make you become better in that domain. It does also have important cheatsheets that I found important for investigation and securing a network company.
+                            <br>
+                            This is the learning guide section, feel free to have a glance at every article !
+                            <br><br>
+                            <a href="tutorialpage.html">Click here to see the articles</a>
+                        </p>
                         </div>
-                        <div class="flex-shrink-0"><span class="text-primary">February 2021</span></div>
-                    </div>
-                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
-                        <div class="flex-grow-1">
-                        <h3 class="mb-0"> <a href="tutorial/openforwardport.html">Opening and forward port</a></h3>
-                        <div class="subheading mb-3">Router / Firewall tutorial</div>
-                        <p>Sometimes, it is necessary to modify some networking settings in the router or firewall. In this article, you will see how to modify those settings, to listen on a specific port and then being able to open a reverse shell on a remote location.</p>
-                        </div>
-                        <div class="flex-shrink-0"><span class="text-primary">November 2020</span></div>
                     </div>
                 </div>
             </section>

@@ -46,13 +46,13 @@
             </div>
         <footer class="d-none d-xl-block">
             <div class="container">
-              <p class="m-0 text-center footerpage">Copyright &copy; 2020 Olivier Leung<br>All rights reserved.</p>
+              <p class="m-1 text-center footerpage">Copyright &copy; 2020 Olivier Leung<br>All rights reserved.</p>
             </div>
         </footer>
         </nav>
         <!-- Page Content-->
         <div>
-            <nav class="navbar navbar-expand-xl navbar-dark bg-secondary sticky-top">
+            <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
             <h3 class="header-article"><a href="../tutorialpage.html">Tutorial & Cheatseet </a>> Create your personal lab</h3>
             </nav>
             
@@ -116,10 +116,16 @@
 
                             After configuring the interfaces, make sure you can ping the NAT gateway, and internet to check if everything works well.
                             <img src="img/PersonalLab/pfsense_internet.png" class="img-fluid" width="600">
-                            Your Firewall has been installed. Then, it is necessary to configure it by adding some firewall rules to control your network traffic. <br>
-
-                            <br>
+                            Your Firewall has been installed. Then, it is necessary to configure it by adding some firewall rules to control your network traffic.
+                        </p>
+                    </div> 
+                </div>
+            </section>
+             <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
                             <h3 class="mb-0">2/ Active Directory</h3>
+                            <p>
                             In this lab, the operating system for the active directory is Windows Server 2012 R2. Create a new virtual machine and change the network adapter settings to put it in the private network. After installing the Windows Server, we need to install some windows features  and roles for Active Directory. <br>
                             First let's use a static ip address for the server, an Active Directory is a DNS server, and many systems must communicate with the DNS server to join the domain or to request any DNS query.
 
@@ -135,11 +141,16 @@
 
                             Then select your server, and click on DNS server for the role you want to add to the Windows server. About the features, we can let it by default on this installation.
                             Once the DNS server is installed, you can proceed to install the Active Directory Domain Services.
-                            After the installation, promote the server as a domain controller and you're done with the installation of the Active Directory. <br>
-
-                            <br>
+                            After the installation, promote the server as a domain controller and you're done with the installation of the Active Directory.
+                        </p>
+                        </div>
+                    </div>
+                </section>
+                 <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
                             <h3 class="mb-0">3/ Windows 10</h3>
-
+                            <p>
                             This part will show you how to join a windows system in the Active Directory. There is nothing complicated in the process but there are key points to be aware:
                             <ul>
                                 <li>Make sure that the system is correctly pointing to the DC in the DNS server settings</li>
@@ -161,7 +172,6 @@
 
                             <img src="img/PersonalLab/infra_2.png" class="img-fluid" width="600">
                         </p>
-                        <br>
                     </div>
                 </div>
             </section>

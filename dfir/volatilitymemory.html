@@ -46,13 +46,13 @@
             </div>
         <footer class="d-none d-xl-block">
             <div class="container">
-              <p class="m-0 text-center footerpage">Copyright &copy; 2020 Olivier Leung<br>All rights reserved.</p>
+              <p class="m-1 text-center footerpage">Copyright &copy; 2020 Olivier Leung<br>All rights reserved.</p>
             </div>
         </footer>
         </nav>
         <!-- Page Content-->
         <div>
-            <nav class="navbar navbar-expand-xl navbar-dark bg-secondary sticky-top">
+            <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
             <h3 class="header-article"><a href="../dfirpage.html">Digital Forensics and Incident Response </a>> Volatility - Memory challenge</h3>
             </nav>
             <section class="article">
@@ -106,9 +106,9 @@
                                 vol.py -f memdump.mem --profile=Win10x64_17134 cmdline | grep -A 1 8560 <br>
                                 Volatility Foundation Volatility Framework 2.6.1 <br>
                                 svchost.exe pid:   8560 <br>
-                                Command line : "C:\Windows\svchost.exe" <br>
+                                Command line : "C:\Windows\svchost.exe" 
                             </div>
-                            <br>
+                            
                             The PID 8560, svchost.exe is called from C:\Windows.  By default svchost.exe should be only located on C:\Windows\System32. <br>
                             <br>
                             The flag is the MD5 hash of the running malicious PID. <br>
@@ -134,10 +134,10 @@
                             </div>
                             <br>
                             The flag is inside of the process's memory, let's check the strings. <br>
-                            <div class="squarebox">Strings –n 32 8560.dmp | less</div> <br>
+                            <div class="squarebox">Strings –n 32 8560.dmp | less</div>
                             After scrolling the strings, we've managed to find something which might be potentially the flag.
                             <img src="img/Volatility Memory/strings.png" class="img-fluid" width="800">
-                            However, the number of characters is not 32. <br>
+                            However, the number of characters is not 32.
                             <div class="squarebox">$ echo -n "M2ExOTY5N2YyOTA5NWJjMjg5YTk2ZTQ1MDQ2Nzk2ODA=" | wc -c <br>
                                 44 <br>
                             </div>

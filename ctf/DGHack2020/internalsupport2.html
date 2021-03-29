@@ -46,13 +46,13 @@
             </div>
         <footer class="d-none d-xl-block">
             <div class="container">
-              <p class="m-0 text-center footerpage">Copyright &copy; 2020 Olivier Leung<br>All rights reserved.</p>
+              <p class="m-1 text-center footerpage">Copyright &copy; 2020 Olivier Leung<br>All rights reserved.</p>
             </div>
         </footer>
         </nav>
         <!-- Page Content-->
         <div>
-        	<nav class="navbar navbar-expand-xl navbar-dark bg-secondary sticky-top">
+            <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
             <h3 class="header-article"><a href="../../ctfpage.html">Capture The Flag </a>> <a href="../dghack2020.html">DG'hack 2020 </a>> Internal Support 2</h3>
             </nav>
             <section class="article">
@@ -66,50 +66,50 @@
                             <img src="img/InternalSupport2/xsscheck.png" class="img-fluid" width="800">
                             On this case, we have "Malicious code detected", which means that we cannot inject JavaScript code in a simple way, except if we find a way to bypass it. Many web applications check if there is a <strong>script</strong> element in the form, so we can modify it by something like <strong>ScRiPt</strong>. 
                             <div class="squarebox">&ltScRiPt&gt alert("") &lt/ScRiPt&gt</div>
-                        	<img src="img/InternalSupport2/alertjs.png" class="img-fluid" width="700">
-                        	It works ! We bypass the protection by adding some upperletters in the script element. Since it is possible to inject JavaScript in the form, let's see if the cookie vulnerability is still there.
-                        	In the Developer Tools, the field <strong>"HttpOnly"</strong> is still set to false, so we can still retrieve user's cookie by using JavaScript document.cookie. Let's redirect the user with window.location and get his cookie with document.cookie.
+                            <img src="img/InternalSupport2/alertjs.png" class="img-fluid" width="700">
+                            It works ! We bypass the protection by adding some upperletters in the script element. Since it is possible to inject JavaScript in the form, let's see if the cookie vulnerability is still there.
+                            In the Developer Tools, the field <strong>"HttpOnly"</strong> is still set to false, so we can still retrieve user's cookie by using JavaScript document.cookie. Let's redirect the user with window.location and get his cookie with document.cookie.
 
-                        	We proceed the same way as the first challenge, let's get the user cookie from pipedream and replace our cookie by his. Once I changed the cookie value and refresh the page, I get an error. 
-                        	<img src="img/InternalSupport2/forbidden.png" class="img-fluid" width="700"> 
+                            We proceed the same way as the first challenge, let's get the user cookie from pipedream and replace our cookie by his. Once I changed the cookie value and refresh the page, I get an error. 
+                            <img src="img/InternalSupport2/forbidden.png" class="img-fluid" width="700"> 
 
-                        	After changing the IP address by going through a proxy or a VPN, I still managed to log into my account. May be there is a IP address verification so only the IP addresses that are inside of a whitelist can log into an admin account. To bypass this protection, <i>Burp</i> can be used to forge any HTML request, but first, it is necessaty to find the IP address used by an administrator. When our pipedream endpoint receive the request, the information regarding the IP address used by the user who've made that request is present.
-                        	<img src="img/InternalSupport2/request.png" class="img-fluid" width="700">
+                            After changing the IP address by going through a proxy or a VPN, I still managed to log into my account. May be there is a IP address verification so only the IP addresses that are inside of a whitelist can log into an admin account. To bypass this protection, <i>Burp</i> can be used to forge any HTML request, but first, it is necessaty to find the IP address used by an administrator. When our pipedream endpoint receive the request, the information regarding the IP address used by the user who've made that request is present.
+                            <img src="img/InternalSupport2/request.png" class="img-fluid" width="700">
 
-                        	The HTTP request is composed of several information. Among them, the header <strong>X-Forwarded-For</strong> is used to identify the originating IP address of a client connecting to a web server. On the screenshot above, we also see that <strong>origin</strong> and <strong>referer</strong> shows that the administrator reach the website from <strong>127.0.0.1</strong> on the port <strong>5000</strong>, which also means that the administrator is accessing locally to the web application. <br>
-                        	<br><a href="https://portswigger.net/burp">Burp</a> can help us to spoof the IP address before sending it to the webserver. Since Burp is acting as a proxy and can intercept any request that we're making, we can spoof our IP address by modyfing the header <strong>X-Forwarded-For</strong> with <strong>127.0.0.1</strong>. That header will inform the webserver that our request come from this IP address. 
-                        	<br>Burp has also a great functionnality that allow anybody to repeat the request and receive directly the response from Burp, it is called <strong>Repeater</strong>. Before sending a request to a web server, you can send it to the Repeater and modify the HTTP request as you wish.
-                        	<img src="img/InternalSupport2/burp.png" class="img-fluid" width="600">
+                            The HTTP request is composed of several information. Among them, the header <strong>X-Forwarded-For</strong> is used to identify the originating IP address of a client connecting to a web server. On the screenshot above, we also see that <strong>origin</strong> and <strong>referer</strong> shows that the administrator reach the website from <strong>127.0.0.1</strong> on the port <strong>5000</strong>, which also means that the administrator is accessing locally to the web application. <br>
+                            <br><a href="https://portswigger.net/burp">Burp</a> can help us to spoof the IP address before sending it to the webserver. Since Burp is acting as a proxy and can intercept any request that we're making, we can spoof our IP address by modyfing the header <strong>X-Forwarded-For</strong> with <strong>127.0.0.1</strong>. That header will inform the webserver that our request come from this IP address. 
+                            <br>Burp has also a great functionnality that allow anybody to repeat the request and receive directly the response from Burp, it is called <strong>Repeater</strong>. Before sending a request to a web server, you can send it to the Repeater and modify the HTTP request as you wish.
+                            <img src="img/InternalSupport2/burp.png" class="img-fluid" width="600">
 
-                        	However, even after spoofing the IP address, the error still appears. It means that it is using another protection mechanism and we cannot bypass like this. <br>
+                            However, even after spoofing the IP address, the error still appears. It means that it is using another protection mechanism and we cannot bypass like this. <br>
                             <br>If we think about how we managed to get the flag on the first challenge, I suspect that the flag is located in the same page because according to the challenge description, it is the same challenge with additional protections. We are going to do some HTML extraction. The scenario will be composed of JavaScript injection in the form. Once the administrator click on the ticket, it will send a <strong>POST</strong> request to our pipedream endpoint and we retrieve the HTML code of a targeted webpage from the administrator session.
 
-                        	<img src="img/InternalSupport2/xhrscript.png" class="img-fluid" width="600">
+                            <img src="img/InternalSupport2/xhrscript.png" class="img-fluid" width="600">
 
-                        	This script will initiate a GET request on the url http://127.0.0.1:5000 (that's how the administrator reach the web application). When the status of the request has changed and the response is fine, then we store the HTML code of that page on a variable called “input”. <br>
+                            This script will initiate a GET request on the url http://127.0.0.1:5000 (that's how the administrator reach the web application). When the status of the request has changed and the response is fine, then we store the HTML code of that page on a variable called “input”. <br>
 
-							<br><strong>readyState</strong> (status of the XMLHttpRequest)<br>
-							0: request not initialized <br>
-							1: server connection established <br>
-							2: request receive<br>
-							3: processing reques<br>
-							4: request finished and response is read<br>
-							<br><strong>status</strong> (HTTP response)<br>
+                            <br><strong>readyState</strong> (status of the XMLHttpRequest)<br>
+                            0: request not initialized <br>
+                            1: server connection established <br>
+                            2: request receive<br>
+                            3: processing reques<br>
+                            4: request finished and response is read<br>
+                            <br><strong>status</strong> (HTTP response)<br>
 
-							200 : “OK”<br>
-							403: “Forbidden”<br>
-							404: “Page not found”<br>
+                            200 : “OK”<br>
+                            403: “Forbidden”<br>
+                            404: “Page not found”<br>
 
-							<br>Then, we initiate a POST request and we send the previous HTTP response that was passed as a argument of the function "sendToServer" to our pipedream endpoint. Obviously when we initialize the request with "open" with the XMLHttpRequest object, we have to finalize it, this is why we send to "null" on the "getContentPage" function.
+                            <br>Then, we initiate a POST request and we send the previous HTTP response that was passed as a argument of the function "sendToServer" to our pipedream endpoint. Obviously when we initialize the request with "open" with the XMLHttpRequest object, we have to finalize it, this is why we send to "null" on the "getContentPage" function.
 
-							<img src="img/InternalSupport2/postrequest.png" class="img-fluid" width="700">
+                            <img src="img/InternalSupport2/postrequest.png" class="img-fluid" width="700">
 
-							The script is working, our pipedream endpoint has received the POST request, we see that the origin and the referer come from 127.0.0.1 and we have the same x-forwarded-for. Let's take a look at the field "bodyRaw".
+                            The script is working, our pipedream endpoint has received the POST request, we see that the origin and the referer come from 127.0.0.1 and we have the same x-forwarded-for. Let's take a look at the field "bodyRaw".
 
-							<img src="img/InternalSupport2/bodyraw.png" class="img-fluid" width="700">
+                            <img src="img/InternalSupport2/bodyraw.png" class="img-fluid" width="700">
 
-							Yes ! We have the flag ! As suspected, the flag is located in the same page as the previous challenge. <br>
-							<br>Therefore, when a website has a XSS vulnerability, it can be really dangerous. In this case, this is a demonstration of data exfiltration. With some JavaScript injections, a basic user can get information of pages that he doesn't have access.
+                            Yes ! We have the flag ! As suspected, the flag is located in the same page as the previous challenge. <br>
+                            <br>Therefore, when a website has a XSS vulnerability, it can be really dangerous. In this case, this is a demonstration of data exfiltration. With some JavaScript injections, a basic user can get information of pages that he doesn't have access.
                         </p>
 
                     </div>

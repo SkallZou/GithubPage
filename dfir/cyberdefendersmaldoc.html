@@ -59,27 +59,13 @@
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
                         <p>
-                            To help with the malicious document investigation, the exercise provides some questions to answer. The tools I will use are Oledump and Olevba. Please view the following .pdf file that gather the useful tools to investigate on a document with a malicious embedded macro : 
-                            <a href="https://digital-forensics.sans.org/media/analyzing-malicious-document-files.pdf">SANS DFIR - Analyzing Malicious Document</a><br>
-                            <a href="https://github.com/DidierStevens/DidierStevensSuite/blob/master/oledump.py">Oledump</a>
+                            Malicious documents are getting more popular among the threat actor. Naive users still are curious about attachment files sent to their email. Focusing on the enduser to have a foothold in a company environment is a common way to attack from a threat agent. The tools I will use are Oledump and Olevba. Please view the following .pdf file that gather the useful tools to investigate on a document with a malicious embedded macro : 
+                            <a href="https://digital-forensics.sans.org/media/analyzing-malicious-document-files.pdf">SANS DFIR - Analyzing Malicious Document</a>.<br><br>
+
+                            <a href="https://github.com/DidierStevens/DidierStevensSuite/blob/master/oledump.py">Oledump</a> is a program to analyze OLE files. Microsoft Office documents are OLE files and can contain stream of data. Oledump analyze those streams to see if any macro is found in the file. <br>
                             <br>
-                            <u>Question 1</u> : Find the running rogue (malicious) process. The flag is the MD5 hash of its PID. <br>
-                            <u>Question 2</u> : Find the running rogue (malicious) process and dump its memory to disk. You'll find the 32-character flag within that process's memory. <br>
-                            <u>Question 3</u> : What is the MAC address of this machine's default gateway? The flag is the MD5 hash of that MAC address in uppercase with dashes (-) as delimiters. Example: 01-00-A4-FB-AF-C2. <br>
-                            <u>Question 4</u> : Find the full path of the browser cache created when an analyst visited "www.13cubed.com." The path will begin with "Users\." Convert the path to uppercase. The flag is the MD5 hash of that string. <br>
-                            <br>
-                            Memory file can be found in <a href="https://drive.google.com/drive/folders/1E-i2RTUBXBGUd_Xz0k67kFOpHcr6WX8J?usp=sharing">https://drive.google.com/drive/folders/1E-i2RTUBXBGUd_Xz0k67kFOpHcr6WX8J?usp=sharing</a>
-                        </p>
-                    </div>
-                </div>
-            </section>
-             <section class="article">
-                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
-                    <div class="flex-grow-1">
-                        <ul>
-                            <li><h4 class="mb-0">Find the running rogue (malicious) process. The flag is the MD5 hash of its PID</h4></li>
-                        </ul>
-                        <p>
+                            URL : <a href="https://cyberdefenders.org/labs/51">https://cyberdefenders.org/labs/51</a><br>
+                            Download the file from that URL. The file has a malicious macro, do not run it directly in your personal computer. Make sure to have a safe environment, or setup a malware analysis lab.
 
                         </p>
                     </div>

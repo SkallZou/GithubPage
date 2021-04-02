@@ -147,14 +147,16 @@
                             Then the variable will call the function "showwindow" that can be used to show, hide, minimize or maximize a window. <br>
                             <br>
                             The next function call is found in the variable "xve". <br>
-                            xve = Array _<br>
+                            <div class="squarebox">xve = Array _<br>
                             ("1234444123", tiajriokchaoy. _<br>
-                            Create(geulgelquuuj, kaenhaig, deavjoajsear), "9938723")
-                            <br>
-                            In vba, a space follow by a "_" tells that the current statement isn't finished and continues on the next line. <br>
-                            xve = Array("1234444123", tiajriokchaoy.Create(geulgelquuuj, kaenhaig, deavjoajsear), "9938723")<br>
-                            The variable xve is a three element list indexed 0 to 2. The first and the last element doesn't seem to be interesting, let's focus on the second one. <br>
-                            tiajriokchaoy.Create(geulgelquuuj, kaenhaig, deavjoajsear), we have no information about tiajriokchaoy and kaenhaig. <br>
+                            Create(geulgelquuuj, kaenhaig, deavjoajsear), "9938723")</div>
+
+                            In vba, a space follow by a "_" tells that the current statement isn't finished and continues on the next line.
+
+                            <div class="squarebox">xve = Array("1234444123", tiajriokchaoy.Create(geulgelquuuj, kaenhaig, deavjoajsear), "9938723")</div>
+
+                            The variable "xve" is a three element list indexed 0 to 2. The first and the last element doesn't seem to be interesting, let's focus on the second one. <br>
+                            tiajriokchaoy.Create(geulgelquuuj, kaenhaig, deavjoajsear) looks interesting since it is calling the function "Create" however, we only have information about geulgelquuuj. geulgelquuuj is a function where the definition is shown below: <br>
                             <img src="img/Maldoc/geulgelquuuj.png" class="img-fluid" width="500">
                             The variable sjiqw is passing as argument to the function juuvzouchmiopxeox, therefore we can expect to have some deobfuscation to do with the pattern "2342772g3&*gs7712ffvs626fq".
 
@@ -164,9 +166,13 @@
 
                             <img src="img/Maldoc/sjiqw.png" class="img-fluid" width="600">
 
-                            Similar as the last time to deobfuscate the string, Vim can help us by running this command:
+                            Similar as the previous obfuscated string, we deobfuscate the string with Vim using the following command:
                             <div class="squarebox">:%s/2342772g3&\*gs7712ffvs626fq//g</div>
-                            Deobfuscating the pattern, it is running the a powershell command with the parameter -e which means that the powershell script is encoded. In this one, it is encoded in base64. Time to decode it ! <br>
+                            Deobfuscating the pattern, it is running the a powershell command with the parameter -e which means that the powershell script is encoded. 
+
+                            <img src="img/Maldoc/powershell_encoded.png" class="img-fluid" width="600">
+
+                            The PowerShell script is encoded in base64. Time to decode it ! <br>
 
                             <img src="img/Maldoc/b64_decoded.png" class="img-fluid" width="600">
 

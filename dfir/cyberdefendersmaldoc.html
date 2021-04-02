@@ -97,50 +97,56 @@
                             <div class="squarebox">oledump -s 15 -v %FILEPATH%</div>
                             <img src="img/Maldoc/stream15.png" class="img-fluid" width="600">
 
-                            Looking at the stream 15, the definition of the function "boaxvoebxiotqueb" is present, and display the code that will be executed when the program is calling the function. Looking at the code below, we see that variable "gooykadheoj" is taking a ASCII value of roubhaol.Zoom + Int(5*3). <br>
+                            Looking at the stream 15, we have the definition of several functions. Among them, "boaxvoebxiotqueb" is present, and display the code that will be executed when the program is calling the function. Looking at the code below, we see that variable "gooykadheoj" is taking a ASCII value of roubhaol.Zoom + Int(5*3). <br>
                             Checking the list of data stream, the index 16 is called roubhaol. Let's see if we can find the value of that variable over there.
                             <img src="img/Maldoc/stream16.png" class="img-fluid" width="600">
                             However, we didn't find the Zoom variable of the roubhaol object. I decided to run the file in a safe environment to see what information we can retrieve. And the Zoom variable has been found in the roubhaol object when having a glance at the object properties. <strong>Zoom = 100</strong>.
 
                             <img src="img/Maldoc/zoomvariable.png" class="img-fluid" width="600">
 
-                            gooykadheoj = Chr(100 + Int(5 * 3)) = Chr(115) = 's'
-                            Then we are facing the variable haothkoebtheil that has a lot of obfuscation. This variable is also used in function "juuvzouchmiopxeox".
+                            <div class="squarebox">gooykadheoj = Chr(100 + Int(5 * 3)) = Chr(115) = 's'</div>
+                            The variable "gooykadheoj" is also used by the variable haothkoebtheil which has a lot of obfuscation. Then, this variable is passed as an argument in the function "juuvzouchmiopxeox".
                             <div class="squarebox">deulsaocthuul = juuvzouchmiopxeox(haothkoebtheil)</div>
                             Looking at the function, it seems to remove the obfuscation.
 
                             <img src="img/Maldoc/juuvzouchmiopxeox.png" class="img-fluid" width="600">
 
-                            The variable geutyoeytiestheug is storing the argument, then there is a split function taking as argument this variable and the pattern to remove. 
+                            The variable "geutyoeytiestheug" stores the argument of the function, then a split function is called, taking this variable and the pattern to remove ("2342772g3&*gs7712ffvs626fq") as argument. 
                         
                             <img src="img/Maldoc/haothkoebtheil_pattern.png" class="img-fluid" width="600">
 
                             To remove a pattern in vim:
-                            <div class="squarebox">%s/[PatternToRemove]/[Replace]/g</div>
+                            <div class="squarebox">%s/[StringToRemove]/[StringToAdd]/g</div>
 
                             <img src="img/Maldoc/haothkoebtheil.png" class="img-fluid" width="600">
-                            Even if we do not know what the joefwoefcheaw variable of the roubhaol object is, we can guess this is a "p" for "process". To get the confirmation let's find that variable in the roubhaol object.
+                            Even if we do not know what the joefwoefcheaw variable of the roubhaol object is, we can guess this is a "p" for "process". To get the confirmation let's find the variable "joefwoefcheaw" in the roubhaol object.
                             <img src="img/Maldoc/jeofwoefcheaw.png" class="img-fluid" width="200">
-                            roubhaol.jeofwoefcheaw = "P"
-                            Therefore, <strong>haothkoebtheil = winmgmts:win32_Process</strong> after deofuscate it.<br>
-                            winmgmts tells WSH(Windows Scripting Host) to use Scripting API objects. It is used to connect to WMI. <br>
-                            The Win32_Process WMI class represents a process on an operating system. Using this class, you can create a process. <br>
+                            <strong>roubhaol.jeofwoefcheaw = "P"</strong> there we know the value of the variable "haothkoebtheil".
+                            <div class="squarebox">haothkoebtheil = winmgmts:win32_Process</div>
+                            <strong>Winmgmts</strong> tells WSH(Windows Scripting Host) to use Scripting API objects. It is used to connect to WMI. <br>
+                            The <strong>Win32_Process</strong> WMI class represents a process on an operating system. Using this class, you can create a process. <br>
                             <br>
-                            deaknaugthein = roubhaol.kaizseah.ControlTipText <br>
+                            The next function call is Set deavjoajsear = luumlaud(queegthaen). <br>
+                            By checking how the function is called, we can determine which value of variables that we have to find.
+                            <ul>
+                                <li>queegthaen = giakfeiw + roubhaol.joefwoefcheaw = <u>giakfeiw</u> + "P"</li>
+                                <li>giakfeiw = deulsaocthuul + gooykadheoj + roubhaol.paerwagyouqumeid.ControlTipText + deaknaugthein = winmgmts:win32_Process + "s" + <u>roubhaol.paerwagyouqumeid.ControlTipText</u> + <u>deaknaugthein</u></li>
+                                <li>deaknaugthein = roubhaol.kaizseah.ControlTipText <br></li>
+                            </ul>
                             <img src="img/Maldoc/kaizseah.png" class="img-fluid" width="200">
-                            deaknaugthein = "tu"
-                            <br>
-                            giakfeiw = deulsaocthuul + gooykadheoj + roubhaol.paerwagyouqumeid.ControlTipText + deaknaugthein
+                            <strong>deaknaugthein = "tu"</strong>
                             <img src="img/Maldoc/paerwagyouqumeid.png" class="img-fluid" width="200">
-                            roubhaol.paerwagyouqumeid.ControlTipText = "tar" <br>
-                            giakfeiw = winmgmts:win32_process + s + tar + tu = winmgnmts:win32_processstartu
-                            <br>
-                            queegthaen = giakfeiw + roubhaol.joefwoefcheaw = winmgnmts:win32_processstartuP
-                            <br>
-                            Set deavjoajsear = luumlaud(queegthaen)
-                            The function lummlaud calls CreateObject and put winmgnmts:win32_processstartup as argument. <br>
-                            The Win32_ProcessStartup abstract WMI class represents the startup configuration of a Windows-based process. <br>
+                            <strong>roubhaol.paerwagyouqumeid.ControlTipText = "tar"</strong><br>
+                            
+                            <div class="squarebox">giakfeiw = winmgmts:win32_process + s + tar + tu = winmgnmts:win32_processstartu</div>
+                            <div class="squarebox">queegthaen = giakfeiw + roubhaol.joefwoefcheaw = winmgnmts:win32_processstartuP</div>
 
+                            <img src="img/Maldoc/luumlaud.png" class="img-fluid" width="600">
+                            Therefore, the function lummlaud initialize a CreateObject object with winmgnmts:win32_processstartuP as argument. <br>
+                            The Win32_ProcessStartup abstract WMI class represents the startup configuration of a Windows-based process. <br>
+                            Then the variable will call the function "showwindow" that can be used to show, hide, minimize or maximize a window. <br>
+                            <br>
+                            The next function call is found in the variable "xve". <br>
                             xve = Array _<br>
                             ("1234444123", tiajriokchaoy. _<br>
                             Create(geulgelquuuj, kaenhaig, deavjoajsear), "9938723")

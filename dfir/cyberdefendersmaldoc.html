@@ -67,14 +67,14 @@
                             URL : <a href="https://cyberdefenders.org/labs/51">https://cyberdefenders.org/labs/51</a><br>
                             Download the file from that URL. The file has a malicious macro, do not run it directly in your personal computer. Make sure to have a safe environment, or setup a malware analysis lab. <br>
                             <br>
-                            Before getting inside of that file, it would be better to know the type of file it is. Is it recognized by antiviruses ? What kind of malware is it ? There are different ways to answer that question, such as sending this file to a public sandbox or send it VirusTotal. For this case, I took the md5 hash of the file and send it to VirusTotal.
+                            Before getting inside of that file, it would be better to know what kind of file it is. Is it recognized by antiviruses ? What kind of malware is it ? There are different ways to answer that question, such as sending this file to a public sandbox or send it VirusTotal. For this case, I took the md5 hash of the file and send it to VirusTotal.
                             <div class="squarebox">md5sum %FILEPATH%</div>
                             <img src="img/Maldoc/md5sum.png" class="img-fluid" width="600">
                             The hash of the file is : ea50158bcef30d51e298846c056649c3, let's copy paste it on VirusTotal.
 
                             <img src="img/Maldoc/virustotal.png" class="img-fluid" width="800">
 
-                            According to VirusTotal, the type of file is a word document that contains some malicious macros, it is the typical way to attack by the Emotet malware. We can also expect some obfuscations in that document. <br>
+                            According to VirusTotal, the file is recognized as potential trojan, downloader, so running this file on your computer might put your system at risk. The file is a word document that contains some malicious macros, it is the typical way to attack by the Emotet malware. We can also expect some obfuscations in that document. <br>
                             <br>
                            
                             The tool OLEdump will help us to learn more about a file and the command "man" or the parameter -h are really useful to get some information about the tool.

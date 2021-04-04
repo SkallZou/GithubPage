@@ -10198,6 +10198,10 @@ a.title-article:hover{
   text-decoration: underline;
 }
 
+body{
+  word-break: break-word;
+}
+
 h2.header-article{
   padding-left: 2%;
   padding-bottom: 3%;

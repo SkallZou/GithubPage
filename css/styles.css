@@ -10123,16 +10123,17 @@ section.summary-article{      /*padding for article list*/
 
 section.article {         /*padding for article*/
   display: block;
-  padding-left: 2%;
-  padding-right: 2%;
+  padding-left: 3%;
+  padding-right: 3%;
   max-width: 100%;
 }
 
 @media (min-width: 768px) {
   section.resume-section {
     min-height: 100vh;
-  }
+  }  
 }
+
 @media (min-width: 1200px) { /*[RESPONSIVE]*/
   section.resume-section {
     padding-left: 3rem;

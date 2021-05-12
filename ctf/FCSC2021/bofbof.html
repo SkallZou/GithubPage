@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Rituel du Boutisme</title>
+        <title>Bofbof</title>
         <link rel="icon" type="image/x-icon" href="../../assets/img/favicon.ico" />
         <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
@@ -46,61 +46,52 @@
             </div>
         <footer class="d-none d-xl-block">
             <div class="container">
-              <p class="m-1 text-center footerpage">Copyright &copy; 2020 Olivier Leung<br>All rights reserved.</p>
+              <p class="m-1 text-center footerpage">Copyright &copy; 2021 Olivier Leung<br>All rights reserved.</p>
             </div>
         </footer>
         </nav>
         <!-- Page Content-->
         <div>
             <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
-            <h3 class="header-article"><a href="../../ctfpage.html">Capture The Flag </a>> <a href="../FCSC2021.html">FCSC 2021 </a>> Rituel du Boutisme</h3><!--change path if file has been moved to another folder-->
+            <h3 class="header-article"><a href="../../ctfpage.html">Capture The Flag </a>> <a href="../FCSC2021.html">FCSC 2021 </a>> Bofbof</h3><!--change path if file has been moved to another folder-->
             </nav>
             
             <section class="article">
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
                         <p>
-                            <img src="img/rituelduboutisme/subject.png" class="img-fluid" width="400">
-                            As the previous challenge, let's start with a hexdump.
-                            <div class="squarebox">xxd disque.img | grep -A 3 -B 3 FCSC</div>
-                            This time, this command did not display any result. <br>
-                            However, checking the hexdump for the string "flag.txt", we have found some results.
-                            <img src="img/rituelduboutisme/hexdump.png" class="img-fluid" width="600">
-                            Information retrieved by looking at the hexdump: <br>
-                            inode : 00 00 00 0c = 12 <br>
-                            03 c8 = record length = 968 bytes <br>
-                            08: name length <br>
-                            01 : type = file <br>
-                            name = 66 6c 61 67 2e 74 78 74 (flag.txt) <br>
-
-                            Let's mount the file to see we can retrieve the file back.
-
-                            <div class="squarebox">losetup /dev/loop0 ./disque.img</div>
-                            To know which loop device use run the command losetup -f <br>
-                            To mount the filesytem on the system, just run "mount" command
-                            <div class="squarebox">mount /dev/loop0 ./mountpoint</div>
-                            <img src="img/rituelduboutisme/mount.png" class="img-fluid" width="400">
-                            Surprisingly, the file does not exist. We will debug the filesystem using the command <strong>debugfs</strong>. <br>
-                            <div class="squarebox">debugfs -R "stat <12>" /dev/loop0</div>
-                            We are interested in the inode 12 linked to the file "flag.txt"
-                            <img src="img/rituelduboutisme/inode12.png" class="img-fluid" width="500">
-                            "dtime" indicates that there exists an event deleting the file from the file system. <br>
-                            Let's see if we can retrieve the deleted file, we need to know the file system type, to do so we can use the command <strong>fsck</strong>.
-                            <div class="squarebox">fsck -N /dev/loop0</div>
-                            <img src="img/rituelduboutisme/fsck.png" class="img-fluid" width="500">
-                            Now we know that the file system type is ext4. A tool called, ext4magic can recover partially deleted file from ext file system. 
-                            <div class="squarebox">ext4magic /dev/loop0 -M -d .</div>
-                            <img src="img/rituelduboutisme/ext4magic.png" class="img-fluid" width="600">
-                            The destination folder is the current folder "./", therefore we will retrieve all the files from the filesystem, we just have to print the content of the file "flag.txt" to retrieve the file. <br>
+                            <img src="img/bofbof/subject.png" class="img-fluid" width="400">
+                            The subject tells us that this is a buffer overflow challenge. The goal of a classic buffer overflow is to fill the stack to overwrite a part of the memory that is not supposed to be written. This can lead to a remote code exploitation. <br>
+                            First, let's check the file info
+                            <img src="img/bofbof/fileinfo.png" class="img-fluid" width="500">
+                            We see that the file is a elf64, let's reverse it to understand what the program is doing when running. Some rule have to be known before getting into elf64:<br>
+                            <ul>
+                                <li>1st argument : rdi</li>
+                                <li>2nd argument : rsi</li>
+                                <li>3rd argument : rdx</li>
+                                <li> user space only uses the first  47  bits (x00007fffffffffff)</li>
+                            </ul>
+                            We can start with some classical checks, such as function listing and strings. <br>
+                            <img src="img/bofbof/strings.png" class="img-fluid" width="500">
+                            From the strings, we see that the the string "/bin/sh" is located at the address 0x2008. Information that can be useful if we need to pass /bin/sh in a argument of a function like system(). <br>
+                            <img src="img/bofbof/functions.png" class="img-fluid" width="500">
+                            From the functions, we got the main function address, and other function that can potentially tell us that the vulnerability is located there. (vuln function should be interesting to check). <br>
+                            <br><h4>Code analysis</h4>
+                            <img src="img/bofbof/main.png" class="img-fluid" width="600">
+                            Looking at the function calls, we have a printf, then a flush, then a gets, vuln, and finally a puts. <br>
+                            Gets() is a well known vulnerability because it does not check for the buffer length that an lead to overwriting the buffer. (Isn't what we are looking for ? :D).
+                            <img src="img/bofbof/vuln.png" class="img-fluid" width="600">
+                            In the vuln function, it will symply open a shell, the "/bin/sh" is passed as argument in the function system().
                             <br>
+                            The challenge is to rewrite a part of the memory to jump in that function. <br>
+                            Before calling the function vuln(), two conditional jumps have to take into account. The first conditional jump jumps to the address 0x121c if [var_8h] = rax = 0x414141414141414141. The second conditional jump jumps to the address 0x1210 if [var_8h] != 0x1122334455667788.
+                            <br>Therefore, we just have to overwrite the rbp-0x8 by 0x1122334455667788 and the program call vuln(). <br>
+
                             <br>
-                            <h4>Alternative method:</h4>
-                            We know that the flag always start with FCSC, if the string did not give any result, it might be because the content of the file is in binary. What if you can tell grep to process the binary content as text, we might find the flag this way. 
-                            <div class="squarebox">-a, --text                equivalent to --binary-files=text</div>
-                            The parameter "a" process the binary file as if it were a text as shown in the section help of the command grep.
-                            <div class="squarebox">xxd disque.img | grep -a F flag.txt </div>
-                            <img src="img/rituelduboutisme/flag.png" class="img-fluid" width="500">
+                            <h4>Stack analysis</h4>
+                            
                         </p>
+
                     </div>
                 </div>
             </section>

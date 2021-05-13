@@ -66,7 +66,7 @@
                             We see that if we try to add more 100 points in the current score, it says "Stop Cheating". Let's analyze a the program with radare2.
                             <img src="img/bonuspoint/main1.png" class="img-fluid" width="600">
                             <img src="img/bonuspoint/main2.png" class="img-fluid" width="600">
-                            We have 5 printf() funtions showing the 5 outputs when the program is being run. <br>
+                            We have 5 printf() functions showing the 5 outputs when the program is being run. <br>
                             <br>
                             The interesting part is located after the functiong fgets(), when there is a string conversion into an integer. Atoi() function take the string that the user has entered and convert it as a integer. <br>
                             Integer range is between those two values : <strong>[-2147483647 ; +2147483648]</strong>. Getting a value lower than -2147483647 or superior than 2147483648 will cause an integer overflow. <br>

@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Bonus Point</title>
+        <title>La Pin</title>
         <link rel="icon" type="image/x-icon" href="../../assets/img/favicon.ico" />
         <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
@@ -53,27 +53,43 @@
         <!-- Page Content-->
         <div>
             <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
-            <h3 class="header-article"><a href="../../ctfpage.html">Capture The Flag </a>> <a href="../fcsc2021.html">FCSC 2021 </a>> Bonus Point</h3><!--change path if file has been moved to another folder-->
+            <h3 class="header-article"><a href="../../ctfpage.html">Capture The Flag </a>> <a href="../fcsc2021.html">FCSC 2021 </a>> La Pin</h3><!--change path if file has been moved to another folder-->
             </nav>
             
             <section class="article">
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
                         <p>
-                            <img src="img/bonuspoint/subject.png" class="img-fluid" width="400">
-                            Running the program, it looks quite simple, the goal is to get more than 1000 points
-                            <img src="img/bonuspoint/runprogram.png" class="img-fluid" width="600">
-                            We see that if we try to add more 100 points in the current score, it says "Stop Cheating". Let's analyze a the program with radare2.
-                            <img src="img/bonuspoint/main1.png" class="img-fluid" width="600">
-                            <img src="img/bonuspoint/main2.png" class="img-fluid" width="600">
-                            We have 5 printf() functions showing the 5 outputs when the program is being run. <br>
+                            <img src="img/lapin/subject.png" class="img-fluid" width="500">The subject comes with 2 files, a python file "lapin.py" and a text file "output.txt"
+                            lapin.py is the python file used to encrypt the flag and the output.txt is the result of the encryption.
+                            <img src="img/lapin/code.png" class="img-fluid" width="600">
+                            The script is giving some interesting information, the encryption method is AES.MODE_GCM.
+                            First it asked the user to chose a PIN between 0000 to 9999.
+                            To decrypt the function, we need to use the same salt, nounce (random number) and tag. 
+                            If we look at the encrypting method of the AES-256 in GCM mode, we notice that it is quite the same.
+
+                            <div class="squarebox">
+                            def encrypt(plain_text, password): <br>
+                            # generate a random salt<br>
+                            salt = get_random_bytes(AES.block_size)<br>
                             <br>
-                            The interesting part is located after the functiong fgets(), when there is a string conversion into an integer. Atoi() function take the string that the user has entered and convert it as a integer. <br>
-                            Integer range is between those two values : <strong>[-2147483647 ; +2147483648]</strong>. Getting a value lower than -2147483647 or superior than 2147483648 will cause an integer overflow. <br>
-                            We see that the program is comparing the value that we have entered with 0x64 = 100 in decimal. In the case, the value is greater than 100, it will print "Stop Cheating" and then jump again to 0x12eb to terminate the program.
-                            Let's enter a value lower than 100 and that causes a integer overflow. <br>
-                            For example : -2147483648.
-                            <img src="img/bonuspoint/integeroverflow.png" class="img-fluid" width="600">
+                            # use the Scrypt KDF to get a private key from the password<br>
+                            private_key = hashlib.scrypt(<br>
+                                password.encode(), salt=salt, n=2**14, r=8, p=1,<br> dklen=32)<br>
+                            <br>
+                            # create cipher config<br>
+                            cipher_config = AES.new(private_key, AES.MODE_GCM)<br>
+                            <br>
+                            # return a dictionary with the encrypted text<br>
+                            cipher_text, tag = cipher_config.encrypt_and_digest(bytes(<br>plain_text, 'utf-8'))<br>
+                            return {<br>
+                                'cipher_text': b64encode(cipher_text).decode('utf-8'),<br>
+                                'salt': b64encode(salt).decode('utf-8'),<br>
+                                'nonce': b64encode(cipher_config.nonce).decode('utf-8'),<br>
+                                'tag': b64encode(tag).decode('utf-8')<br>
+                            }<br>
+                        </div>
+
                         </p>
 
                     </div>

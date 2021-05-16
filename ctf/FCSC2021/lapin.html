@@ -79,7 +79,7 @@
                             <strong>Nonce</strong>: A random nonce (arbitrary value) must be a random and unique value for each time our encryption function is used with the same key. Think of it as a random salt for a cipher. The library supplies us with a secure nonce. <br>
                             <strong>Tag</strong>: The tag is used to authenticate the data when using AES in GCM mode. This ensures no one can change our data without us knowing about it when we decrypt. <br>
                         In our program, the pin is the password, the salt correspond to hex(FCSC), nounce is c and we got the tag.
-                        <img src="img/lapin/output.png" class="img-fluid" width="600">After several researches and test, it seems that the flag and the nonce is taking a size of 16 bytes. The encrypted message is composed of the <strong>nonce</strong> followed by the cipher text and the tag.
+                        <img src="img/lapin/output.png" class="img-fluid" width="900">After several researches and test, it seems that the flag and the nonce is taking a size of 16 bytes. The encrypted message is composed of the <strong>nonce</strong> followed by the cipher text and the tag.
                         <div class="squarebox">enc = nonce + cipher + tag</div>
                         Therefore if we get the encrypted message, we can determine the nonce and the tag. <br>
                         In our case, the encrypted message is : <br>
@@ -95,8 +95,6 @@
                         <img src="img/lapin/decrypt.png" class="img-fluid" width="800">
                         After running the program, the flag were found after reaching 6273. The user password is 6273 ! 
                         <img src="img/lapin/flag.png" class="img-fluid" width="550">
-
-
                         </p>
 
                     </div>

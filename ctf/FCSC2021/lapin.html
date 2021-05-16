@@ -66,29 +66,36 @@
                             The script is giving some interesting information, the encryption method is AES.MODE_GCM.
                             First it asked the user to chose a PIN between 0000 to 9999.
                             To decrypt the function, we need to use the same salt, nounce (random number) and tag. 
-                            If we look at the encrypting method of the AES-256 in GCM mode, we notice that it is quite the same.
+                        
+                            <strong>Scrypt</strong>: Scrypt is used to generate a secure private key from the password. This will make it harder for an attacker to brute-force our encryption. <br>
+                            the function takes 5 parameters:
+                            <ul>
+                                <li>User password</li>
+                                <li>Salt: This makes it impossible for an attacker to use precomputed hashes in an attempt to crack the cipher.</li>
+                                <li>N is the cost factor. It must be a power of two, and the higher it is the more secure the key, but the more resources it requires to run.</li>
+                                <li>R is the block size.</li>
+                                <li>P is the parallelization factor, useful for running on multiple cores.</li>
+                            </ul>                           
+                            <strong>Nonce</strong>: A random nonce (arbitrary value) must be a random and unique value for each time our encryption function is used with the same key. Think of it as a random salt for a cipher. The library supplies us with a secure nonce. <br>
+                            <strong>Tag</strong>: The tag is used to authenticate the data when using AES in GCM mode. This ensures no one can change our data without us knowing about it when we decrypt. <br>
+                        In our program, the pin is the password, the salt correspond to hex(FCSC), nounce is c and we got the tag.
+                        <img src="img/lapin/output.png" class="img-fluid" width="600">After several researches and test, it seems that the flag and the nonce is taking a size of 16 bytes. The encrypted message is composed of the <strong>nonce</strong> followed by the cipher text and the tag.
+                        <div class="squarebox">enc = nonce + cipher + tag</div>
+                        Therefore if we get the encrypted message, we can determine the nonce and the tag. <br>
+                        In our case, the encrypted message is : <br>
+                        <div class="longword">f049de59cbdc9189170787b20b24f7426ccb9515e8b0250f3fc0f0c14ed7bb1d4b42c09d02fe01e0973a7233d99af55ce696f599050142759adc26796d64e0d6035f2fc39d2edb8a0797a9e45ae4cd55074cf99158d3a64dc70a7e836e3b30382df30de49ba60a</div>
+                        <div class="squarebox">nonce = f049de59cbdc9189170787b20b24f742 <br>tag = 4dc70a7e836e3b30382df30de49ba60a <br>cipher = 6ccb9515e8b0250f3fc0f0c14ed7bb1d4b42c09d02fe01e0973a7233d99af55ce696f599050142759adc26796d64e0d6035f2fc39d2edb8a0797a9e45ae4cd55074cf99158d3a6</div>
 
-                            <div class="squarebox">
-                            def encrypt(plain_text, password): <br>
-                            # generate a random salt<br>
-                            salt = get_random_bytes(AES.block_size)<br>
-                            <br>
-                            # use the Scrypt KDF to get a private key from the password<br>
-                            private_key = hashlib.scrypt(<br>
-                                password.encode(), salt=salt, n=2**14, r=8, p=1,<br> dklen=32)<br>
-                            <br>
-                            # create cipher config<br>
-                            cipher_config = AES.new(private_key, AES.MODE_GCM)<br>
-                            <br>
-                            # return a dictionary with the encrypted text<br>
-                            cipher_text, tag = cipher_config.encrypt_and_digest(bytes(<br>plain_text, 'utf-8'))<br>
-                            return {<br>
-                                'cipher_text': b64encode(cipher_text).decode('utf-8'),<br>
-                                'salt': b64encode(salt).decode('utf-8'),<br>
-                                'nonce': b64encode(cipher_config.nonce).decode('utf-8'),<br>
-                                'tag': b64encode(tag).decode('utf-8')<br>
-                            }<br>
-                        </div>
+                        AES is a block cipher, it is reversible. We can decrypt it is we have the encrypted message, the password, the salt, nonce and tag used for encryption. The only missing element is the password.<br>
+
+                        First, we must generate the private key, we know that AES encryption is a symmetric encryption, so the key for decryption is the same as the one used for encryption. <br>
+                        We dib't know exactly what is the user password but we know that it is between 0 and 9999. Therefore, brute forcing is the only solution to get the password.
+                        <br>
+                        The AES class has a function to decrypt called "decrypt_and_verify", it has two parameters (cipher_text and the tag used for encryption).
+                        <img src="img/lapin/decrypt.png" class="img-fluid" width="800">
+                        After running the program, the flag were found after reaching 6273. The user password is 6273 ! 
+                        <img src="img/lapin/flag.png" class="img-fluid" width="550">
+
 
                         </p>
 

@@ -63,36 +63,36 @@
                             <img src="img/guessy/subject.png" class="img-fluid" width="500"> 
                             <img src="img/guessy/run.png" class="img-fluid" width="500">
                             After running the program, it looks like the challenge is composed of several part, and we have to guess the flag through reversing the program. Let's open the program with radare2.
-                            <img src="img/guessy/main.png" class="img-fluid" width="500">
+                            <img src="img/guessy/main.png" class="img-fluid" width="900">
                             The main function is easy to understand, it ask the user for the flag, wait for the user input, and then call the validate() function. The program is composed of several parts, we have to understand each part to retrieve the flag.
-                            <img src="img/guessy/validate.png" class="img-fluid" width="500"> 
+                            <img src="img/guessy/validate.png" class="img-fluid" width="900"> 
                             After entering in the function validate(), there are many conditional jumps that are performed. It is quite simple to understand here, we just have to convert those hexadecimal numbers in ASCII character. 
                             <div class="squarebox">0x46 = F <br>0x43 = C <br>0x53 = S <br>0x43 = C <br>0x7b = {</div>
                             Passing this step, the program call another function : difficult_part() <br>
-                            <img src="img/guessy/difficultpart1.png" class="img-fluid" width="500">
+                            <img src="img/guessy/difficultpart1.png" class="img-fluid" width="900">
                             This part is also the same, we just need to convert those hexadecimal into ASCII characters.
                             <div class="squarebox">\x65\x37\x35\x35\x32\x63\x66\x36 = e7552cf6 <br> FCSC{e7552cf6</div>
-                            <img src="img/guessy/difficultpart2.png" class="img-fluid" width="500">
+                            <img src="img/guessy/difficultpart2.png" class="img-fluid" width="700">
                             On this one, we have an instruction add eax, eax that tell you that eax is getting multiplied by 2 before the conditional jump. So I suppose we just need to divide the comparason by 2.
                             <div class="squarebox">(\x68\xc6\xca\x64\xca\x8a\xc2\xc8) / 2 = \x34\x63\x65\x32\x65\x45\x61\x64 = 4ce2e5ad <br>
                             FCSC{e7552cf64ce2e5ad
                             </div>
-                            <img src="img/guessy/difficultpart3.png" class="img-fluid" width="500">
+                            <img src="img/guessy/difficultpart3.png" class="img-fluid" width="700">
                             The instruction "shl" will proceed to shift the some bits to the left.
                             <div class="squarebox">shl eax, 3 <br>cmp eax, 0x180</div>
                             0x180 = 110000000 so we just have to proceed to the reverse, we shift 3 bits to the right to find the initial value of eax. That gives us 000110000 = 0x30 = 0 in ASCII. If we continue it should gives us 0bb0954f.
                             <div class="squarebox">FCSC{e7552cf64ce2e5ad0bb0954f</div>
-                            <img src="img/guessy/difficultpart4.png" class="img-fluid" width="500">
+                            <img src="img/guessy/difficultpart4.png" class="img-fluid" width="700">
                             This part is a little bit tricky, each time before the conditional jump, it takes two values.
                             <div class="squarebox">movzx edx, byte [var_fh] <br>mozx eax, byte [var_1fh] <br>xor eax, edx</div>
                             Their position on the stack is different, 16 bits separate those two value. 0bb0954f = \x30\x62\x62\x30\x39\x35\x34\x66, takes 16 bits, therefore it will xor the current input with the previous user input. <br>
                             In the last conditional jump there isn't any xor.
                             <div class="squarebox">movzx edx, byte [var_9h] <br>mozx eax, byte [var_19h] <br>cmp dl, al <br>je 0x4014c5</div>
                             the register dl must be equal to al, al is equal to f (last character of the previous input)
-                            <img src="img/guessy/xor.png" class="img-fluid" width="600">
+                            <img src="img/guessy/xor.png" class="img-fluid" width="700">
                             To pass this step, the correct input was : 167a02cf.
                             <br>After this, the program call another function, most_difficult_part(), we can expect some challenge here ! 
-                            <img src="img/guessy/mostdifficultpart.png" class="img-fluid" width="600">
+                            <img src="img/guessy/mostdifficultpart.png" class="img-fluid" width="800">
                             Looks like we only have one conditional jump in the program.
                             <div class="squarebox">cmp al, 0x7d <br>je 0x40119e</div>
                             To get into that jump, the register al must be equal to 0x7d, which is "}" in ASCII. It simply marks the end of the flag. <br>

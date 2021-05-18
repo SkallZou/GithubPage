@@ -100,14 +100,14 @@
 
                             <div class="squarebox">0x7fffffffe278 - 0x7fffffffe240 = 38</div>
 
-                            Converting 38 in decimal is equal to 56. Therefore the offset is 56 before overwriting on the rip. The ret instruction is similar as pop rip. <br>
+                            Converting 38 in decimal is equal to 56. Therefore the offset is 56 before overwriting rip. The ret instruction is similar as pop rip. <br>
 
                             We also know the address of $rbp = 0x7fffffffe278, remember that we have to overwrite a specific memory address (rbp - 0x8). <br>
                             <br>
                             <h4>Creating payload</h4>
                             In this program, our target is $rbp - 0x8, we know to overwrite $rbp, the offset needed is 56. <br>
                             56 - 8 = 48. The user space only uses the first  47  bits (x00007fffffffffff but in the memory it takes 64 bits. So, we need to substract 8 again, 56 - 8 - 8 = 40. <br>
-                            We have to overwrite the variable $rbp-0x8 with 0x1122334455667788. Let's try it on d
+                            We have to overwrite the variable $rbp-0x8 with 0x1122334455667788.
                             <div class="squarebox">(python2.7 -c 'print "A"*40 + "\x88\x77\x66\x55\x44\x33\x22\x11"';cat -) | ./bofbof)</div>
                             <img src="img/bofbof/localexploit.png" class="img-fluid" width="700">
                             It works ! Time to execute it on the remote machine through netcat. 

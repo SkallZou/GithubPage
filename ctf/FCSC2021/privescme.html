@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Rituel en Chaine</title>
+        <title>Privesc Me - Warmup</title>
         <link rel="icon" type="image/x-icon" href="../../assets/img/favicon.ico" />
         <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
@@ -53,20 +53,46 @@
         <!-- Page Content-->
         <div>
             <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
-            <h3 class="header-article"><a href="../../ctfpage.html">Capture The Flag </a>> <a href="../fcsc2021.html">FCSC 2021 </a>> Rituel en Chaine</h3><!--change path if file has been moved to another folder-->
+            <h3 class="header-article"><a href="../../ctfpage.html">Capture The Flag </a>> <a href="../fcsc2021.html">FCSC 2021 </a>> Privesc Me</h3><!--change path if file has been moved to another folder-->
             </nav>
             
             <section class="article">
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
                         <p>
-                            <img src="img/rituelenchaine/subject.png" class="img-fluid" width="400">
-                            A hexdump can give you a lot of information. You can retrive the type of the file by looking at the magic bytes or even the strings inside of a file. <br>
-                            We know that the flag always start with FCSC.
-                            <div class="squarebox">xxd disque.img | grep FCSC</div>
-                            <img src="img/rituelenchaine/hexdump.png" class="img-fluid" width="600">
-                            The parameter "a" of grep prints following line after finding the correct string. <br>
-                            
+                            <img src="img/privescme/subject.jpg" class="img-fluid" width="500">
+                            <img src="img/privescme/ssh.jpg" class="img-fluid" width="700">
+                            Connecting to the server through ssh, the server tells us that the /tmp directory is writable. <br>
+                            Let's navigate to the folder <strong>stage0</strong> as the subject mention it, the file <strong>flag.txt</strong> is present but we do not have the permission to open it.
+                            <img src="img/privescme/stage0.jpg" class="img-fluid" width="700">
+                            A .c file and a binary file are also presents, let's check the what kind of code do we have inside.
+                            <div class="squarebox">
+                                #define _GNU_SOURCE <br>
+                                #include &ltstdlib.h&gt <br>
+                                #include &ltunistd.h&gt <br>
+                                #include &ltsys/types.h&gt <br>
+                                <br>
+                                int main(int argc, char const *argv[]) { <br>
+                                    setresgid(getegid(), getegid(),getegid()); <br>
+                                    system("head -c5 flag.txt"); <br>
+                                    return 0; <br>
+                                }
+                            </div>
+                            Inside of the main function, we have two functions setresgid() and system(). Setresgid() will set the real user ID, the effective user ID, and the saved set-user-ID of the calling process. Here, it is not useful, because it is taking geteid() as argument which return the effective user ID. <br>
+                            The second function is more interesting, system() will execute a command in the console. Here, it executes <strong>head</strong> with the parameter <strong>-c 5</strong> which prints the first 5 characters of the file. <br>
+                            We see that the argument in system is not a absolute path, which mean that if we change the environment variable PATH to point to a specific directory that we can write then we can control the behavior of the command head. Moreover, the binary file contain SGID bit which means that we will run the program under the permissions of a member of the group.<br>
+                            Another good thing is that the /tmp directory is writtable, let's copy the binary cat to /tmp/head and then modify the environment variable $PATH to point to /tmp. Once it is done, when the funtion system() calls head, it will first look at /tmp, and if head exists then the code of head will be executed.
+                            <div class="squarebox">cp /usr/bin/cat /tmp/head <br>export PATH=/tmp:$PATH</div>
+                            <img src="img/privescme/cat.jpg" class="img-fluid" width="600">
+                            The problem is because <strong>cat</strong> command does not have a parameter -c, this is why it is showing the error "invalid option -- c". <br>
+                            We need to find a way to print the content of flag.txt that takes into account the parameter -c. After some researches, vim have a parameter -c.
+                            <div class="squarebox">vim -c &ltcommand&gt : Execute &ltcommand&gt after loading the first file</div>
+                            vim will run "5", but 5 means nothing in vim, so vim will simply just ignore the command. Let's copy vim into /tmp/head.
+                            <div class="squarebox">cp /usr/bin/vim /tmp/head</div>
+                            Let's run the program : ./stage0
+                            <img src="img/privescme/flag.jpg" class="img-fluid" width="600">
+
+
                         </p>
 
                     </div>

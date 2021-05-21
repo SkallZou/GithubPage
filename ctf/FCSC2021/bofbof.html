@@ -61,10 +61,10 @@
                     <div class="flex-grow-1">
                         <p>
                             <img src="img/bofbof/subject.png" class="img-fluid" width="400">
-                            The subject tells us that this is a buffer overflow challenge. The goal of a classic buffer overflow is to fill the stack to overwrite a part of the memory that is not supposed to be written. This can lead to a remote code exploitation. <br>
-                            First, let's check the file info
+                            The subject tells us that this is a buffer overflow challenge. The goal of a buffer overflow is to fill the stack to overwrite a part of the memory that is not supposed to be written. This can lead to a remote code exploitation. <br>
+                            Let's check the file information to see what king of file we are facing to.
                             <img src="img/bofbof/fileinfo.png" class="img-fluid" width="400">
-                            We see that the file is a elf64, let's reverse it to understand what the program is doing when running. Some rule have to be known before getting into elf64:<br>
+                            We see that the file is a elf64, we will reverse it to understand what the program is doing when running. Some rule have to be known before getting into elf64:<br>
                             <ul>
                                 <li>1st argument : rdi</li>
                                 <li>2nd argument : rsi</li>
@@ -73,7 +73,7 @@
                             </ul>
                             We can start with some classical checks, such as function listing and strings. <br>
                             <img src="img/bofbof/strings.png" class="img-fluid" width="500">
-                            From the strings, we see that the the string "/bin/sh" is located at the address 0x2008. Information that can be useful if we need to pass /bin/sh in a argument of a function like system(). <br>
+                            Displaying the strings give us some interesting information such as "/bin/sh" which is located at the address 0x2008. This can be useful if we need to pass /bin/sh in a argument of a function like system(). <br>
                             <img src="img/bofbof/functions.png" class="img-fluid" width="500">
                             From the functions, we got the main function address, and other function that can potentially tell us that the vulnerability is located there. (vuln function should be interesting to check). <br>
                             <br><h4>Code analysis</h4>

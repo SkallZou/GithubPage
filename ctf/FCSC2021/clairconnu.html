@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Clair Connu</title>
+        <link rel="icon" type="image/x-icon" href="../../assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="../../css/styles.css" rel="stylesheet" /><!--change path if file has been moved to another folder-->
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-xl navbar-dark bg-primary fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger" href="../../index.html"><!--change path if file has been moved to another folder-->
+                <span class="d-block d-xl-none">Olivier LEUNG</span>
+                <span class="d-none d-xl-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="../../assets/img/profile.jpg" alt="" /></span><!--change path if file has been moved to another folder-->
+            </a>
+            <div class="d-none d-xl-block description_profile"> <!--d-none is used for responsiveness of the panel when you shring the window -->
+                <h3>Olivier LEUNG</h3>
+                <div class="subheading_panel">Cybersecurity engineer </div>
+                    <div class="subheading_description">Love testing random cyber stuff !<br>That's by baking we become a baker</div>
+            </div>
+            <!-- button collapse panel when small windows, responsive pane -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> 
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../../ctfpage.html">CTF</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../../dfirpage.html">DFIR</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../../vulnpage.html">Vuln Exploitation</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../../malwarepage.html">Malware Analysis</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../../tutorialpage.html">Tutorial</a></li>
+                </ul>
+            </div>
+
+            <div class="d-none d-xl-block social-icons">
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/olivierleung"><i class="fab fa-linkedin-in"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://github.com/SkallZou"><i class="fab fa-github"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://twitter.com/olivier_leung"><i class="fab fa-twitter"></i></a>
+            </div>
+        <footer class="d-none d-xl-block">
+            <div class="container">
+              <p class="m-1 text-center footerpage">Copyright &copy; 2021 Olivier Leung<br>All rights reserved.</p>
+            </div>
+        </footer>
+        </nav>
+        <!-- Page Content-->
+        <div>
+            <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
+            <h3 class="header-article"><a href="../../ctfpage.html">Capture The Flag </a>> <a href="../fcsc2021.html">FCSC 2021 </a>> Clair Connu</h3><!--change path if file has been moved to another folder-->
+            </nav>
+            
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <p>
+                            <img src="img/clairconnu/subject.jpg" class="img-fluid" width="500">
+                            The challenge comes with two files. We have the code used for encryption and the output (encrypted message). The goal is to decrypt the encrypted message.
+                            <div class="squarebox">
+                            import os <br>
+                            from Crypto.Util.number import  <br>long_to_bytes <br>
+                            from Crypto.Util.strxor import strxor <br>
+                            <br>
+                            FLAG = open("flag.txt", "rb").read() <br>
+                            <br>
+                            key = os.urandom(4)*20 <br>
+                            c = strxor(FLAG, key[:len(FLAG)]) <br>
+                            print(c.hex()) <br>
+                            </div>
+                            Reading the code, the encryption method using by this file is XOR. strxor(str a, str b) return the a XOR b. Both parameters must have the same lenght. This is why the second parameter is a slice of the array key depending on the lenght of the FLAG. <br>
+                            <br>
+                            The variable key is taking 4 random value, and it is going to repeat 20 times. We also know that the FLAG always start with FCSC. <br> With XOR encrytpion, as long as we have 2 elements, we can determine the 3rd one. 
+                            <div class="squarebox">INPUT XOR KEY = OUTPUT <br>OUTPUT XOR INPUT = KEY <br>OUTPUT XOR KEY = INPUT</div>
+                            In our case, we don't know the key, we only have the output file and we know that the flag starts with FCSC. Therefore, if we XOR the four first characters of the output with FCSC then we should get the key.
+                            <img src="img/clairconnu/output.jpg" class="img-fluid" width="800">
+                            <div class="squarebox">OUTPUT XOR INPUT 
+                                <br>= \xd9\x1b\x70\x23 XOR hex(FCSC)
+                                <br>= d91b7023 XOR 46435343
+                                <br>= 9f582360
+                            </div>
+                            Key = 9f 58 23 60. Now let's determine the flag by xoring the output with the key.
+                            <img src="img/clairconnu/cyberchef.jpg" class="img-fluid" width="1000">
+
+                        </p>
+
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

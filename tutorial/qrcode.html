@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>How does QR code work ?</title>
+        <link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="../css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-xl navbar-dark bg-primary fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger" href="../index.html">
+                <span class="d-block d-xl-none">Olivier LEUNG</span>
+                <span class="d-none d-xl-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="../assets/img/profile.jpg" alt="" /></span>
+            </a>
+            <div class="d-none d-xl-block description_profile"> <!--d-none is used for responsiveness of the panel when you shring the window -->
+                <h3>Olivier LEUNG</h3>
+                <div class="subheading_panel">Cybersecurity engineer </div>
+                    <div class="subheading_description">Love testing random cyber stuff !<br>That's by baking we become a baker</div>
+            </div>
+            <!-- button collapse panel when small windows, responsive pane -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> 
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../ctfpage.html">CTF</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../dfirpage.html">DFIR</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../vulnpage.html">Vuln Exploitation</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../malwarepage.html">Malware Analysis</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../tutorialpage.html">Tutorial</a></li>
+                </ul>
+            </div>
+
+            <div class="d-none d-xl-block social-icons">
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/olivierleung"><i class="fab fa-linkedin-in"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://github.com/SkallZou"><i class="fab fa-github"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://twitter.com/olivier_leung"><i class="fab fa-twitter"></i></a>
+            </div>
+        <footer class="d-none d-xl-block">
+            <div class="container">
+              <p class="m-1 text-center footerpage">Copyright &copy; 2020 Olivier Leung<br>All rights reserved.</p>
+            </div>
+        </footer>
+        </nav>
+        <!-- Page Content-->
+        <div>
+            <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
+            <h3 class="header-article"><a href="../tutorialpage.html">Tutorial & Cheatseet </a>> QR Code</h3>
+            </nav>
+            
+            <section class="article">
+                <h3 style="color:gray">How does QR code work ?</h3>
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <p>
+                            A QR code (Quick Response code) is a well common type of barcode used to contain data. Nowaways it becomes popular to send data to a person throught QRcode, it is a common advertising strategy since it simplifies the way to access to any data. It has many used such as payment, website login, restaurant ordering, joining a Wi-Fi netc etc. To give an example, it has been by many restaurants to display the menu, order the food, pay, and receive the invoice. It was particulary adapted for the pandemic period in 2020. Almost any smartphone in 2021 can scan the QR code to read and analyze the data behind that bar code. How come the smartphone managed to analyze it so quickly and in less than 5 seconds gives you the message behind that code ? How does it exactly work ? <br> This article will explain the core functionning of a QR code.
+                        </p>
+                        <h4 class="mb-0">1/ QR code overview</h4>
+                        <p>
+                            <img src="img/QRcode/overview.jpg" class="img-fluid" width="500">
+                            A QR code is always composed of 3 large squares located on the top left, top right and bottom left and a small square in the lower right corner. I have divided the QR code in 3 sections, you have red section, blue section and no color section. The red section is used for alignment, this alignment is used to know how the QR code must be oriented. <br>
+                            <br>The blue section is composed of 2 sets of 15 bits, known as format info. Only one set is needed for the decoding but 2 is safer, and it is used as a backup. About those sets of bits, the bits from 00 to 09 are insignificant and can be ignored, only the bits from 10 to 14 is interesting because it gives us the format marker. <br>
+                            <div class="squarebox">white = 0 <br>black = 1</div>
+                            The format marker is written from the bit 14 to the bit 10, in our case <strong>format marker = 11111</strong>
+                            The format marker has been XOR with 10101. So let's XOR again with 10101 the retrieve the real value of format marker.
+                            <div class="squarebox">11111 XOR 10101 = 01010</div>
+                            The two first bits represent the error correction level, and the 3 following bits (010) indicates the type of mask used by the QR code.
+                            <img src="img/QRcode/mask.jpg" class="img-fluid" width="600">
+                            Let's apply the mask (010) on the data section of the QR code.
+                            <div class="squarebox">QR Code XOR Mask 010 <br>XOR table: <br>0 0 1 <br>0 1 0 <br>1 0 0 <br>1 1 1</div>
+                            It will reverse the color of the QR code when j%3 != 0
+                            <img src="img/QRcode/qrcodemasked.jpg" class="img-fluid" width="600">
+                            After XORed the QR code with the mask that we have identified, we have to read the data from the bottom right to the top left in a zig-zag pattern.
+                            From the bottom right corner, we have 0100 indicating the type of QR code.
+                            <img src="img/QRcode/zigzag.jpg" class="img-fluid" width="600">
+                            <div class="squarebox">0001 : numeric (10 bits)<br>0010 : alphanumeric (9 bits)<br>0100 : byte (8 bits)</div>
+                            Our QR code is a byte type so the length field is 8 bits long. We continue reading the data in a zig-zag way. The next 8 bits indicates how much bytes our QR code can handle. In our case, the next 8 bits are 00000010 so our QR code can handle at the maximum 2 bytes. 
+                            <img src="img/QRcode/qrcodedata.jpg" class="img-fluid" width="600">
+                            Now we can decode the data by translating binary to ascii to see what kind of message we do have behind that QR code. 
+                            
+                        </p>
+                        <br>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

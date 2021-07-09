@@ -68,7 +68,7 @@
                             <div class="squarebox">admin' OR 'a'='a'#</div>
                             However it doesn't seem to work. Instead of blocking on that form, we can create an account below and see what we can find inside the website. After creating an account, we reach a page with another form, which is used to contact the support in case of a problem. Let's start by checking if the website has a <strong>XSS (Cross Site Scripting)</strong> vulnerability. <br>To do so, I'm going to inject some basic JavaScript in the form.
 
-                            <div class="squarebox">"alert();"</div>.
+                            <div class="squarebox">"alert();"</div>
 
                             <img src="img/InternalSupport/xssvuln.png" name="xssvuln" class="img-fluid" width="800">
                             
@@ -78,9 +78,9 @@
                             The scenario is easy here, we know that by submitting a request, it is going to create a ticket, someone from the support will read the ticket, so when this person reach our ticket page, the JavaScript will load and send his cookie to a webserver. Then we'll retrieve his cookie, and set our cookie with his. By doing so, when we'll refresh the page, we are going to be in his session if it is still valid. This is called <strong>cookie stealing</strong> and <strong>session hijacking</strong>. <br>
                             <a href="https://pipedream.com">Pipedream</a> is a serverless integration that can receive web request, this is perfect for us, because we just need a server that can log HTTP events on request. Since the field "HttpOnly" is set to false, we can create a GET request to my Pipedream endpoint with a simple JavaScript function <i>document.location</i>, which is going to redirect the user to our pipedream page when he reach the ticket page. 
                             <img src="img/InternalSupport/cookiestealing.png" class="img-fluid" width="800">
-                            This script will redirect any person who reach our ticket page to my Pipedream endpoint and set the field cookie with their own cookie thanks to the JavaScript function <strong>document.cookie</strong>.
+                            This script will redirect any user who reach our ticket page to my Pipedream endpoint and set the field cookie with their own cookie thanks to the JavaScript function <strong>document.cookie</strong>.
                             <img src="img/InternalSupport/cookiestolen.png" class="img-fluid" width="800">
-                            On the screenshot above, the field cookie has been filled by the cookie of the user who reach my ticket page. Therefore, copy pasting this value and replacing our cookie with this value should give us access to his session if there is not other security measure.
+                            On the screenshot above, the field cookie has been filled by the user's cookie who reach my ticket page. Therefore, copy pasting this value and replacing our cookie with this value should give us access to his session if there is not other security measure.
                             To replace our cookie, access to the Developement Tools, go to storage, click cookie and paste the value. Once it is done, refresh the page, and see if the session has changed. 
                             <img src="img/InternalSupport/sessionhijacked.png" class="img-fluid" width="800">
                             Yes! The page content has changed and if you look closely the flag is here as well. <br>

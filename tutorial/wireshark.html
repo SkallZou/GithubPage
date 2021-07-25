@@ -68,7 +68,16 @@
                             <img src="img/Wireshark/columnpreference.jpg" class="img-fluid" width="700">
                             On the bottom of the windows, the "+" allows you to add a column and the "-" to remove the selected column(s). At the beginning, you might want to remove the "No." (frame number), "length" and "Protocol" to lighten the number of columns in the UI. <br>
                             <br>
-                            You can also apply a value of a field from a result to a column. Let's take an example. Supposing we are analyzing some web traffic, <strong>Hypertext Transfer Protocol</strong> is the most common protocol to communicate between a client and a server in the World Wide Web. <br>
+                            You can also apply a value of a field from a result to a column. Let's take an example. We are analyzing some web traffic, <strong>Hypertext Transfer Protocol</strong> is the most common protocol to communicate between a client and a server in the World Wide Web.<br>
+                            <div class="squarebox">http.request</div>
+                            Using this request, we will filter only on http traffic among the data of the pcap file. If you have some result, select one event and expand <strong>Htpertext Transfer Protocol</strong> then left click on the "<strong>Host:[DOMAIN_NAME]</strong>" and right click to apply as a column.
+
+                            <img src="img/Wireshark/httprequest.jpg" class="img-fluid" width="700">
+                            Nowadays, most of the web traffics are encrypted with TLS, HTTP still exist but HTTPS is recommended because encryption is necessary for confidentiality and avoid unauthorized user to see the content. Type the following query to filter on HTTPS.
+                            <div class="squarebox">ssl.handshake.type == 1</div>
+                            Expand “Transport Layer Security” -> “Handshake Protocol: Client Hello” -> Extension: server_name -> Server Name Indication extension -> left click on Server Name: [DOMAIN_NAME] and apply as a column
+
+                            <img src="img/Wireshark/httpsrequest.jpg" class="img-fluid" width="700">
 
                         </p>
                         <h4 class="mb-0">2/ Change the time value</h4>

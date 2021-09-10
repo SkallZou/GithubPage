@@ -102,11 +102,17 @@
                         </p>
                             <h4 class="mb-0">3/ Classic queries cheatsheet</h4>
                             <p>
-                                <li>Web traffic</li>
                                 HTTP: <strong>http.request</strong> <br> To find the domain name, expand Hypertext Transfer Protocol, and find "Host:[DOMAIN_NAME]" <br>
                                 <br>
                                 HTTPS: <strong>ssl.handshake.type==1</strong> <br>To find the domain name, expand "Transport Layer Security", "Handshake Protocol: Client Hello", "Extension: server_name", "Server Name Indication extension", and you will find Server name: [DOMAIN_NAME]<br>
                                 <br>
+                                FTP requests: <strong>ftp.request.command</strong><br>
+                                There are different types of FTP request. <br>RETR (retrieve) means that the user downloaded the file from the server.
+                                <br>SIZE returns the size of a file.
+                                <br>USER shows the user authentication.
+                                <br>
+                                <br><strong>ftp-data</strong> to get the data transmit from the client to the server.
+
                                 TCP SYN: <strong>tcp.flags == 0x002</strong><br>TCP SYN indicates if the host has made a TCP connection attempt to another server. <br>
                                 <br>
                                 DHCP: <strong>dhcp</strong><br>
@@ -119,7 +125,28 @@
                                 <br><br>
                                 Kerberos: <strong>kerberos.cnamestring</strong> <br>Kerberos traffic can also help you to identify the host name. Expand "Kerberos", expand "as-req", expand "req-body", expand "cname", expand "cname-string" and the value of "CNameString" is the hostname.
                             </p>
-                            <h4 class="mb-0">4/ Exporting object from a PCAP</h4>                            
+                            <h4 class="mb-0">4/ Exporting object from a PCAP</h4>
+                            <p>
+                                <img src="img/Wireshark/getrequest.jpg" class="img-fluid" width="800">
+                                Wireshark managed to capture three GET requests. One GET request is sent to www.msftncsi.com and pull the file ncsi.txt. The others are sent to smart-fax.com and get a .doc and a .exe files. <br>
+                                <br>
+                                To extract those objects, go to File -> Export Objects -> HTTP...
+                                <img src="img/Wireshark/httpobjectexport.jpg" class="img-fluid" width="700">
+                                To export emails such as .eml files, instead of clicking on HTTP, click on IMF (Internet Message Format). <br>
+                                <br>
+                                To export FTP object, you must know the difference types of requests. <br>
+                                <img src="img/Wireshark/ftpobjectexport.jpg" class="img-fluid" width="700">
+                                From Wireshark, we see that some files have been requested. Those files are executable files, we won't be able to export them as previously shown for HTTP object or IMF object. <br>
+                                <br>
+                                Fiter on "ftp-data" to see the data transmit from the client to the server. Then select any request with an executable file, and right click on to follow the TCP stream. Click on Show data as "Raw".
+
+                                <img src="img/Wireshark/ftpraw.jpg" class="img-fluid" width="700">
+
+                                Click on "save as..." and save it as an executable file, because the client requests an executable file.
+
+                                <img src="img/Wireshark/exefile.jpg" class="img-fluid" width="700">
+
+                            </p>                          
                         <br>
                     </div>
                 </div>

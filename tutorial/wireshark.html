@@ -75,18 +75,51 @@
                             <img src="img/Wireshark/httprequest.jpg" class="img-fluid" width="700">
                             Nowadays, most of the web traffics are encrypted with TLS, HTTP still exist but HTTPS is recommended because encryption is necessary for confidentiality and avoid unauthorized user to see the content. Type the following query to filter on HTTPS.
                             <div class="squarebox">ssl.handshake.type == 1</div>
+                            This query will filter on every Client Hello traffic. To understand what is a Client Hello, you need to understand how TLS handshake works. A TLS handshake takes place when a user reach a website over HTTPS.
+                            <ul>
+                                <li>The client initiates the handshake by sending a "hello" message to the server. The client "hello" message contains TLS version supported, cipher suites supported and the "client random".</li>
+                                <li>The server reply the client with a server "hello" message containing the server's SSL certificate (Cipher suite chosen, server's public key, and other parameters are inside).</li>
+                                <li>
+                                    The client receives the server's SSL certificate and verify it, by decrypting it using the server's public key.
+                                </li>
+                                <li>The client send back to the server a premaster secret by encrypting it with the server's public key.</li>
+                                <li>
+                                    The server validates the premaster secret, by decrypting it with his private key.
+                                </li>
+                                <li>Having the client random, the server random, and the premaster secret, session keys are created.</li>
+                                <li>The client and the server send a "finish" message encrypted with a session key.</li>
+                                <li>The communication continue by encrypting with the session keys.</li>
+                            </ul>
                             Expand “Transport Layer Security” -> “Handshake Protocol: Client Hello” -> Extension: server_name -> Server Name Indication extension -> left click on Server Name: [DOMAIN_NAME] and apply as a column
 
                             <img src="img/Wireshark/httpsrequest.jpg" class="img-fluid" width="700">
 
                         </p>
-                        <h4 class="mb-0">2/ Change the time value</h4>
-                        <p>
-                            By default, the time shown in the column "Time" is set to "Seconds Since Beginning of Capture". May be you're not interested in that format and you want to change it, to do so, click on "<strong>View</strong>", followed by "<strong>Time Display Format</strong>" and set the time you want. Personally I like the format "<strong>UTC Date and Time of Day</strong>", also set "<strong>Seconds</strong>" for most of the cases.
-                            <img src="img/Wireshark/timedisplayformat.jpg" class="img-fluid" width="700">
 
-                            <h3 style="color:grey;">TO CONTINUE ...</h3>
+                        <p>
+                            By default, the time shown in the column "Time" is set to "Seconds Since Beginning of Capture". May be you're not interested in that format and you want to change it. To do so, click on "<strong>View</strong>", followed by "<strong>Time Display Format</strong>" and set the time you want. Personally I like the format "<strong>UTC Date and Time of Day</strong>", also set "<strong>Seconds</strong>" for most of the cases.
+                            <img src="img/Wireshark/timedisplayformat.jpg" class="img-fluid" width="700">
                         </p>
+                            <h4 class="mb-0">3/ Classic queries cheatsheet</h4>
+                            <p>
+                                <li>Web traffic</li>
+                                HTTP: <strong>http.request</strong> <br> To find the domain name, expand Hypertext Transfer Protocol, and find "Host:[DOMAIN_NAME]" <br>
+                                <br>
+                                HTTPS: <strong>ssl.handshake.type==1</strong> <br>To find the domain name, expand "Transport Layer Security", "Handshake Protocol: Client Hello", "Extension: server_name", "Server Name Indication extension", and you will find Server name: [DOMAIN_NAME]<br>
+                                <br>
+                                TCP SYN: <strong>tcp.flags == 0x002</strong><br>TCP SYN indicates if the host has made a TCP connection attempt to another server. <br>
+                                <br>
+                                DHCP: <strong>dhcp</strong><br>
+                                To get the client MAC address, expand "Dynamic Host Configuration Protocol (request)", expand "Option: Client identifier", and you should see "Client MAC address"<br>
+                                To get the Hostname, expand "Dynamic Host Configuration", expand Option: Host Name, and you should see the Host Name.
+                                <br>
+                                <br>
+                                Netbios: <strong>nbns</strong>
+                                <br>Netbios is used to identify a hostname from Windows systems. To find the hostname, expand "NetBIOS Name Service", expand "Additional records" and you should find the computer name.
+                                <br><br>
+                                Kerberos: <strong>kerberos.cnamestring</strong> <br>Kerberos traffic can also help you to identify the host name. Expand "Kerberos", expand "as-req", expand "req-body", expand "cname", expand "cname-string" and the value of "CNameString" is the hostname.
+                            </p>
+                            <h4 class="mb-0">4/ Exporting object from a PCAP</h4>                            
                         <br>
                     </div>
                 </div>

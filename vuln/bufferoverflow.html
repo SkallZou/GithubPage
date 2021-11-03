@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Buffer Overflow</title>
+        <link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="../css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-xl navbar-dark bg-primary fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger" href="../index.html">
+                <span class="d-block d-xl-none">Olivier LEUNG</span>
+                <span class="d-none d-xl-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="../assets/img/profile.jpg" alt="" /></span>
+            </a>
+            <div class="d-none d-xl-block description_profile"> <!--d-none is used for responsiveness of the panel when you shring the window -->
+                <h3>Olivier LEUNG</h3>
+                <div class="subheading_panel">Cybersecurity engineer </div>
+                    <div class="subheading_description">Love testing random cyber stuff !<br>That's by baking we become a baker</div>
+            </div>
+            <!-- button collapse panel when small windows, responsive pane -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> 
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../ctfpage.html">CTF</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../dfirpage.html">DFIR</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../vulnpage.html">Vuln Exploitation</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../malwarepage.html">Malware Analysis</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../tutorialpage.html">Tutorial</a></li>
+                </ul>
+            </div>
+
+            <div class="d-none d-xl-block social-icons">
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/olivierleung"><i class="fab fa-linkedin-in"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://github.com/SkallZou"><i class="fab fa-github"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://twitter.com/olivier_leung"><i class="fab fa-twitter"></i></a>
+            </div>
+        <footer class="d-none d-xl-block">
+            <div class="container">
+              <p class="m-1 text-center footerpage">Copyright &copy; 2021 Olivier Leung<br>All rights reserved.</p>
+            </div>
+        </footer>
+        </nav>
+        <!-- Page Content-->
+        <div>
+            <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
+            <h3 class="header-article"><a href="../vulnpage.html">Vulnerability Exploitation </a>> Buffer Overflow</h3>
+            </nav>
+            
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h4 class="mb-0">Tools & technique</h4>
+                            <p>
+                                Resolving a buffer overflow challenge is before anything else understand where is located the vulnerability. I'll mostly use GDB (GNU debugger), a classic debugger in Linux, to see what is happening when executing a program. It can display the stack, and the registers. If you do not have any knowledge about how the stack works, please check out my tutorial about the stack here : <a href="../tutorial/understandstack.html">How does the stack work</a> <br>
+                                <br>
+                            </p>
+
+                            <h4 class="mb-0">Find the vulnerability</h4>
+                            Let's open gdb, and see what we can find by disassembling the program. In GDB, we can list the function using the following command.
+                            <div class="squarebox">info functions</div>
+                            <img src="img/BufferOverflow/infofunctions.jpg" class="img-fluid" width="300">
+                            Among the listed functions, we see the function called "give_flag()", that might potentially what we want to call using the program. 
+                            <br>
+                            A program usually start with the main function before calling other function, let's disassemble it to see what we have.
+                            <div class="squarebox">disass main</div>
+                            <img src="img/BufferOverflow/disassmain.jpg" class="img-fluid" width="700">
+                            Looking at the call instructions in the main function, we have setbuf(), signal(), puts() and gets(). Among those functions, the one that must be shining to your eyes are the gets() because if we look at the gets() manual, it is clearly indicating the reason to never use gets().
+                            <img src="img/BufferOverflow/mangets.jpg" class="img-fluid" width="800">
+                            According to the manual, gets() will not check how many characters will be read so it might store some characters past the end of the buffer.
+                            Here is our vulnerability. We are going to use gets() to overwrite some data and take control of the program execution. The goal will be to overwrite the stackframe and to modify the register RIP to the address of the give_flag() function.
+                            <br>
+                            <br>
+                            <h4 class="mb-0">Exploit the vulnerability</h4>
+                            Looking at the disassemble code in the main function(), we need to find how many offset do we need to overwrite the register RIP.
+                            <div class="squarebox">sub rsp, 0x200</div>
+                            This instruction is telling you what is the size of the stack frame. We will convert 200 which is in hexadecimal to decimal.
+                            <div class="squarebox">echo $((16#200))</div>
+                            It is equal to 512. Therefore the stackframe size is equal to 512. Let's print a 512 "A" on GDB to see what happened to the stack. We will also put 2 breakpoints in the instruction "leave" and "ret". <br>
+                            The instruction leave will destroy the stackframe, and the instruction ret will return to the older RBP register. To add a breakpoint in GDB, type <strong>b *[address]</strong>. <br>
+                            <div class="squarebox">r < <(python2.7 -c ‘print “A”*512’) to run 512 "A" on GDB.</div>
+                            Let's take a look at the stackframe during the <strong>leave</strong> instruction. <br>
+                            To display the stack and the register information after each breakpoint, type the following command on gdb:
+                            <ul>
+                                > define hook-stop <br>
+                                > x/24wx $rsp <br>
+                                > x/2i $rip <br>
+                                > info reg
+                            </ul>
+                            <img src="img/BufferOverflow/leavestackframe.jpg" class="img-fluid" width="600">
+                            The instruction <strong>leave</strong> will set rsp to rbp so the stackframe will be destroyed.
+                            <ul>
+                                <li>rsp = 0x7fffffffdfe0</li>
+                                <li>rbp = 0x7fffffffe1e0</li>
+                                <li>$rbp = 0x55555300 (content of the register rbp)</li>
+                            </ul>
+                            <img src="img/BufferOverflow/leavestackframe2.jpg" class="img-fluid" width="600">
+                            Continuing, the stackframe does not exist anymore and the next value of the stack is at the address 0x7fffffffe1e8 that has a value 0xf7e11d0a. We didn't reach 0x7fffffffe1e0 because the second part of the instruction <strong>leave</strong> is <strong>POP RBP</strong>, so the register rbp is taking the value of the top of the stack and remove it from the stack.
+                            <img src="img/BufferOverflow/inforegisters.jpg" class="img-fluid" width="600">
+                            Looking at the register table, the register $rbp is taking the value "0x555555555300" which means that we didn't fuzzle enough to overwrite the base pointer of the stack, therefore we are missing 8 bytes to overwrite RBP. The next instruction is calling the RET function, which is similar to <strong>POP RIP</strong>, is taking the value on the top of the stack and store it on the register RIP. Since the register RIP is executing the next instruction then if we manage to know the offset to control the top of the stack at the moment, we also control the register RIP, which means that we can control the program execution. <br>
+                            <br>
+                            We are missing 8 bytes to control the RIP. 512 + 8 = 520 <br>
+                            <div class="squarebox">r < <(python -c ‘print “A”*520 + “\xef\xbe\xad\xde”’)</div>
+                            <img src="img/BufferOverflow/inforegisters2.jpg" class="img-fluid" width="800">
+                            $rip = 0x7f00deadbeef, we've managed to write "deadbeef" in the register RIP, we control the program execution. Therefore instead of writing "deadbeef", we can set the give_flag() address to the RIP register to achieve our goal. <br>
+                            Info address GDB command give you the information regarding the address of a specific function on gdb.<br> <strong>Info address give_flag : 0x555555555203</strong>
+                            <div class="squarebox">r < <(python2.7 -c ‘print “A”*520 + “\x03\x52\x55\x55\x55\x55\x00\x00”)</div>
+                            <img src="img/BufferOverflow/controlrip.jpg" class="img-fluid" width="700">
+                            The program is calling the RET function, the value on the top of the stack is 0x555555555203, so ret set this value to the register RIP, and the function give_flag() will be executed. <br>
+                            <br>
+                            Looking at the disassembly of the function give_flag()
+
+                            <img src="img/BufferOverflow/giveflag.jpg" class="img-fluid" width="600">
+                            We see that the function give_flag() is calling the function fopen(). Fopen() function has 2 parameters :
+                            <div class="squarebox">FILE *fopen(const char *filename, const char *mode)</div>
+                            Let's run the program until it reach the function fopen, to see if we can retrieve the filename from the parameter. <br>
+                            <img src="img/BufferOverflow/fopen.jpg" class="img-fluid" width="800">
+                            The file passing as an argument to the function fopen() is flag.txt. Let's try to exploit in our local environment to see if that works.
+                            <div class="squarebox">echo "hello world" > flag.txt</div>
+                            <img src="img/BufferOverflow/helloworld.jpg" class="img-fluid" width="750">
+                            The buffer overflow works, the program is not supposed to open the file called flag.txt, but we've managed to control the program execution by overwriting the stack and modifying the address that the register RIP is supposed to be. We have set the register RIP with our address to make the program to open a file. <br>
+                            Now let's finish the challenge and connect to the server where the actual flag is present.
+                            <img src="img/BufferOverflow/flag.jpg" class="img-fluid" width="750">
+
+
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

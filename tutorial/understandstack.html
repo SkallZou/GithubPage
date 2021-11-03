@@ -188,8 +188,8 @@
                             <br>
                             <u>Registers information:</u> <br>
                             eip = 0x080483fd <br>
-                            ebp = 0xbffff770 <br>
-                            esp = 0xbffff770 <br>
+                            ebp = 0xbffff7d8 <br>
+                            esp = 0xbffff7d8 <br>
                             <br>
                             <img src="img/UnderstandStack/stack_7.png" class="img-fluid" width="300">
                             The second part takes off the top of the stack and put the content in ebp. The instruction is <strong>pop ebp</strong>. If you remember the value of ebp at the beginning, it has the same value, therefore we come back to the previous stack frame, the register ebp is pointing back to the beginning of the old base pointer. <br>

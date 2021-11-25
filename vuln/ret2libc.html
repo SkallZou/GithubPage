@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>PowerShell & .NET</title>
+        <title>Buffer Overflow</title>
         <link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico" />
         <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
@@ -46,155 +46,32 @@
             </div>
         <footer class="d-none d-xl-block">
             <div class="container">
-              <p class="m-1 text-center footerpage">Copyright &copy; 2020 Olivier Leung<br>All rights reserved.</p>
+              <p class="m-1 text-center footerpage">Copyright &copy; 2021 Olivier Leung<br>All rights reserved.</p>
             </div>
         </footer>
         </nav>
         <!-- Page Content-->
         <div>
             <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
-            <h3 class="header-article"><a href="../vulnpage.html">Vulnerability Exploitation </a>> PowerShell & .NET</h3>
+            <h3 class="header-article"><a href="../vulnpage.html">Vulnerability Exploitation </a>> Buffer Overflow - Ret2LibC</h3>
             </nav>
             
             <section class="article">
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
-                        <h3 class="mb-0">Introduction</h3>
-                        <p>
-                            After getting several alerts from FireEye regarding suspicious .dll file coming from the process csc.exe, I decided dig into that subject. When I was doing some Enterprise Searches in FireEye for the process name "csc.exe", I've found that PowerShell.exe is often the parent process of csc.exe. According to some researches, by dynamically compiling a C# code through PowerShell, it can also be used to evade detection.  For instance, compiling malware this way can evade Symantec’s “reputation 1” detection of new and untrusted softwares. It also has been seen that it can evade detection from Device Guard since Code Integrity is not performed. <br>
-                            <br>
-                            This article is to understand how can we exploit that vulnerability and to discover FireEye rule logic when csc.exe use is “normal” and when it is an attack.
-                        </p>
-                    </div>
-                </div>
-            </section>
-            <section class="article">
-                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
-                    <div class="flex-grow-1">
-                        <h3 class="mb-0">What is csc.exe ?</h3>
-                        <p>
-                            The process <strong>csc.exe</strong> is a C# compiler and is part of Microsoft .NET Framework. A compiler is used to translate a programming language (high-level language understood by human) into low-level language (machine code or assembly). We can invoke the C# compiler by typing csc.exe at a command prompt. <br>
-                            The default location of csc.exe is "C:\Windows\Microsoft.NET\Framework\<<i>Version</i>>", the version of the framework for Microsoft.NET might vary. To know the location of csc.exe, you can type this command in the windows command line: 
-                            <div class="squarebox">dir /s %WINDIR%\csc.exe</div>
-                            <img src="img/PowerShell .NET/csclocation.png" class="img-fluid" width="400">
-                            In the case where csc.exe is located in C:\Windows or in C:\Windows\System32, an investigation will be necessary. A potential malicious csc.exe is present. Many malwares try to dissimulate itself by having the same name as a legitimate program. 
-                        </p>
-                    </div>
-                </div>
-            </section>
-            <section class="article">
-                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
-                    <div class="flex-grow-1">
-                        <h3 class="mb-0">Compiling C# with PowerShell</h3>
-                        <p>
-                            In PowerShell, when the cmdlet “<strong>Add-type</strong>” is executed, it will run the csc.exe to compile the C# code into a machine language. A temporary file <i>XXXX.cmdline</i> is created in AppData\local\temp and this file will be passed as argument to the C# compiler csc.exe to create XXXX.0.cs in AppData\local\temp. <br>
-                            The Add-Type cmdlet define a Microsoft .NET Core class in the PowerShell session. With that cmdlet, it is possible to instantiate .NET Core object, so C# Object can be created as well with that cmdlet. By compiling dynamically C# with PowerShell, it has been demontrated that it can evade detection from Device Guard since Code Integrity is not performed.
-                            <br>
-                            <strong>Device Guard</strong> is a functionality developed by Microsoft, available only on <i>Windows 10 Enterprise</i>. It allows to lock any device to only run signed and allowed applications and scripts. Device Guard uses a technology called "<strong>Code Integrity</strong>” which will verify the integrity of the Windows kernel before running any script. Therefore, it become harder to run a malicious code because it might be blocked by Device Guard. The Code Integrity is based on the virtualization and when the system is booting, Hyper-V Code Integrity verifies that every script and driver running at boot on the system are signed. <br>
-                            However, by compiling C# with PowerShell, the Code Integrity checks are not performed on any code that compiles C# dynamically with csc.exe. <br>
-                            <br>
-                            <u>What does dynamically compile means?</u><br>
-                            Delaying compilation of a program, it can be done at program load, or on demand as code is executed. During execution, the program may be compiled into native code to improve its performance. Since, it is compiling the code when the program has been executed, it means that we can run malicious C# code through PowerShell.
-                        </p>
-                    </div>
-                </div>
-            </section>
-            <section class="article">
-                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
-                    <div class="flex-grow-1">
-                        <h3 class="mb-0">POC: Analyzing PowerShell calling csc.exe</h3>
-                        <p>
-                            In this part, we are going to create a PowerShell script with Add-Type cmlet to compile a C# code. After executing the cmdlet Add-Type, PowerShell will run csc.exe. <br>
-                            First, let’s create a #C code.
+                        <h4 class="mb-0">Tools & technique</h4>
+                            <p>
+                                Resolving a buffer overflow challenge is before anything else understand where is located the vulnerability. GDB (GNU debugger) will be mostly used, a classic debugger in Linux, to see what is happening when executing a program. It can display the stack, and the registers. If you do not have any knowledge about how the stack works, please check out my tutorial about the stack here : <a href="../tutorial/understandstack.html">How does the stack work</a> <br>
+                                Before getting into Ret2libC attack, you must understand how to exploit a vulnerability buffer overflow. You can check out a classic buffer overflow here : <a href="bufferoverflow.html">Buffer Overflow</a>
+                                <br>
+                            </p>
 
-                            <img src="img/PowerShell .NET/program.png" class="img-fluid" width="500">
+                            <h4 class="mb-0">Find the vulnerability</h4>
+                           
+                            <h4 class="mb-0">Exploit the vulnerability</h4>
+                           
 
-                            This C# code will simply display "Hello World !". <br>
-                            Let's create a PowerShell script calling that csc.exe with the cmdlet Add-Type to compile dynamically this C# code.
 
-                            <img src="img/PowerShell .NET/powershell.png" class="img-fluid" width="500">
-
-                            Since we are using inline source code, TypeDefinition parameter specify that the code source is stored in the $code variable. <br>
-                            :: is used to call a static member of the class. <br>
-                            <strong>iex</strong> is Invoke-Expression and that is used to run a command or expression on a local system.
-                            A static function is a member function of a class that can be called even when an object of the class is not initialized. <br>
-                            <br>
-
-                            To view the file creation and all others file modification, let’s use “procmon”. Procmon (process monitor) is a troubleshooting tool from Windows Sysinternals that display the file and registry that applications access in real-time.
-
-                            <img src="img/PowerShell .NET/procmon.png" class="img-fluid" width="500">
-
-                            Using Procmon, we will filter on the program PowerShell.exe, and will record every file created by the process, or track the activity of that process. To open the filter window, press <i>crtl+L</i> or navigate to "<i>Filter</i>" and click on "<i>Filter...</i>". 
-
-                            <img src="img/PowerShell .NET/procmon_filter.png" class="img-fluid" width="500">
-
-                            Make sure that procmon is capturing the event, by checking that there is not a cross on the “Capturing” icon.
-
-                            <img src="img/PowerShell .NET/capture.png" class="img-fluid" width="500">
-
-                            We can clear the existing events by pressing ctrl+X or click on the button “clear”. Once we have cleaned the events, let’s run the script with PowerShell. 
-
-                            <div class="squarebox">.\powershell_script.ps1 -ExecutionPolicy Bypass</div>
-                            The option ExecutionPolicy Bypass allows us to run any script, signed or unsigned. It is made for testing purpose. 
-
-                            <img src="img/PowerShell .NET/filecreated.png" class="img-fluid" width="900">
-
-                            Before PowerShell is calling "csc.exe", there are some files created in the folder C:\Users\[<i>USERNAME</i>]\AppData\Local\Temp. 6 files are created, a .tmp, .0.cs, .dll, .cmdline, .out and .err files.
-                            Checking those files in the path C:\Users\[<i>USERNAME</i>]\AppData\Local\Temp, it does not exist anymore, it means that those files are deleted after that csc.exe has run.
-
-                            <img src="img/PowerShell .NET/appdata.png" class="img-fluid" width="500">
-
-                            PowerShell is calling csc.exe after creating the .tmp, .0.cs, .dll and .cmdline file. 
-
-                            <img src="img/PowerShell .NET/cscactivity.png" class="img-fluid" width="500">
-
-                            When Add-Type cmdlet is executed, the C# compiler (csc.exe) is invoked by PowerShell to compile this class definition into an assembly (.dll) with the .NET type to be used by the PS script. This .dll file is created in the folder C:\Users\[USERNAME]\AppData\Local\Temp. Another temporary file is created, with the extension .cmdline, this file is passed as argument to csc.exe and contains direction to compile a C# program which generate a .0.cs file.
-                            The .0.cs file contains the C# code classes, namespace, function passed in argument to the cmdlet Add-Type.
-                            In that case, .dll files provide some information to the Common Language Runtime including the language because the Common Language Runtime is the program managing the execution of the application. The programming languages such as Visual Basic, Visual C++ and C# compile their code and translate it to a Common Intermediate Language executable by the CLR. <br>
-                        </p>
-                        <br>
-                    </div>
-                </div>
-            </section>
-             <section class="article">
-                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
-                    <div class="flex-grow-1">
-                        <h3 class="mb-0">Downloading and execute C# assembly in PowerShell</h3>
-                        <p>
-                            After analyzing, how we can compile a C# code in PowerShell, I want to go further. Let's find out how to download a file from a URL and run the file on the system.
-
-                            <a href="https://github.com/GhostPack/Seatbelt">GhostPack - Seatbelt</a> is a C# project that performs a number of security oriented host-survey "safety checks" relevant from both offensive and defensive security perspectives. <br>
-                            We will use this tool in this exercise to see if we can run scanning check on a computer with our script. Let's download the C# project file.
-
-                            <div class="squarebox"> git clone https://github.com/GhostPack/Seatbelt</div>
-                            <img src="img/PowerShell .NET/seatbeltmaster.png" class="img-fluid" width="500">
-
-                            Open the SLN file with your C# IDE, and build the solution to get the assembly. Once the program is built, you will have the executable file of the program in the <strong>bin\Debug</strong> of the C# solution file.
-
-                            <img src="img/PowerShell .NET/seatbeltcompiled.png" class="img-fluid" width="500">
-
-                            After generating the executable file, let's see if we can create another C# program to run Seatbelt.
-                            I've come up with that C# script: 
-                            
-                            <img src="img/PowerShell .NET/seatbeltrunningcs.png" class="img-fluid" width="800">
-
-                            This program stores the byte of a program in a variable, then load the program in memory by using the Assembly library in C#, call the program by finding the entry point, most of the case the entry point correspond to the main function. In this case, we specify manually the path of the program, but later it would be great if we can get the binary from a webserver. 
-
-                            To get the assembly file of that program, we must compile the .cs file.
-                            <div class="squarebox">csc.exe -target:library -out:Seatbelt.dll AssemblyLoader.cs</div>
-                            After getting the assembly file, I've uploaded it in my github page.
-
-                            Now let's try to call a assembly file from PowerShell
-
-                            <img src="img/PowerShell .NET/runningcsprogram.png" class="img-fluid" width="600">
-
-                            In this PowerShell program, I download the assembly file from my github repository in the temp directory. Once the assembly file is load, the powershell recognize the method of the loaded assembly file.
-
-                            <img src="img/PowerShell .NET/runningcsprogram2.png" class="img-fluid" width="600">
-
-                            What I've demonstrated here is typical attack scenario. The adversary, compile a malicious code locally and update it in a server where he can retrieve that code. Once in a victim system, the hacker downloads the malicious file from his server and run it.
-
-                        </p>
                     </div>
                 </div>
             </section>

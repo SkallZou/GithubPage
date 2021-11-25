@@ -53,6 +53,17 @@
         <!-- Page Content-->
         <div>
             <h2 class="header-article">Vulnerability Exploitation</h2>
+            <hr class="m-0" /> <!-- Trait de separation entre les articles -->
+              <section class="summary-article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h3 class="mb-0"> <a href="vuln/ret2libc.html">Buffer Overflow - Ret2LibC</a></h3>
+                        <div class="subheading mb-3">Binary Exploitation </div>
+                        <p>Many protections exist against the buffer overflow vulnerability. Among those protections, NXbit makes the stack non executable or ASLR randomize the start location of the stack and the attacker cannot determine precisely what address to set to the register RIP to control the program execution. Ret2libC is a buffer overflow technique to bypass certain protection, it uses the C library to determine exactly the address of a specific function to open a shell for example, such as system() and /bin/sh.  </p>
+                    </div>
+                    <div class="flex-shrink-0"><span class="text-primary">November 2021</span></div>
+                </div>
+            </section>
              <hr class="m-0" /> <!-- Trait de separation entre les articles -->
               <section class="summary-article">
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">

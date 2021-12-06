@@ -61,7 +61,8 @@
                     <div class="flex-grow-1">
                         <h4 class="mb-0">Tools & technique</h4>
                             <p>
-                                Resolving a buffer overflow challenge is before anything else understand where is located the vulnerability. I'll mostly use GDB (GNU debugger), a classic debugger in Linux, to see what is happening when executing a program. It can display the stack, and the registers. If you do not have any knowledge about how the stack works, please check out my tutorial about the stack here : <a href="../tutorial/understandstack.html">How does the stack work</a> <br>
+                                A buffer overflow occurs when the program is trying to write data over a buffer capacity, resulting overwriting other memory locations. Overwriting the memory locations might give the attacker a chance to take control of the program execution.
+                                I'll mostly use GDB (GNU debugger), a classic debugger in Linux, to see what is happening in the stack when executing a program and fuzzing some data on it. The debugger can display the stack, and the registers, function address, library used, etc. If you do not have any knowledge about how the stack works, please check out my tutorial about the stack here : <a href="../tutorial/understandstack.html">How does the stack work</a> <br>
                                 <br>
                             </p>
 

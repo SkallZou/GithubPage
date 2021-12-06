@@ -61,16 +61,48 @@
                     <div class="flex-grow-1">
                         <h4 class="mb-0">Tools & technique</h4>
                             <p>
-                                Resolving a buffer overflow challenge is before anything else understand where is located the vulnerability. GDB (GNU debugger) will be mostly used, a classic debugger in Linux, to see what is happening when executing a program. It can display the stack, and the registers. If you do not have any knowledge about how the stack works, please check out my tutorial about the stack here : <a href="../tutorial/understandstack.html">How does the stack work</a> <br>
+                                Many protections exist against the buffer overflow vulnerability. Among those protections, NXbit makes the stack non executable or ASLR randomize the start location of the stack and the attacker cannot determine precisely what address to set to the register RIP to control the program execution. Ret2libC is a buffer overflow technique to bypass certain protection, it uses the C library to determine exactly the address of a specific function to open a shell for example, such as system() and /bin/sh. <br>
+                                <br>
                                 Before getting into Ret2libC attack, you must understand how to exploit a vulnerability buffer overflow. You can check out a classic buffer overflow here : <a href="bufferoverflow.html">Buffer Overflow</a>
                                 <br>
                             </p>
 
                             <h4 class="mb-0">Find the vulnerability</h4>
-                           
-                            <h4 class="mb-0">Exploit the vulnerability</h4>
-                           
+                            <p>
+                                <img src="img/ret2libc/binary_info.jpg" class="img-fluid" width="400">
+                            The program has no canary, and PIC enable. Only NX is enable which means that it prevents any code execution from the stack. Therefore the use of shellcodes might not be useful. PIC or PIE is not enable, which means that the .plt and the .got section will not change every time that the program is being executed.
+                            <img src="img/ret2libc/binary_string.jpg" class="img-fluid" width="600">
 
+                            Printing the functions and the strings used by the program can give you a many information to understand how does the program work. Reading the strings, it seems that the program will ask the user to choose a number and see if the user got the right book or a wrong one. The function rand() is being to randomize the result. The function gets() seems to be used in the program too. It might be a potential vulnerability in the program. <br>
+                            Let's disassemble the code to see how the program is working.
+                            <img src="img/ret2libc/disass1.jpg" class="img-fluid" width="800">
+                            The program is using the gets() function to get the user's answer. This function does not check for the number of characters written in the buffer. Exploiting this function, we might overwrite some data inside of the stack.
+                            <img src="img/ret2libc/disass2.jpg" class="img-fluid" width="800">
+                            Looking at the end of the program, it is simply printing "Correct" or "Wrong" depending on the user's first choice and then stop the program. We need to find a way to control the program and redirect it to a shell.
+                            <br>
+                            <h4 class="mb-0">Understanding the technique</h4>
+                            When the program call a function, the program first jump in the .plt section where the global offset table has the reference of that function address from libc. <br>
+                            <br>
+                            Let’s take the example with puts() function. During compilation, we don’t know its address, so the program will create a function “trampoline”, which will jump to the .plt section. The first time we call the function puts(), The plt section will not jump to the reference address pointed by GOT because at the time, the global offset table is empty. So it will jump to another location <strong>"dl_runtime_resolve"</strong>. <br>
+                            The function dl_runtime_resolve() belongs to the address of ld.so in our program. Ld.so is actually a dynamically linker, and dl_runtime_resolve() will find the address of the function puts() from the libc and update the GOT then execute puts(). <br>
+                            <br>
+                            The second time the program called puts(), since it has already been updated by the function dl_runtime_resolve from ld.so, GOT has the reference address of the function puts(). When the program jump to the .plt section, it will immediately jump that address without passing by dl_runtime_resolve to find the address in the libc. <br>
+                            <br>
+                            The address of libc might be different every time the program is executed but the global offset table might remain fixe.
+                            Static linking means that when the program is running, all the function needed is loaded in the process virtual address space. Programs need to run functions from the system libraries and those function also need to be loaded.
+                            Dynamically linking contain a statically linked function that maps the link library into memory and the link library determines the dynamic libraries which the program requires along with the name of the functions needed from those libraries. <br>
+                            <br>
+                            Looking at our program, we see puts(), srand(), printf(), gets() that has been used by our program. Those functions have been called by the program, therefore the global offset table has a reference address of those functions which point to the address in the libc.
+                            We want to print an address in libc from the remote machine. To print a value, we can use the puts() function. Since we know that GOT is pointing to the libc, then puts@plt(function@GOT) will give us the function address found in the libc. <br>
+
+                            </p>
+                            
+                            <h4 class="mb-0">Exploit the vulnerability</h4>
+                            <p>
+                            In this case we will take gets() as an example. <br>
+
+                            In x64 the first argument of a function is taken by the register RDI. Therefore before calling a program we must make sure that RDI is taking the value of gets.GOT. <br>
+                            </p>
 
                     </div>
                 </div>

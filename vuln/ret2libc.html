@@ -102,6 +102,43 @@
                             In this case we will take gets() as an example. <br>
 
                             In x64 the first argument of a function is taken by the register RDI. Therefore before calling a program we must make sure that RDI is taking the value of gets.GOT. <br>
+                            <br>
+                            <i><u>How do we modify the value of the registry RDI ?</u></i><br>
+                            The "POP" instruction set a register by placing the value of the top of the stack in that register. Therefore, with the instruction "pop rdi", we will place the value of the top of the stack on the register RDI. <br>
+                            To find that instruction, we might use ROPgadget that give us a list of instruction that we can use as gadget.
+                            <div class="squarebox">ROPgadget --binary ./the_library --only "pop|ret" | grep rdi</div>
+                            <img src="img/ret2libc/ropgadget.jpg" class="img-fluid" width="700">
+                            The instruction RET control the value of RIP becasue it is similar to "pop rip".<br>
+                            Since that now, we know how to control the stack and set some value to different register. We can planify how to exploit the vulnerabilities.
+                            <div class="squarebox">Offset + @Gadget + @Gets.GOT + @Puts.PLT + @exit</div>
+                            The size of the stackframe is 544 bytes, since we have the following instruction :
+                            <div class="squarebox">sub rsp, 0x220</div>
+                            0x220 in hexadecimal is equal to 544 bytes, the leave instruction in x64 will also add 8 bytes, and then we'll reach the "ret" instruction that let us control the register RIP. <br>
+                            <strong>Therefore, the offset neeeded to control the register RIP is 552. <br></strong> <br>
+                            Looking at the disassembly code of the main function, gets@plt is located at 0x401140
+                            <img src="img/ret2libc/address_gets.jpg" class="img-fluid" width="600">
+                            Let's disassemble at the address to see the list of instruction of the gets instruction
+                            <img src="img/ret2libc/disass_gets.jpg" class="img-fluid" width="700">
+                            <div class="squarebox">
+                                Offset = 552 <br>
+                                @Gadget = 0x0000000000401493 <br>
+                                @Gets.GOT = 0x403fc8 <br>
+                                @Puts.PLT = 0x4010e0 <br>
+                                @exit.PLT = 0x401170
+                            </div>
+                            So we can start building in python script thatget the address of the function gets() from the libc. 
+                            <img src="img/ret2libc/script1.jpg" class="img-fluid" width="700">
+                            <img src="img/ret2libc/leakaddress.jpg" class="img-fluid" width="500">
+                            Now that we get the address of the function gets() from the libc. We can also get the base address of the libc with the following substraction :
+                            <div class="squarebox">libc_base = leakaddress_gets - libc.sym["gets"]</div>
+                            <img src="img/ret2libc/libc_baseaddress.jpg" class="img-fluid" width="600">
+                            <div class="squarebox">Libc base address = 0x7fed1de9a070</div>
+                            Once we have the libc base address, we want to open a shell on the remote machine. To open a shell, we will call system(“/bin/sh”). Therefore we need to find the address of system() in libc.
+
+                            <div class="squarebox">system_libc = baseaddress_libc + libc.sym[‘system’] <br>
+                                binsh = baseaddress_libc + next(libc.search(b”/bin/sh\0xx”))
+                            </div>
+
                             </p>
 
                     </div>

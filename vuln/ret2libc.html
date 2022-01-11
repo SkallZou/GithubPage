@@ -133,12 +133,18 @@
                             <div class="squarebox">libc_base = leakaddress_gets - libc.sym["gets"]</div>
                             <img src="img/ret2libc/libc_baseaddress.jpg" class="img-fluid" width="600">
                             <div class="squarebox">Libc base address = 0x7fed1de9a070</div>
-                            Once we have the libc base address, we want to open a shell on the remote machine. To open a shell, we will call system(“/bin/sh”). Therefore we need to find the address of system() in libc.
+                            Once we have the libc base address, we want to open a shell on the remote machine. To open a shell, we will call system(“/bin/sh”). Therefore we need to find the address of system() in libc. Also this is why the challenge gives us a libc file, which must match with the version of the libc used by the vulnerable system. To use the libc file in our python script :
+                            <div class="squarebox">Libc = ELF(“libc-2.31.so”)</div>
 
                             <div class="squarebox">system_libc = baseaddress_libc + libc.sym[‘system’] <br>
                                 binsh = baseaddress_libc + next(libc.search(b”/bin/sh\0xx”))
                             </div>
 
+                            <img src="img/ret2libc/systembashaddress.jpg" class="img-fluid" width="600">
+                            Once we have found the address of system, and /bash/sh, we need to run the program a second time. The first run is used to get the necessary addresses of the libc and this second run is needed to get us a shell on the system. <br>
+                            Therefore, we will replace the address of exit() by the address of the main function so that instead jumping into the exit function and quit the program, it will recreate the stack frame and we will still be able to control the register RIP since we know the exact offset 
+
+                            <div class="squarebox">@Main = 0x00000000004012a9</div>
                             </p>
 
                     </div>

@@ -145,6 +145,16 @@
                             Therefore, we will replace the address of exit() by the address of the main function so that instead jumping into the exit function and quit the program, it will recreate the stack frame and we will still be able to control the register RIP since we know the exact offset 
 
                             <div class="squarebox">@Main = 0x00000000004012a9</div>
+
+                            In the second run, the goal is to have shell, therefore for that we need to call system with /bin/bash as argument.
+
+                            <div class="squarebox">payload_shell = offset + poprdi + binbash + system_libc</div>
+
+                            Once we reach the offset, the instruction RET will place the address of the instruction "pop rdi" in the register RIP. Pop rdi will be executed, setting the value of RDI by the address of binbash. Followed by another RET, that place the address of system in the register RIP. RIP execute the next instruction which is "system()". Since the first argument held by the register RDI is "/bin/bash", the program will call "system(/bin/bash)".
+
+                            Let's improve our script by adding the payload shell.
+
+                            <img src="img/ret2libc/script_shell.jpg" class="img-fluid" width="700">
                             </p>
 
                     </div>

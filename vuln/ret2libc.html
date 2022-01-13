@@ -146,15 +146,32 @@
 
                             <div class="squarebox">@Main = 0x00000000004012a9</div>
 
-                            In the second run, the goal is to have shell, therefore for that we need to call system with /bin/bash as argument.
+                            In the second run, the goal is to have shell, so we need to call system with /bin/bash as argument.
 
                             <div class="squarebox">payload_shell = offset + poprdi + binbash + system_libc</div>
 
-                            Once we reach the offset, the instruction RET will place the address of the instruction "pop rdi" in the register RIP. Pop rdi will be executed, setting the value of RDI by the address of binbash. Followed by another RET, that place the address of system in the register RIP. RIP execute the next instruction which is "system()". Since the first argument held by the register RDI is "/bin/bash", the program will call "system(/bin/bash)".
+                            Once we reach the offset, the instruction RET will place the address of the instruction "pop rdi" in the register RIP. Pop rdi will be executed, setting the value of RDI by the address of "/bin/bash". Followed by another RET, that will place the address of "system" in the register RIP. Since the first argument held by the register RDI is "/bin/bash", the program will call "system(/bin/bash)".
 
-                            Let's improve our script by adding the payload shell.
+                            Let's improve our script by adding the payload shell. <br>
+                            
+                            <img src="img/ret2libc/script2.jpg" class="img-fluid" width="700">
 
-                            <img src="img/ret2libc/script_shell.jpg" class="img-fluid" width="700">
+                            During the second run, I've encountered a segmentation error after fuzzing the stack, the program couldn't execute the <i>pop rdi; ret instruction</i>. To solve this problem, I have added another "ret" instruction after the leave instruction. <br>
+                            I get the ret instruction from the ROPGadget as I've done it with "pop rdi; ret".
+
+                            <img src="img/ret2libc/ropgadget_ret.jpg" class="img-fluid" width="600">
+                            <div class="squarebox">ret = 0x000000000040101a <br>
+                                payload_shell = offset + ret + poprdi + binsh + system_libc
+                            </div>
+
+                            During the second run, the program will be fuzzed, the leave instruction will set the address of ret instruction in the register RIP. The register RIP is executing the instruction ret, that will set the address of "pop rdi; ret" in the register RIP. When RIP execute "pop rdi; ret", it set the value of the top of the stack in the register RDI, which is the address of "/bin/sh", followed by the ret instruction "ret" that place the address of system in RIP. <br>
+                            RIP will execute system(/bin/bash).
+
+                            <img src="img/ret2libc/script3.jpg" class="img-fluid" width="700">
+
+                            <img src="img/ret2libc/flag.jpg" class="img-fluid" width="700">
+
+
                             </p>
 
                     </div>

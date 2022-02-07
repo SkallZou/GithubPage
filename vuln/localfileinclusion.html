@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Buffer Overflow</title>
+        <link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="../css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-xl navbar-dark bg-primary fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger" href="../index.html">
+                <span class="d-block d-xl-none">Olivier LEUNG</span>
+                <span class="d-none d-xl-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="../assets/img/profile.jpg" alt="" /></span>
+            </a>
+            <div class="d-none d-xl-block description_profile"> <!--d-none is used for responsiveness of the panel when you shring the window -->
+                <h3>Olivier LEUNG</h3>
+                <div class="subheading_panel">Cybersecurity engineer </div>
+                    <div class="subheading_description">Love testing random cyber stuff !<br>That's by baking we become a baker</div>
+            </div>
+            <!-- button collapse panel when small windows, responsive pane -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> 
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../ctfpage.html">CTF</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../dfirpage.html">DFIR</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../vulnpage.html">Vuln Exploitation</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../malwarepage.html">Malware Analysis</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../tutorialpage.html">Tutorial</a></li>
+                </ul>
+            </div>
+
+            <div class="d-none d-xl-block social-icons">
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/olivierleung"><i class="fab fa-linkedin-in"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://github.com/SkallZou"><i class="fab fa-github"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://twitter.com/olivier_leung"><i class="fab fa-twitter"></i></a>
+            </div>
+        <footer class="d-none d-xl-block">
+            <div class="container">
+              <p class="m-1 text-center footerpage">Copyright &copy; 2022 Olivier Leung<br>All rights reserved.</p>
+            </div>
+        </footer>
+        </nav>
+        <!-- Page Content-->
+        <div>
+            <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
+            <h3 class="header-article"><a href="../vulnpage.html">Vulnerability Exploitation </a>> Local File Inclusion</h3>
+            </nav>
+            
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h4 class="mb-0">Tools & technique</h4>
+                            <p>
+                                A <strong>Local File Inclusion</strong> (LFI) is a way to access to some local file from the web server that the user is not supposed to have accessed. Enumerating the local files of the web server can reveal some confidential documents or information. Similar as every attack, the attacker must find the vulnerability before exploiting it. It is necessary to look for an entry point. A LFI entry point can be a GET or a POST parameter that pass an argument or data to the web application. The GET request is usually found in the URL, that makes it easy to find. Then, the attacker can request any file from the web server. If the file is not found, then an error 404 will be shown, if the attacker doesn't have the rights to view the file, then another error code will appear to indicate it is forbidden.
+                            </p>
+
+                            <h4 class="mb-0">Find the vulnerability</h4>
+                            An entry point can be a GET or POST request. <br>
+                            <u>example :</u> http://webtest.xyz/file.php?file=password.txt
+                            <br>
+                            In the example above, there is GET request that pass a file as a argument and will send it to the web server. The <strong>file</strong> parameter has "password.txt" as value. Therefore, when the webserver has received this request, it might try to find that file and show the content of that file. Obviously it depends on the script behind file.php. <br>
+                            In a PHP file, we can use PHP filter wrapper to extract more data in the web application.
+                            <div class="squarebox">Php://filter/resource=/etc/passwd</div>
+                            /etc/passwd is a file on Linux that is readable for any user. This file does not show the password in clear, the password inside of that file is encrypted. If the user managed to get access to the file, or display the content of the file, the web server is potentially vulnerable to LFI attack. <br>
+
+                            <br>
+                            <h4 class="mb-0">Exploit the vulnerability</h4>
+                            There is a limit when using the PHP wrapper technique is we cannot include any .php file in the resource because the php code will be executed and won't display the content of the file. To solve this problem, encoding it with base64 can be a solution.
+                            <div class="squarebox">Php://filter/convert.base64-encode/resource=file.php
+                            </div>
+                            The content of the file "file.php" will be encoded in base64 and displayed on the web page. Then, we just have to decode the base64 to retrieve the content of the file. <br>
+                            <br>
+                            <strong><u><li>Local File Inclusion to Remote Code Execution via log files</li></u></strong>
+                            Playing around with a web application, we can find out how to access to the logs (access logs for example).
+                            <img src="img/localfileinclusion/log.jpg" class="img-fluid" width="600">
+
+                            In the example above, the logs store the user name, the IP address, the user-agent and the page that the user has accessed. <br>
+                            Among those data that are stored in the logs, the user-agent is the one that is modifiable, controllable by any user.
+                            <br>
+                            <strong>Curl</strong> is a great tool to make HTTP request to a web application. Let's look at the curl command.
+                            <div class="squarebox">curl --help</div>
+                            <img src="img/localfileinclusion/curlhelp.jpg" class="img-fluid" width="700">
+                            The parameter -A send a user-agent to the server, which means that any user can control the value of the "user-agent".
+                            <div class="squarebox">curl -A "The user agent has been modified" http://10.10.197.112/</div>
+                            <img src="img/localfileinclusion/useragent.jpg" class="img-fluid" width="700">
+                            As shown in the screenshot above, the user-agent has been modified with a value controlled by the user. We know that using PHP wrapper, we can load any php code in the web application, therefore if we modified the user agent with PHP code, we will execute it when using the PHP wrapper.
+                            <div>curl -A "<?php phpinfo(); ?>" http://10.10.197.12</div>
+                            <img src="img/localfileinclusion/useragent_php.jpg" class="img-fluid" width="700">
+                            The function phpinfo() will display the web server configuration. <br>
+                            <strong>Guest:172.17.0.1::/</strong> does not have any user agent. If we use a PHP wrapper to access to this page, the PHP code will be executed. On the log page, we also get the information where the log file is located on the server "./include/logs/app_access.log".
+                            <br>
+                            <img src="img/localfileinclusion/phpinfo.jpg" class="img-fluid" width="700">
+                            When we access to the page with the PHP wrapper, we see the web server configuration on the page.
+                            <div class="squarebox">php://filter/resource=./include/logs/app_access.log</div>
+                            If we have executed successfully some php code on the web server, then we successfully made a remote code execution (RCE). It is also called <strong>log poisoning</strong>. <br> <br>
+                            <strong><u><li>Local File Inclusion to Remote Code Execution via PHP session</li></u></strong>
+                            PHP sessions are files that store temporary information. When the user logs out of the web application, the PHP session information is deleted. Command location where the session file is located on the server:
+                            <ul>
+                                <li>C:\Windows\Temp</li>
+                                <li>/tmp/</li>
+                                <li>/var/lib/php5</li>
+                                <li>/var/lib/php/session</li>
+                            </ul>
+                            PHP session file store the value of the username into a the session file. <br>
+                            To find the PHP session file name, by default it uses a naming convention "sess_&ltSESSION_ID&gt". The SESSION_ID can be found by looking at the cookies.
+                            <img src="img/localfileinclusion/sessionid.jpg" class="img-fluid" width="700">
+                            In the example above, the cookie value is 8kvcms0gffo6nkare72vibg1d5, therefore the session information will be located in the following file: /tmp/sess_8kvcms0gffo6nkare72vibg1d5. <br>
+                            Since we know that the file will log the username, let's try to put some PHP code on the username tab.
+                            <img src="img/localfileinclusion/phpcode_username.jpg" class="img-fluid" width="700"> 
+                            Since that the session file store the value of the username, it will store some PHP code on it. Let's access the file with a PHP wrapper so that it will execute the PHP code.
+                            <div class="squarebox">http://10.10.184.38/index.php?err=php://filter/resource=/tmp/sess_8kvcms0gffo6nkare72vibg1d5</div>
+                            <img src="img/localfileinclusion/rce_session.jpg" class="img-fluid" width="700">
+                            And boom, remote code execution. Our PHP code "phpinfo()" execute it in the session file.
+
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>PowerShell .NET Assembly Usage</title>
+        <title>SEP - Recover Quarantined File</title>
         <link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico" />
         <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
@@ -98,19 +98,19 @@
                             <img src="img/SymantecQuarantineFile/vbntool_extract2.jpg" class="img-fluid" width="800">
                             In the second attempt, more bytes are written in the download.dat file. <br>
                             Let's take another look to the hexdump.
-                            <img src="img/SymantecQuarantineFile/hexdump_download2.jpg" class="img-fluid" width="800">
+                            <img src="img/SymantecQuarantineFile/hexdump_download2.jpg" class="img-fluid" width="700">
                             Looking at the hex dump, we see the MZ byte is present, despite the fact we don’t see 4D5A but only 5A. Sending the file to a Linux system to have a better tool to cut hexdump.
 
-                            <img src="img/SymantecQuarantineFile/xxd_download.jpg" class="img-fluid" width="800">
+                            <img src="img/SymantecQuarantineFile/xxd_download.jpg" class="img-fluid" width="700">
                             The offset that we need to take into account, to cut until the MZ byte is 118. We need to convert 118 to decimal.
                             <div class="squarebox">echo $((16#118))<br>280</div>
                             <img src="img/SymantecQuarantineFile/xxd_help.jpg" class="img-fluid" width="800">
                             <div class="squarebox">Option -s : start at seek bytes</div>
-                            <img src="img/SymantecQuarantineFile/xxd_offset.jpg" class="img-fluid" width="800">
+                            <img src="img/SymantecQuarantineFile/xxd_offset.jpg" class="img-fluid" width="700">
                             Time to redirect to another file. Redirect only the hex on a file call mimikatz.
                             <div class="squarebox">xxd -p -s 280 download.dat > mimikatz</div>
                             Convert the hex to string with Cyberchef and save the output as mimikatz.exe.
-                            <img src="img/SymantecQuarantineFile/cyberchef_mimikatz.jpg" class="img-fluid" width="800">
+                            <img src="img/SymantecQuarantineFile/cyberchef_mimikatz.jpg" class="img-fluid" width="900">
                             Get the file hash of the recovered mimikatz.exe.
                             <div class="squarebox"> md5sum mimikatz.exe <br>363a14d0604b63ffc04abadca139ed16 mimikatz.exe</div>
                             Check the hash on VirusTotal.

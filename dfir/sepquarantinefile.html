@@ -121,7 +121,16 @@
                             <img src="img/SymantecQuarantineFile/mimikatz.jpg" class="img-fluid" width="600">
 
                             Mimikatz is running, we managed to recover the quarantine file from those .vbn file under the path C:\ProgramData\Symantec\Symantec Endpoint Protecton\[VERSION_NUMBER]\Data\Quarantine.
+                         </p>
+                         <h3 class="mb-0 header-article">Conclusion : Lesson learnt</h3>
+                         <p>
+                             Many .vbn files can be found under the path “C:\ProgramData\Symantec\Symantec Endpoint Protection\[VERSIONNUMBER]\Data\Quarantine\”. Make sure that the .vbn file that you pick does not have a folder with the same name, otherwise the hexdump will show you some incorrect hex.
 
+                            Before extracting the file, make sure to check the information of the quarantine file to know what kind of file is.
+
+                            .exe, .pdf, .xlsx have different signatures, it will be useful to know those signature when editing the hexdump.
+
+                            <a href="https://en.wikipedia.org/wiki/List_of_file_signatures">List of file signatures - Wikipedia</a>
 
                          </p>
                     </div>

@@ -83,7 +83,8 @@
                             <img src="img/SymantecQuarantineFile/vbntool_info.jpg" class="img-fluid" width="800"> 
                             The time stamp is matching perfectly the quarantine time of both files. <br>
                             <br>
-                            Let's extract the both quarantine file.
+                            Let's extract the both quarantine file. Pass -o/--output to extract the quarantine file
+                            <div class="squarebox">.\vbntool.py [FILE.vbn] -o [FILENAME]</div>
                             <img src="img/SymantecQuarantineFile/vbntool_extract.jpg" class="img-fluid" width="800">
                             Surprisingly, SEP didn’t raise an alert to quarantine te file again. Moreover only 4ko for a mimikatz is really small, which is strange. <br>
                             Let's check the hex dump.
@@ -129,7 +130,7 @@
                             Before extracting the file, make sure to check the information of the quarantine file to know what kind of file is.
 
                             .exe, .pdf, .xlsx have different signatures, it will be useful to know those signature when editing the hexdump.
-
+                            <br>
                             <a href="https://en.wikipedia.org/wiki/List_of_file_signatures">List of file signatures - Wikipedia</a>
 
                          </p>

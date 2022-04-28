@@ -71,14 +71,14 @@
                             <h4 class="mb-0">Scenario & Topology</h4>
                             <p>
                                 <img src="img/namedpipe/diagram.jpg" class="img-fluid" width="700">
-                                The scenario that will be presented will focus on 3 machines. <br>
+                                The following scenario will focus on 3 machines. <br>
                                 <ul>
                                     <li>Attacker system : 192.168.101.12</li>
                                     <li>Compromised system : 192.168.101.13 - Windows 10</li>
                                     <li>Client system : 192.168.101.4 - Windows Server 2019</li>
                                 </ul>
 
-                                The attacker has a remote connection to the compromised system. The compromised system will initialize a pipe called "YahudPipe" and the client system will connect to it.
+                                Let's suppose that the attacker has a remote connection to the compromised system. The compromised system will initialize a pipe called "YahudPipe" and the client system will connect to it.
                             </p>
 
                             <h4 class="mb-0">Development & Scripting</h4>
@@ -280,7 +280,7 @@
 
                             <h4 class="mb-0">Conclusion</h4>
                             <p>
-                                Named pipes is a windows functionality that exist for a very long time, it is mainly used to send data from a process to another process. Most of people know the pipe to send the output of a command to the input of another command, such as dir | findstr "cmd.exe", which will send the output of the command "dir" as the input of the command "findstr". On the attack side, it is currently used by Cobalt Strike to exfiltrate data but on the defense side, we are still lacking of detection regarding this windows feature. As shown in this POC, the antivirus and EDR does not detect anything regarding the creation or the connection event of a pipe. Moreover, it give the opportunity for attackers to remotely execute code in memory which is another way to evade antivirus and EDR detection.
+                                Named pipes is a windows functionality that exist for a very long time, it is mainly used to send data from a process to another process. Most of people know the pipes to send the output of a command to the input of another command, such as dir | findstr "cmd.exe", which will send the output of the command "dir" as the input of the command "findstr". On the attack side, it is currently used by Cobalt Strike to exfiltrate data but on the defense side, we are still lacking of detection regarding this windows feature. As shown in this POC, the antivirus and EDR do not detect anything regarding the creation or the connection event of a pipe. Moreover, it give the opportunity for attackers to remotely execute code in memory which is another way to evade antivirus and EDR detection.
                             </p>
 
                     </div>

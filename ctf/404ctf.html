@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Brigitte Friang</title>
+        <title>404CTF</title>
         <link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico" />
         <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
@@ -38,7 +38,6 @@
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../tutorialpage.html">Tutorial</a></li>
                 </ul>
             </div>
-
             <div class="d-none d-xl-block social-icons">
                 <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/olivierleung"><i class="fab fa-linkedin-in"></i></a>
                 <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://github.com/SkallZou"><i class="fab fa-github"></i></a>
@@ -53,37 +52,23 @@
         <!-- Page Content-->
         <div>
             <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
-            <h3 class="header-article"><a href="../ctfpage.html">Capture The Flag </a>> Brigitte Friang Challenge</h3><!--change path if file has been moved to another folder-->
+            <h3 class="header-article"><a href="../ctfpage.html">Capture The Flag </a>> 404CTF</h3> <!--change path if file has been moved to another folder-->
             </nav>
             <section class="article">
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
-                        <div class="subheading mb-3">Capture the flag organized by the DGSE and ESIEE </div> <!-- mb-3 add padding bottom-->
+                        <div class="subheading mb-3">Capture the flag organized by DGSE </div> <!-- mb-3 add padding bottom-->
+                        <p>The DGSE (Direction Générale de la Sécurité Extérieure) and another french engineer school Mines Telecom Paris Sud have organized a cybersecurity challenge in May 2022. Many challenges were presents for cyber passionates to evaluate their skills by resolving them and capturing the flag to earn points. Write ups of successful challenges are presented here.</p>
+                        <br>
+                        <h4 class="mb-3">Here are the write-ups of the challenges I have succeded:</h4>
                         <p>
-                            <u>This challenge is made by french organizations and the challenge will be mainly in french. Some of the discoveries might be obvious for people understanding french.</u>
-                            <br>Reaching the page, we are facing a page with 0 user interaction.
-                            <img src="BrigitteFriang/img/home/webpage.png" class="img-fluid" width="600">
-                            Let's analyze the source code of the webpage to see if we can get some information. Press F12 to open the Developer Tools or right click on the page and click on <i>View Page Source</i>
-                            <img src="BrigitteFriang/img/home/codesource.png" class="img-fluid" width="600">
-                            Looking at the source code, we see that the web page is using bootstrap, some .png files to display images, js files, and also a html file in comment ("<strong>/static/message-secret.html</strong>"). Let’s take a look at the path /static/message-secret.html and see what is the content of <i>https://challengecybersec.fr/static/message-secret.html</i>
-                            <img src="BrigitteFriang/img/home/messagesecret.png" class="img-fluid" width="600">
-                            We are facing an ecrypted message and if you look closely, some letters in the text are in bold “<strong>/joha</strong>”.
-                            The page title is “Cesar”. Do we have a encryption method containing Cesar? Yes ! "Chiffrement de Cesar" which is Caesar cipher. Caesar cipher is a shift cipher, one of the simplest encryption methods. <br>
-                            I suspect that the message is in French, we have “sl 23/01/1924” (the date format is also in french format ;)) and “h 19 huz”, it is probably “le 23/01/1924” and “a 19 ans”. The number of shifts to go from “A” to “H” is 7. We might have the cipher key. <br>
-                            <br>
-                            HIJKLMNOPQRSTUVWXYZABCDEFG <br>
-                            ABCDEFGHIJKLMNOPQRSTUVWXYZ <br>
-                            <br>
-
-                            To decrypt it we can use any tool on internet such as <a href="https://www.dcode.fr/chiffre-cesar">https://www.dcode.fr/chiffre-cesar</a>.<br>
-                            Decrypting the message does not give us a lot of information, it is about Brigitte Friang history. However, decrypting the 5 bolds characters gives us "<strong>/chat</strong>" as result. “/” can either be a path of a linux machine or it can also be the directory of an URL. We should check <i>https://challengecybersec.fr/chat</i>. 
-
-                            <img src="BrigitteFriang/img/home/chat.png" class="img-fluid" width="600">
-
-                            Reaching the /chat page, we are facing 5 people asking us to resolve the mystery behind some riddles. Only 2 out of 5 have been completed. Here are the write-ups for those challenges: <br>
+                            <div class="mb-3" style="font-size: 1rem;"><i>Forensics</i></div>
                             <ul>
-                                <li><a href="BrigitteFriang/web.html">Service Web</a></li>
-                                <li><a href="BrigitteFriang/forensic.html">Service Forensic</a></li>
+                            <li><div class="mb-2"><a href="404ctf/floppy.html">Floppy (Disk Analysis)</a></div></li>
+                            </ul>
+                            <div class="mb-3" style="font-size: 1rem;"><i>Binary Exploitation</i></div>
+                            <ul>
+                                <li><div class="mb-2"><a href="404ctf/tropfacile.html">Trop Facile (Buffer Overflow)</a></div></li>
                             </ul>
                         </p>
                     </div>

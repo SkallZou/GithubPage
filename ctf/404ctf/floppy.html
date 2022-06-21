@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Floppy</title>
+        <link rel="icon" type="image/x-icon" href="../../assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="../../css/styles.css" rel="stylesheet" /><!--change path if file has been moved to another folder-->
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-xl navbar-dark bg-primary fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger" href="../../index.html"><!--change path if file has been moved to another folder-->
+                <span class="d-block d-xl-none">Olivier LEUNG</span>
+                <span class="d-none d-xl-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="../../assets/img/profile.jpg" alt="" /></span><!--change path if file has been moved to another folder-->
+            </a>
+            <div class="d-none d-xl-block description_profile"> <!--d-none is used for responsiveness of the panel when you shring the window -->
+                <h3>Olivier LEUNG</h3>
+                <div class="subheading_panel">Cybersecurity engineer </div>
+                    <div class="subheading_description">Love testing random cyber stuff !<br>That's by baking we become a baker</div>
+            </div>
+            <!-- button collapse panel when small windows, responsive pane -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> 
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../../ctfpage.html">CTF</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../../dfirpage.html">DFIR</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../../vulnpage.html">Vuln Exploitation</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../../malwarepage.html">Malware Analysis</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../../tutorialpage.html">Tutorial</a></li>
+                </ul>
+            </div>
+
+            <div class="d-none d-xl-block social-icons">
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/olivierleung"><i class="fab fa-linkedin-in"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://github.com/SkallZou"><i class="fab fa-github"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://twitter.com/olivier_leung"><i class="fab fa-twitter"></i></a>
+            </div>
+        <footer class="d-none d-xl-block">
+            <div class="container">
+              <p class="m-1 text-center footerpage">Copyright &copy; 2022 Olivier Leung<br>All rights reserved.</p>
+            </div>
+        </footer>
+        </nav>
+        <!-- Page Content-->
+        <div>
+            <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
+            <h3 class="header-article"><a href="../../ctfpage.html">Capture The Flag </a>> <a href="../404ctf.html">404CTF </a>> Floppy</h3><!--change path if file has been moved to another folder-->
+            </nav>
+            
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <p>
+                            The challenge gives us a file named "floppy.img". The goal of the challenge is to recover the files that have been deleted by mistake. <br>
+
+                            <u>Mount the disk image:</u>
+                            <div class="squarebox">losetup -f : To find the first unused device
+                                <br>
+                                losetup /dev/loop0 ./floopy.img <br>
+                                mkdir ./mountpoint <br>
+                                mount /dev/loop0 ./mountpoint
+                            </div>
+                            <u>List the element present in the mountpoint:</u>
+                            <img src="img/floppy/mountpoint.jpg" class="img-fluid" width="400">
+                            Simply by looking at the name, a file seems to be missing, we have IMG_0001.jpg, IMG_0002.jpg, IMG_0004.jpg and IMG_0005.jpg. <br>
+                            Where is IMG_0003.jpg ? <br>
+                            It is potentially the file that has been deleted by accident. <br>
+                            <img src="img/floppy/hexdump_img3.jpg" class="img-fluid" width="600">
+                            Looking at the hex dump, IMG_003 is found and some data of that file is still present, we also see the date of deletion “2022-05-07”. As long as the data have not been completely overwritten, we might have a chance to recover it. <br>
+                            To recover a file, two methods are possible, use of testdisk or autopsy. Testdisk method will be shown in that write up. Autopsy has a graphical user interface, which makes it easier.<br>
+                            <br>
+                            <h4>Testdisk</h4>
+                            By default, testdisk will attempt to identify the partition table type, usually we want to select a default partition type since testdisk tries to find the correct partition type. In our case, “None” has been chosen.
+                            <img src="img/floppy/testdiskselectmedia.jpg" class="img-fluid" width="600">
+                            <img src="img/floppy/testdiskselectpartition.jpg" class="img-fluid" width="600">
+                            <img src="img/floppy/testdiskselectpartition2.jpg" class="img-fluid" width="600">
+                            Once the partition has been chose, click on "list" to list directories and files on the disk.
+                            <img src="img/floppy/testdisklistoption.jpg" class="img-fluid" width="600">
+                            <img src="img/floppy/testdisklistfile.jpg" class="img-fluid" width="600">
+                            The color red indicates the deleted files or deleted folder. Press ‘a’ to select all the file and ‘c’ to copy. Choose your destination folder and press ‘c’ to copy. <br>
+                            Once done, you should find the file that has been copied to your destination.
+                            <img src="img/floppy/ls.jpg" class="img-fluid" width="600">
+                            Open the file IMG_0003.jpg and the file is there.
+                            <div class="squarebox"> Umount /dev/loop0 : Unmount the device <br>
+                            losetup -d /dev/loop0 : Disconnect the device from the system</div>
+                            And the flag is present in that file.
+                            <img src="img/floppy/flag.jpg" class="img-fluid" width="600">
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

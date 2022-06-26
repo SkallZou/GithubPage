@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Un Agent Compromis</title>
+        <link rel="icon" type="image/x-icon" href="../../assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="../../css/styles.css" rel="stylesheet" /><!--change path if file has been moved to another folder-->
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-xl navbar-dark bg-primary fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger" href="../../index.html"><!--change path if file has been moved to another folder-->
+                <span class="d-block d-xl-none">Olivier LEUNG</span>
+                <span class="d-none d-xl-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="../../assets/img/profile.jpg" alt="" /></span><!--change path if file has been moved to another folder-->
+            </a>
+            <div class="d-none d-xl-block description_profile"> <!--d-none is used for responsiveness of the panel when you shring the window -->
+                <h3>Olivier LEUNG</h3>
+                <div class="subheading_panel">Cybersecurity engineer </div>
+                    <div class="subheading_description">Love testing random cyber stuff !<br>That's by baking we become a baker</div>
+            </div>
+            <!-- button collapse panel when small windows, responsive pane -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> 
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../../ctfpage.html">CTF</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../../dfirpage.html">DFIR</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../../vulnpage.html">Vuln Exploitation</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../../malwarepage.html">Malware Analysis</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../../tutorialpage.html">Tutorial</a></li>
+                </ul>
+            </div>
+
+            <div class="d-none d-xl-block social-icons">
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/olivierleung"><i class="fab fa-linkedin-in"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://github.com/SkallZou"><i class="fab fa-github"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://twitter.com/olivier_leung"><i class="fab fa-twitter"></i></a>
+            </div>
+        <footer class="d-none d-xl-block">
+            <div class="container">
+              <p class="m-1 text-center footerpage">Copyright &copy; 2022 Olivier Leung<br>All rights reserved.</p>
+            </div>
+        </footer>
+        </nav>
+        <!-- Page Content-->
+        <div>
+            <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
+            <h3 class="header-article"><a href="../../ctfpage.html">Capture The Flag </a>> <a href="../404ctf.html">404CTF </a>> Un Agent Compromis</h3><!--change path if file has been moved to another folder-->
+            </nav>
+            
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <p>
+                            The challenge tells us to that a user was exfiltrating some confidential documents from his office computer to another server. He managed to exfiltrate the data, but fortunately, the system has monitored the network traffic and might have potentially captured the file that was used to exfiltrate the company data. <br>
+                            Checking the GET request traffic on Wireshark
+                            <div class="squarebox">http.request.method == “GET”</div>
+                            <img src="img/agentcompromis/httpget.jpg" class="img-fluid" width="900">
+                            The result shows some suspicious file like "exfiltration.py". Let’s download the file to see what’s inside. You can also follow the TCP stream and check the response from the client.
+                            <img src="img/agentcompromis/followtcp.jpg" class="img-fluid" width="700">
+                            On the HTTP response, we see some code that appear, you can get the first flag here, but I also want to show you how to download a file that has been downloaded by the user. <br>
+                            <i>Click on export HTTP object list</i>
+                            <img src="img/agentcompromis/exporthttpobject.jpg" class="img-fluid" width="700">
+                            Click on "save" to save the file.
+                            <img src="img/agentcompromis/exfiltration.jpg" class="img-fluid" width="700">
+                            At the end of the script, we have the flag. <br>
+                            <br>
+                            According to the python script, some data are sent through the 
+                            protocol DNS. Therefore, we can filter on "dns" in Wireshark.
+                            <img src="img/agentcompromis/dns1.jpg" class="img-fluid" width="900">
+                            The domain name is located on the following section : 
+                            <div class="squarebox">Domain Name System (query) -> Queries -> Name</div>
+                            Select it and apply it as a column. <br>
+                            <br>
+                            Inside of the python script, we have the information of 626567696E.hallebarde.404ctf.fr and 656E64.hallebarde.404ctf.fr which in ascii indicate “begin” and “end”. <br>
+                            Let’s filter on “626567696E.hallebarde.404ctf.fr” to see if the user computer has made that DNS request. <br>
+
+                            <img src="img/agentcompromis/dns2.jpg" class="img-fluid" width="900">
+                            In Wireshark, there are 4 requests of that type, which potentially means that there are 4 extracted files.
+
+                            <div class="squarebox">dns.qry.name contains "hallebarde.404ctf.fr"</div>
+                            <img src="img/agentcompromis/dns3.jpg" class="img-fluid" width="900">
+                            Between those two requests, some dns requests contain encoded data in hex. <br>
+                            Everyfile that has been extracted has an extension, such as the previous file "exfiltration.py". We might have "2e" which represent a "." in ascii. So let's export the result of dns.qry.name contains "2e". Since that we know, the response is normally the same as the request, we just want one of them to not have duplicate values.
+                            <div class="squarebox">(dns.qry.name contains "2e") && (dns.flags == 0x0100)</div>
+                            Export the value in a CSV file.
+                            <img src="img/agentcompromis/resultdns.jpg" class="img-fluid" width="400">.
+                            The filter came out with a lot of results, we were supposed to only have 4 files that have been extracted. We've forgotten to take into account the position of the period. <br>
+                            <br>
+                            Regular expression : ^[^.]+ => Match everything from the start until the first occurrence of “.” <br>
+                            With this regular expression, we remove the domain name "hallebarde.404ctf.fr". To do some hex analysis, I have written the following python script that take account the position of the "." in the file. 
+                            <div class="squarebox">
+                                import re <br>
+                                import codecs <br>
+                                <br>
+                                with open("dnsquery.txt", encoding='utf-8') as f: <br>
+                                &emsp;name = [] <br>
+                                &emsp;for i in f: <br>
+                                    &emsp;&emsp;name.append(re.search("^[^.]*", i).group()) <i># only keep the hostname</i> <br>
+
+                                print(name) <br>
+                                namehex = [] <br>
+                                tmplist = [] <br>
+                                for i in name: <br>
+                                &emsp;for j in range(0, len(i), 2): <br>
+                                &emsp;&emsp;tmplist.append(i[j:j+2]) <br>
+                                &emsp;namehex.append(tmplist) <br>
+                                &emsp;tmplist = [] <br>
+                                file = [] <br>
+                                for cpt in range(len(namehex)): <br>
+                                &emsp;if namehex[cpt][-4] == '2e' or namehex[cpt][-3] == '2e': <i># take account position</i><br>
+                                &emsp;&emsp;file.append(namehex[cpt]) <br>
+                                j = 0 <br>
+                                for k in files: <br>
+                                &emsp;files[j] = ''.join(k) <i># Remove space</i><br>
+                                &emsp;j = j+1 <br>
+
+                                print(files) <br>
+
+                            </div>
+
+                            Result : 666c61672e747874, 68616c6c6562617264652e706e67, 73757065722d7365637265742e706466, 657866696c74726174696f6e2e7079... <br> 
+                            <br>
+                            The last thing to do is to convert those hexadecimal values in hex.
+
+                            <div class="squarebox">
+                                for i in files: <br>
+                                &emsp;print(str(codecs.decode(i, "hex"))) <br></div>
+
+                            <strong>File found : exfiltration.py,flag.txt,hallebarde.png,super-secret.pdf</strong> <br>
+                            <br>
+                            We are asked to find the content of the file "super-secret.pdf" but this one is not readable.
+                            <br>
+                            To get the content of those file, the script "exfiltration.py" gives us some hint about how those files have been extracted. The content of the file is between those dns requests where the values are 626567696E.hallebarede.404ctf.fr and 656E64.hallebarde.404ctf.fr. <br>
+                            <br>
+                            Extracting the dns response, I've noticed that there are more responses than requests.
+
+                            <img src="img/agentcompromis/dnsresponse.jpg" class="img-fluid" width="800">
+                            On the left the request (293 lines), and on the right the responses with 2441 lines. <br>
+                            <br>
+                            On the dns responses, search for "73757065722d7365637265742e706466" which correspond to "super-secret.pdf" in hexadecimal. Once you have it, copy all the hex until 656E64 which mean "end". <br>
+                            <br>
+                            Paste the value on CyberChef and convert them to strings.
+                            <img src="img/agentcompromis/supersecret.jpg" class="img-fluid" width="600">
+                            From CyberChef, as expected from the file name, it is a pdf file, let's download it and see what we have.
+                            <img src="img/agentcompromis/supersecret2.jpg" class="img-fluid" width="600">
+                            Awesome, nothing, let's see if we can find something there. After a long time analyzing the object inside of the pdf using <strong>pdfid.py</strong> and <strong>pdf-parser.py</strong> from Didier Stevens, nothing came out until I use binwalk and see "begincmap" and "endcmap".
+                            <img src="img/agentcompromis/binwalk.jpg" class="img-fluid" width="600">
+                            <img src="img/agentcompromis/binwalk2.jpg" class="img-fluid" width="600">
+                            <img src="img/agentcompromis/cmap.jpg" class="img-fluid" width="600">
+
+                            I've used this python script to analyze and read the content of the pdf:
+
+                            <div class="squarebox">
+                                from pdfminer3.layout import LAParams, LTTextBox <br>
+                                from pdfminer3.pdfpage import PDFPage <br>
+                                from pdfminer3.pdfinterp import PDFResourceManager <br>
+                                from pdfminer3.pdfinterp import PDFPageInterpreter <br>
+                                from pdfminer3.converter import PDFPageAggregator <br>
+                                from pdfminer3.converter import TextConverter <br>
+                                import io <br>
+                                <br>
+                                resource_manager = PDFResourceManager() <br>
+                                fake_file_handle = io.StringIO() <br>
+                                converter = TextConverter(resource_manager, fake_file_handle, laparams=LAParams()) <br>
+                                page_interpreter = PDFPageInterpreter(resource_manager, converter) <br>
+                                <br>
+                                with open('./super-secret.pdf', 'rb') as fh: <br>
+                                &emsp;for page in PDFPage.get_pages(fh, caching=True, check_extractable=True): <br>
+                                &emsp;&emsp;page_interpreter.process_page(page) <br>
+                                &emsp;text = fake_file_handle.getvalue() <br>
+                                <br>
+                                # close open handles <br>
+                                converter.close() <br>
+                                fake_file_handle.close() <br>
+                                <br>
+                                print(text) <br>
+                            </div>
+                            <img src="img/agentcompromis/pdfcontent.jpg" class="img-fluid" width="400">
+                            Inside of that pdf content, there are some number with cid, it reminds me of the cmap that we have seen previously, let's map the cid with the values in the cmap.
+
+                            <img src="img/agentcompromis/pdfcontent2.jpg" class="img-fluid" width="400">
+
+                            Taking all those values gives us 3430344354467B444E535F337866316C7472347431306E5F68616C6C6562617264657D. Converting this hexadecimal value in string, it gives us <strong>404CTF{DNS_3xf1ltr4t10n_hallebarde}</strong>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

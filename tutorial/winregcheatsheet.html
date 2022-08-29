@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Windows Registry - CheatSheet</title>
+        <link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="../css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-xl navbar-dark bg-primary fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger" href="../index.html">
+                <span class="d-block d-xl-none">Olivier LEUNG</span>
+                <span class="d-none d-xl-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="../assets/img/profile.jpg" alt="" /></span>
+            </a>
+            <div class="d-none d-xl-block description_profile"> <!--d-none is used for responsiveness of the panel when you shring the window -->
+                <h3>Olivier LEUNG</h3>
+                <div class="subheading_panel">Cybersecurity engineer </div>
+                    <div class="subheading_description">Love testing random cyber stuff !<br>That's by baking we become a baker</div>
+            </div>
+            <!-- button collapse panel when small windows, responsive pane -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> 
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../ctfpage.html">CTF</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../dfirpage.html">DFIR</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../vulnpage.html">Vuln Exploitation</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../malwarepage.html">Malware Analysis</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../tutorialpage.html">Tutorial</a></li>
+                </ul>
+            </div>
+
+            <div class="d-none d-xl-block social-icons">
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/olivierleung"><i class="fab fa-linkedin-in"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://github.com/SkallZou"><i class="fab fa-github"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://twitter.com/olivier_leung"><i class="fab fa-twitter"></i></a>
+            </div>
+        <footer class="d-none d-xl-block">
+            <div class="container">
+              <p class="m-1 text-center footerpage">Copyright &copy; 2022 Olivier Leung<br>All rights reserved.</p>
+            </div>
+        </footer>
+        </nav>
+        <!-- Page Content-->
+        <div>
+            <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
+            <h3 class="header-article"><a href="../tutorialpage.html">Tutorial & Cheatseet </a>> Windows Registry Cheatsheet</h3>
+            </nav>
+            
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h4 class="mb-0">Malware Windows registry modification</h4>
+                        <p>
+                            It is common that malwares will attempt to modify the Windows registry to achieve persistence on exploited systems or to bypass some built in securities. <br>
+                            <br>
+                            <strong>Disable UAC :</strong> <br>
+                            <ul>
+                                <li>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA" set to 0</li>
+                                <div class="squarebox">&lt;SYSTEM32&gt;\reg.exe /k Reg Add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v "EnableLUA" /t "REG_DWORD" /d "0" /f</div>
+                                <li>HKLM\SOFTWARE\MICROSOFT\WINDOWS\CURRENTVERSION\POLICIES\SYSTEM\ConsentPromptBehaviorAdmin" set to 0</li>
+                                <div class="squarebox">&lt;SYSTEM32&gt;\reg.exe /k Reg Add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v "ConsentPromptBehaviorAdmin" /t "REG_DWORD" /d "0" /f</div>
+                                <li>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\UAC\COMAutoApprovalList <br>
+                                    Shows all COM objects that auto-elevate, bypassing UAC. The COM objects inside of that registry path are defined with their CLSID. To walk through COM class in Windows <a href="https://github.com/tyranid/oleviewdotnet">OleView.NET</a></li>
+                            </ul>
+                            <br>
+                            <strong>Persistence</strong>
+                            <ul>
+                                <li>HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run</li>
+                                <li>HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce</li>
+                                <li>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run</li>
+                                <li>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\RunOnce</li>
+                                Run or RunOnce registry keys to make a program run when a user logs on. The Run key makes the program run every time the user logs on, while the RunOnce key makes the program run one time, and then the key is deleted.
+                                <br><br>
+                                <li>HKCU\Software\Microsoft\Windows NT\CurrentVersion\Winlogon</li>
+                                <li>HKLM\Software[\Wow6432Node\]\Microsoft\Windows NT\CurrentVersion\Winlogon <br>Malicious modifications to these Registry keys may cause Winlogon to load and execute malicious DLLs and/or executables. <br>
+                                    &emsp;Winlogon\Notify - points to notification package DLLs that handle Winlogon events.<br>
+                                    &emsp;Winlogon\Userinit - points to userinit.exe, the user initialization program executed when a user logs on.<br>
+                                    &emsp;Winlogon\Shell - points to explorer.exe, the system shell executed when a user logs on.
+                                </li>
+
+                            </ul>
+                            <br>
+                            <strong>Technical details :</strong> <br>
+
+                            HKLM : HKEY_LOCAL_MACHINE <br>
+                            HKEY_CLASSES_ROOT : HKLM\Software
+
+                        </p>                      
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

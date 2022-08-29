@@ -75,18 +75,26 @@
                             <br>
                             <strong>Persistence</strong>
                             <ul>
+                                Run or RunOnce registry keys to make a program run when a user logs on. The Run key makes the program run every time the user logs on, while the RunOnce key makes the program run one time, and then the key is deleted.
+                                <br>
                                 <li>HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run</li>
                                 <li>HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce</li>
                                 <li>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run</li>
                                 <li>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\RunOnce</li>
-                                Run or RunOnce registry keys to make a program run when a user logs on. The Run key makes the program run every time the user logs on, while the RunOnce key makes the program run one time, and then the key is deleted.
-                                <br><br>
+                                <br>
+                                Malicious modifications to these registry keys may cause Winlogon to load and execute malicious DLLs and/or executables. <br>
                                 <li>HKCU\Software\Microsoft\Windows NT\CurrentVersion\Winlogon</li>
-                                <li>HKLM\Software[\Wow6432Node\]\Microsoft\Windows NT\CurrentVersion\Winlogon <br>Malicious modifications to these Registry keys may cause Winlogon to load and execute malicious DLLs and/or executables. <br>
+                                <li>HKLM\Software[\Wow6432Node\]\Microsoft\Windows NT\CurrentVersion\Winlogon <br>
                                     &emsp;Winlogon\Notify - points to notification package DLLs that handle Winlogon events.<br>
                                     &emsp;Winlogon\Userinit - points to userinit.exe, the user initialization program executed when a user logs on.<br>
                                     &emsp;Winlogon\Shell - points to explorer.exe, the system shell executed when a user logs on.
                                 </li>
+                                <br>
+                                Adversaries may abuse the Windows Task Scheduler to perform task scheduling for initial or recurring execution of malicious code. <br>
+                                    <li>HKLM\Software\Microsoft\Windows NT\CurrentVersion\Schedule\Taskcache\Tasks</li>
+                                <div class="squarebox">C:\Windows\system32\schtasks.exe" /Create /F /SC DAILY /ST 12:00 /TN MicrosoftEdge /TR "c:\Windows\system32\wscript.exe C:\Windows\temp\Windows.vbe"</div>
+                                <li>HKLM\Software\Microsoft\Windows NT\CurrentVersion\Schedule\Taskcache\Tree</li>
+                                <div class="squarebox">at.exe \\computername time/interactive | /every: date, … /next: date, … command</div>
 
                             </ul>
                             <br>

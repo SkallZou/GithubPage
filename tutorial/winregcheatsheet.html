@@ -63,7 +63,7 @@
                         <p>
                             It is common that malwares will attempt to modify the Windows registry to achieve persistence on exploited systems or to bypass some built in securities. <br>
                             <br>
-                            <strong>Disable UAC :</strong> <br>
+                            <strong>Disable UAC :</strong>
                             <ul>
                                 <li>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA" set to 0</li>
                                 <div class="squarebox">&lt;SYSTEM32&gt;\reg.exe /k Reg Add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v "EnableLUA" /t "REG_DWORD" /d "0" /f</div>
@@ -73,7 +73,7 @@
                                     Shows all COM objects that auto-elevate, bypassing UAC. The COM objects inside of that registry path are defined with their CLSID. To walk through COM class in Windows <a href="https://github.com/tyranid/oleviewdotnet">OleView.NET</a></li>
                             </ul>
                             <br>
-                            <strong>Persistence</strong>
+                            <strong>Persistence :</strong>
                             <ul>
                                 Run or RunOnce registry keys to make a program run when a user logs on. The Run key makes the program run every time the user logs on, while the RunOnce key makes the program run one time, and then the key is deleted.
                                 <br>

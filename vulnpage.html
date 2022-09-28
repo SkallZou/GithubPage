@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>vuln Exploitation</title>
+        <title>Vulnerability Exploitation</title>
         <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
         <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
@@ -57,6 +57,17 @@
              <section class="summary-article">
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
+                        <h3 class="mb-0"> <a href="vuln/dnstunneling.html">DNS Tunneling</a></h3>
+                        <div class="subheading mb-3">Post-Exploitation</div>
+                        <p>Domain Name System has been created in the very early days of Internet and the DNS Tunneling attack method is not a recent discovery, it has been around for a very long time. Despite it is a old and well known technique, many organizations still have difficulties to detect and prevent it. Usually, adversaries use DNS Tunneling for data exfiltration but in some recent malicious activities, DNS Tunneling has been also used to beacon a Command & Control and execute commands or payload(Cobalt Strike)</p>
+                    </div>
+                    <div class="flex-shrink-0"><span class="text-primary">September 2022</span></div>
+                </div>
+            </section>
+            <hr class="m-0" /> <!-- Trait de separation entre les articles -->
+             <section class="summary-article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
                         <h3 class="mb-0"> <a href="vuln/namedpipes.html">Named Pipes</a></h3>
                         <div class="subheading mb-3">Post-Exploitation</div>
                         <p><strong>Names pipes</strong> are a Windows feature used for interprocess communication (IPC). It can be used to load the backdoor into memory or inject into a process. Named pipes are used for local processes to communicate with each other. It’s similar to a TCP session between a client and server. It can be used to provide a communication channel between processes on the same computer or between processes on different computers across a network.</p>
@@ -102,7 +113,7 @@
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
                         <h3 class="mb-0"> <a href="vuln/powershelldn.html">PowerShell & .NET</a></h3>
-                        <div class="subheading mb-3">FireEye HX Detection </div>
+                        <div class="subheading mb-3">Living off the land</div>
                         <p>After getting several alerts from FireEye HX regarding suspicious .dll file coming from the process csc.exe, I decided to dig into that subject. After doing an Enterprise Search in FireEye for the process name "csc.exe", I've found that PowerShell.exe is often its parent process. This article is to understand what are the possible exploits by compiling C# code with PowerShell. </p>
                     </div>
                     <div class="flex-shrink-0"><span class="text-primary">January 2021</span></div>

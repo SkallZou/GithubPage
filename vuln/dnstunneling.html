@@ -74,7 +74,7 @@
                                     <li><strong>Not-in-order problem:</strong> There is no guarantee that the TXT record will be returned in order. Since that we need to recreate the executable from the base64, we need to make sure that it comes in order.</li>
                                     <li><strong>Duplicate issue:</strong> Duplicate results will not be display, only one result will be displayed. It is very common for a PowerShell script to have a lot of A when the hex is convert as a base64. Therefore, If there are several times 255 ‘A’, the TXT record will only show one 255 ‘A’.</li>
                                 </ul>                                
-                                To avoid those issues, it is necessary to create subdomains with numbers to keep track of the order and store the 255 strings in the TXT records. <br>
+                                To avoid those issues, it is necessary to create subdomains with numbers to keep track the order and store the 255 strings in the TXT records. <br>
                                 <br>
                                 <h4>Proof of Concept</h4>
                                 I've created a Windows Server that hosts a DNS server for this POC.

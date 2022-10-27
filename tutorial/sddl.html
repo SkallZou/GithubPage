@@ -61,12 +61,102 @@
                     <div class="flex-grow-1">
                         <h4 class="mb-0">Definition</h4>
                         <p>
-
+                            In Windows, every named object has a security descriptor, which contains the security settings for an object. <br>
+                            A security descriptor has two separate Access Control List: a System ACL (SACL) and a discretionary ACL. SACL determine which operation on an object is logged. DACL determine which user can perform a particular operation on the object. <br>
+                            In this case, we will more focus on the DACL, that contains three information that can be called Access Control Entry (ACE): 
+                            <ul>
+                                <li>Allowed or Denied</li>
+                                <li>Set of access rights</li>
+                                <li>Security ID (SID)</li>
+                            </ul>
+                            The Security identifier determines who the Access Control Entry applies to, it can be a user or a group. <br>
+                            The language SDDL (Security Descriptor Definition Language) defines the string format used to describe a security descriptor. The four main components of a security descriptor are owner (O:), primary group (G:), DACL (D:), SACL (S:). <br> <br>
+                            Let’s create a service to understand a bit more how does it work.
                         </p>  
                         <h4 class="mb-0">Windows Services</h4>
                         <p>
-                            
-                        </p>                  
+                            Creating a service in Windows can be done by using the command <strong>sc.exe</strong>
+                            <div class="squarebox">sc.exe create mysvc displayname=”myservice” binpath=”C:\Users\Hakkyahud\Desktop\work.exe”</div>
+                            <img src="img/SDDL/createservice.jpg" class="img-fluid" width="700">
+                            To confirm that your service has been correctly created, you can list all the services on windows.
+                            <div class="squarebox">sc queryex type=service state=all</div>
+                            <img src="img/SDDL/listservice1.jpg" class="img-fluid" width="700">
+                            There are other ways to find your service like opening task manager then click on the tab "Services"
+                            <img src="img/SDDL/listservice2.jpg" class="img-fluid" width="700">
+                            Or using WMI to query the services.
+                            <div class="squarebox">Get-WmiObject -Class Win32_service | findstr mysvc</div>
+                        </p>
+                        <h4 class="mb-0">SDDL & Services</h4>
+                        <p>
+                            We have learnt about the services and SDDL, what about we check the permission of a service ?
+                            Let's take a native service that can be started or stopped.
+                            <img src="img/SDDL/listservicexbl.jpg" class="img-fluid" width="500">
+                            To start a service:
+                            <div class="squarebox">sc start [ServiceName]</div>
+                            <img src="img/SDDL/runservice.jpg" class="img-fluid" width="500">
+                            The service cannot be run by a normal user, how can we give the right to the user ?
+                            First let's check the SDDL of the service to understand more closely what permission it has.
+                            <div class="squarebox">sc sdshow [ServiceName]</div>
+                            <img src="img/SDDL/sdshow.jpg" class="img-fluid" width="700">
+                            D: indicate the DACL, followed by ACEs and the S: indicate the SACL. <br>
+                            We will focus on the DACL part, the format of an ACE is: <strong>(ace_type;ace_flags;rights;object_guid;inherit_object_guid;account_sid)</strong> <br>
+                            Let’s take the first ACE: <strong>(A;;CCLCSWRPWPDTLOCRRC;;;SY)</strong> <br>
+                            <br>
+                            <strong>SDDL for Windows services</strong>
+                            <div class="squarebox">
+                            A - ALLOW <br>
+                            D - DENY <br>
+                            <hr style="border-top: 1px solid black;">
+                            CC – SERVICE_QUERY_CONFIG – ask the SCM for the service’s current configuration <br>
+                            LC – SERVICE_QUERY_STATUS – ask the SCM for the service’s current status <br>
+                            SW – SERVICE_ENUMERATE_DEPENDENTS – list dependent services <br>
+                            LO – SERVICE_INTERROGATE – ask the service its current status <br>
+                            CR – SERVICE_USER_DEFINED_CONTROL – send a service control defined by the service’s authors <br>
+                            RC – READ_CONTROL – read the security descriptor on this service. <br>
+                            RP – SERVICE_START – start the service <br>
+                            WP – SERVICE_STOP – stop the service <br>
+                            DT – SERVICE_PAUSE_CONTINUE – pause / continue the service <br>
+                            <hr style="border-top: 1px solid black;">
+                            IU - NT AUTHORITY\INTERACTIVE <br>
+                            SU - NT AUTHORITY\SERVICE <br>
+                            SY - NT AUTHORITY\SYSTEM <br>
+                            BA - BUILTIN\ADMINISTRATEUR <br>
+                            WD - Everyone <br>
+                            </div>
+
+                            So the ACE indicate that it allows the user NT AUTHORITY\SYSTEM to almost every right for the system. Among the access control entries, there isn't any indicating that a specific user can start a service.
+                            <br>
+                            If we want to give the permission to start the service to a user, we must retrieve his SID.
+                            <img src="img/SDDL/sid.jpg" class="img-fluid" width="700">
+                            Let’s add the following SDDL to give the permission to start and stop a service (A;;WPRP;;; S-1-5-21-320533732-2754806046-4003924088-1001).
+                            <img src="img/SDDL/sdset.jpg" class="img-fluid" width="700">
+                            After adding the new access control entry, the user can start and stop the service.
+                            <img src="img/SDDL/startservice.jpg" class="img-fluid" width="700">
+                        </p>
+                        <h4 class="mb-0">Hiding Windows services</h4>
+                        <p>
+                            How about we get more stealthy and attempt to hide some services. The permission "LC" will ask the Service Control Manager the current status of a service, but I've noticed that by denying this permission, the service will disappear. <br>
+                            Let's add the following ACE to the ACL of the service Xblgamesave : <strong>(D;;LC;;;S-1-5-21-320533732-2754806046-4003924088-1001)</strong>
+                            <img src="img/SDDL/hidesdset.jpg" class="img-fluid" width="900">
+                            Once this ACE has been added, the service will be invisible for the user. <br>
+                            <br>
+                            <li>Check with sc.exe :</li>
+                            <img src="img/SDDL/hideservice.jpg" class="img-fluid" width="700">
+                            <li>Check with WMI : </li>
+                            <img src="img/SDDL/hideservice2.jpg" class="img-fluid" width="700">
+                            <li>Check in Task Manager :</li>
+                            <img src="img/SDDL/hideservice3.jpg" class="img-fluid" width="700">
+
+                            Moreover by denying the right to ask the Service Control Manager the current status of the service, the user cannot start, stop the service.
+
+                            Therefore if we want that the service not be not found, or not able to get started by any user, simply add as the first position of ACE : <strong>(D;;CCLCSWWPDTLOCRRC;WD)</strong> <br>
+                            <br>
+                            This access control entry deny everyone to request for the service current configuration, current status, check depedencies, stop the service, pause the service and read the SDDL. <br>
+                            We allow to start the service, so that we can put in a schedule task to run the service everytime the laptop start for example.
+                            <br>
+                            <br>
+                            An attacker that has compromised an account with some administrative rights can easily hide a service from the victim. We will see in another article, how to catch and detect this kind of behavior.
+                        </p>
                     </div>
                 </div>
             </section>

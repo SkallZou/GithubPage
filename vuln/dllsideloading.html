@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>DLL Sideloading</title>
+        <link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="../css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-xl navbar-dark bg-primary fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger" href="../index.html">
+                <span class="d-block d-xl-none">Olivier LEUNG</span>
+                <span class="d-none d-xl-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="../assets/img/profile.jpg" alt="" /></span>
+            </a>
+            <div class="d-none d-xl-block description_profile"> <!--d-none is used for responsiveness of the panel when you shring the window -->
+                <h3>Olivier LEUNG</h3>
+                <div class="subheading_panel">Cybersecurity engineer </div>
+                    <div class="subheading_description">Love testing random cyber stuff !<br>That's by baking we become a baker</div>
+            </div>
+            <!-- button collapse panel when small windows, responsive pane -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> 
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../ctfpage.html">CTF</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../dfirpage.html">DFIR</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../vulnpage.html">Vuln Exploitation</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../malwarepage.html">Malware Analysis</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../tutorialpage.html">Tutorial</a></li>
+                </ul>
+            </div>
+
+            <div class="d-none d-xl-block social-icons">
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/olivierleung"><i class="fab fa-linkedin-in"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://github.com/SkallZou"><i class="fab fa-github"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://twitter.com/olivier_leung"><i class="fab fa-twitter"></i></a>
+            </div>
+        <footer class="d-none d-xl-block">
+            <div class="container">
+              <p class="m-1 text-center footerpage">Copyright &copy; 2022 Olivier Leung<br>All rights reserved.</p>
+            </div>
+        </footer>
+        </nav>
+        <!-- Page Content-->
+        <div>
+            <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
+            <h3 class="header-article"><a href="../vulnpage.html">Vulnerability Exploitation </a>> DLL Sideloading</h3>
+            </nav>
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <p>
+                            DLL sideloading is a technique that attackers use to trick a legitimate application to load a malicious DLL. Many applications are calling a .dll to use some functions that are exported by those .dll. This method is become more popular among the attackers since it can bypass many AV/EDR detections. I will demonstrate a DLL Sideloading by exploiting the vulnerability in all the version of Notepad++ prior 7.6. <br>
+
+                            It's a classic one, the CIA has determined that the notepad++ version prior 7.6 were vulnerable to a DLL Sideloading. Let's take the version 6.66 as an example. <br>
+                            <h4>NotePad++ version 6.66</h4>
+                            First thing we can do to find any vulnerability on a application is to copy the binary to another folder and see if can run it. In this case, we are facing an error <i>"Exception on WM_CREATE"</i>
+                            <img src="img/dllsideloading/error.jpg" class="img-fluid" width="500">
+                            The error indicates that the program could not load a specific function and display this error. Let's open Process Monitor from Sysinternals to monitor what dynamic library notepad++ is calling when it is run on the system. <br>
+                            <br>
+                            We want to look for every .dll that is loading by Notepad++, we can set some filter option to display the results that we want.
+                            <img src="img/dllsideloading/processmonitorfilter.jpg" class="img-fluid" width="700">
+                            <img src="img/dllsideloading/processmonitorresult.jpg" class="img-fluid" width="600">
+                            Notepad++ seems to load a specific dll called "SciLexer.dll", if we look at the previous error, the error indicates that it couldn't load a the dynamic library to call the function ScintillaEditView::init. <br>
+                            <br>
+                            Let's take a look at what the function are exported in the DLL file "Scilexer.dll". <br>
+                            Open PEStudio and load the dll.
+
+                            <img src="img/dllsideloading/pestudioexport.jpg" class="img-fluid" width="900">
+                            Only one function is exported in the SciLexer.dll, which means that the program need to call the function "Scintilla_DirectFunction". Let's create a .dll that is calling paint.exe. In C, C++, the function DllMain() is the entrypoint into a dynamic-link library, it is very similar as the function Main(). When the system starts or terminate a process it calls the entry-point function for each loaded DLL. Therefore, putting the function WinExec() will run this function when a process is calling this dll. WinExec() is used to execute the content of his argument. 
+
+                            <div class="squarebox">
+                                #include &lt;windows.h&gt; //for WinExec() <br>
+                                BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) { <br>
+                            &emsp;WinExec("cmd.exe /C C:\\Windows\\System32\\mspaint.exe", 0);
+                            &emsp;exit(0);
+                            &emsp;return 0;
+                            }
+                            </div>
+                            
+                            To compile a source code in C and generate a .dll, use the default C compiler "GCC"
+                            <div class="squarebox">
+                                gcc -c [FILENAME].c <br>
+                                gcc -shared [FILENAME].o -o [DLLNAME].dll
+                            </div>
+
+                            As I previously mentioned, the main reason for an application to load a dll is to import some functions from this dll instead of rewriting the function in the program code. <br>
+                            We have previously checked the export functions of the legitimate SciLexer.dll, and the file was only exporting one function called "Scntilla_DirectFunction". There might be a chance that if our dll does not contain this function, the program will also not run properly. 
+
+                            <div class="squarebox">
+                            #include &lt;windows.h&gt; //for WinExec() <br>
+                            void Scintilla_DirectFunction() { <br>
+                            &emsp;WinExec("cmd.exe /C C:\\Windows\\System32\\mspaint.exe", 0);
+                            }
+                            BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) { <br>
+                            &emsp;Scintilla_DirectFunction();
+                            &emsp;exit(0);
+                            &emsp;return 0;
+                            }
+                            </div>
+                            Compile the source code and generate a dll.
+                            <img src="img/dllsideloading/gcccompile.jpg" class="img-fluid" width="700">
+                            If I open PEStudio and check for the export, we should be able to see the function in the exports.
+                            <img src="img/dllsideloading/pestudioexport2.jpg" class="img-fluid" width="900">
+                            For this case, we only have 1 function, however, if we have many functions to copy, it will become troublesome to rewrite each function on our dll. <br>
+                            To know what functions are called by the program, check the imports on PEStudio.
+                            <img src="img/dllsideloading/pestudioimport.jpg" class="img-fluid" width="900">
+                            It exists a tool called "<a href="https://github.com/monoxgas/Koppeling">NetClone</a>" that can clone the exports from one DLL to another.
+                            <div class="squarebox">Netclone.exe --target [MALICIOUS_DLL] --reference [LEGITIMATE_DLL] --output [NEW_DLL]</div>
+                            This tool will clone the export of the legitimate DLL to the malicious DLL, which in our case launch paint.
+                            <img src="img/dllsideloading/netclone.jpg" class="img-fluid" width="900">
+                            Our new dll is called "SciLexer.dll" and has all the functions of the legitimate one. Now let's try to run Notepad++.exe. <br> <br>
+                            <video width="70%" style="max-width: 100%; height: auto; display: block;" muted autoplay loop>
+                                <source src="img/dllsideloading/notepad++.mp4" type="video/mp4">
+                                    Your browser does not support the video tag
+                            </video>
+                            <br>
+                            In this example, notepad++.exe has opened paint.exe but it could lead to a more critical arbitrary code execution and the attacker could have had a reverse shell for example from this legitimate program. We have seen an increase in the use of this methods by the attackers and some have found dll sideloading vulnerabilities on native Windows applications such as OneDrive and Teams.
+
+                        </p>
+                    </div>
+                </div>
+            </section>            
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

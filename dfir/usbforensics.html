@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>USB Key Forensic Investigation</title>
+        <link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="../css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-xl navbar-dark bg-primary fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger" href="../index.html">
+                <span class="d-block d-xl-none">Olivier LEUNG</span>
+                <span class="d-none d-xl-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="../assets/img/profile.jpg" alt="" /></span>
+            </a>
+            <div class="d-none d-xl-block description_profile"> <!--d-none is used for responsiveness of the panel when we shring the window -->
+                <h3>Olivier LEUNG</h3>
+                <div class="subheading_panel">Cybersecurity engineer </div>
+                    <div class="subheading_description">Love testing random cyber stuff !<br>That's by baking we become a baker</div>
+            </div>
+            <!-- button collapse panel when small windows, responsive pane -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> 
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../ctfpage.html">CTF</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../dfirpage.html">DFIR</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../vulnpage.html">Vuln Exploitation</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../malwarepage.html">Malware Analysis</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../tutorialpage.html">Tutorial</a></li>
+                </ul>
+            </div>
+
+            <div class="d-none d-xl-block social-icons">
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/olivierleung"><i class="fab fa-linkedin-in"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://github.com/SkallZou"><i class="fab fa-github"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://twitter.com/olivier_leung"><i class="fab fa-twitter"></i></a>
+            </div>
+        <footer class="d-none d-xl-block">
+            <div class="container">
+              <p class="m-1 text-center footerpage">Copyright &copy; 2023 Olivier Leung<br>All rights reserved.</p>
+            </div>
+        </footer>
+        </nav>
+        <!-- Page Content-->
+        <div>
+            <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
+            <h3 class="header-article"><a href="../dfirpage.html">Digital Forensics and Incident Response </a>> USB Key Forensic Investigation</h3>
+            </nav>
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h4 class="mb-0">1/ Use Case</h3>
+                        <p>
+                            An incident has been created manually to investigate on a USB key infection. A system has been detected having a Raspberry Robin infection. The goal of this case is to find the USB key that was the source of the infection. 
+                        </p>
+
+                        <h4 class="mb-0">2/ Investigation</h3>
+                        <p>
+                            Whenever a USB key is plugged in a system, a registry key named USBSTOR is created on the SYSTEM registry hive.
+                            <div class="squarebox">
+                                HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR
+                            </div>
+                            The registry files are found on the following path : <strong>C:\Windows\System32\config</strong>, so the files that correspond to SYSTEM, SOFTWARE, SECURITY hives can be found in this path. <br>
+
+                            Registry explorer from Eric Zimmerman is a great tool to navigate into those file.
+
+                            <img src="img/UsbForensic/registryexplorer.png" class="img-fluid" width="600">
+
+                            The incident happened on 2022-06-16 05:44:40Z, which means that the USB key has to be plugged before or at the incident time.
+
+
+
+                            Expanding the folder and clicking on the first sub folder, we manage to extract some interesting information regarding the USB key.
+
+                            <img src="img/UsbForensic/usbkey2.png" class="img-fluid" width="900">
+
+                            Serial # : 37DXYQWK7W33HB5M <br>
+                            USB key name : JetFlash Transcend 16GB <br>
+                            USB DeviceCapability : 16 GB <br>
+                            GUID: {4d36e967-e325-11ce-bfc1-08002be10318} <br>
+                            Service : disk <br>
+                            <br>
+                            On the registry, we can also get the information about when the USB key has been plugged in the computer for the first time. <br>
+                            <br>
+                            On the subfolder 'Properties' find the key 64 to get the date of when the USB key has been plugged in the computer.
+
+                            <img src="img/UsbForensic/64.png" class="img-fluid" width="800">
+                            First time connected : 2022-06-16 05:44:05Z <br>
+                            <br>
+                            Find the key 66 to get the information when the USB key last connected to the laptop.
+
+                            <img src="img/UsbForensic/66.png" class="img-fluid" width="800">
+                            Last time connected : 2022-06-16 05:44:05Z <br>
+                            <br>
+                            Find the key 67 to get the information about when was the last time the USB key has been removed.
+
+                            <img src="img/UsbForensic/67.png" class="img-fluid" width="800">
+                            Last time removed : 2022-06-16 05-49-02Z <br>
+                            <br>
+                            At the Mounted Devices, you can also get the drive letter. 
+                            <img src="img/UsbForensic/mounteddevice.png" class="img-fluid" width="900">
+
+                            We see that the D drive letter was associated to the USB key JetFlash Transcend 16GDB&Rev_100. In the value you also find the serial number (37DXYQWK7W33HB5M) <br>
+                            To find the Drive Letter, it is also possible to go to the following registry key : 
+                            <div class="squarebox">
+                                HKLM\SOFTWARE\Microsoft\Windows Portable Devices\Devices
+                            </div>
+
+                            Look for USB key name and the serial number that you've got from USBSTOR, clicking on the registry key, the drive letter will be shown
+
+                            <img src="img/UsbForensic/driveletter.png" class="img-fluid" width="900">
+                            
+                        </p>
+                        
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

@@ -60,7 +60,7 @@
                     <div class="flex-grow-1">
                             <p>
                                 We have previously work locally to understand the concept of DNS tunneling (<a href="https://skallzou.github.io/vuln/dnstunneling.html">DNS Tunneling P.1</a>).
-                                This second part of the DNS tunneling series will show how to exploit the DNS to open a reverse shell when the VBA macro is executed on the victim system. The issue in the previous part is that the domain name wasn’t reachable from the internet. The test was made locally. In this case, we will buy a domain from a domain registrar so that our domain is reachable by anyone sending a DNS query to our server. <br>
+                                This second part of the DNS tunneling series will show how to exploit the DNS to open a reverse shell when the VBA macro is executed on the victim system. The issue in the previous part is that the domain name wasn’t reachable from the internet. In this case, we will buy a domain from a domain registrar so that our domain is reachable by anyone sending a DNS query to our server. <br>
                                 <br>
                                 So the first thing to do is to buy a domain on a domain registrar such as GoDaddy or OVH and configure the domain to store the payload inside. <br>
                                 As we know, we will store a big amount of string in the DNS server, but since that TXT records can only store 255 characters, we need to automate the task to create DNS entries. <br>

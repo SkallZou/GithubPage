@@ -62,10 +62,8 @@
                                 We have previously work locally to understand the concept of DNS tunneling (<a href="https://skallzou.github.io/vuln/dnstunneling.html">DNS Tunneling P.1</a>).
                                 This second part of the DNS tunneling series will show how to exploit the DNS to open a reverse shell when the VBA macro is executed on the victim system. The issue in the previous part is that the domain name wasn’t reachable from the internet. In this case, we will buy a domain from a domain registrar so that our domain is reachable by anyone sending a DNS query to our server. <br>
                                 <br>
-                                So the first thing to do is to buy a domain on a domain registrar such as GoDaddy or OVH and configure the domain to store the payload inside. <br>
-                                As we know, we will store a big amount of string in the DNS server, but since that TXT records can only store 255 characters, we need to automate the task to create DNS entries. <br>
-                                To automate the creation of DNS entry, one classic choice is to play with the API. <br>
-                                <br>
+                                First, get a domain either from a domain registrar such as GoDaddy or OVH or get public dns and configure the domain to store the payload inside. <br>
+                                We will store a big amount of string in the DNS server as previously done locally. The TXT records of a DNS can only store 255 characters so we need to automate the task to create DNS entries. To automate the creation of DNS entry, it might be necessary to play with the API. <br>
                                 <h4>OVH API</h4>
                                 OVH has a documentation that explains how to use their API, and they suggest to install their library. For those people using python, installing their library will make the task easier. Here is the link for the OVH documentation in python (https://github.com/ovh/python-ovh).  
                                 Since that I want to stay on PowerShell, we will need to understand how the API works, and check what it returns after a request.

@@ -10264,3 +10264,14 @@ h3.mb-0{
 body{
   color: #aaaaaa  /*Dark Theme*/
 }
+
+.sidebar{
+  display: flex;
+  width: 20%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}

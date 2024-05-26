@@ -60,12 +60,12 @@
                     <div class="flex-grow-1">
                         <h4 class="mb-0">1/ Description</h4>
                         <p>
-                            As a SOC engineer, we are spending time on events and alerts on our daily working life. Sometimes, we wish to have more features on the frontend to assist us when doing hunting or investigating in a incident. It could also be useful to make a proof of concept showing the usefulness of the features requested to the development team. This article is about user script which are customized JavaScript to load on the frontend of the web page. It only happened on the frontend, it cannot be used in the backend otherwise this leads to a severe security issue. With the user scripts, any user can add their own code to enhance some functionalities of the web application.
+                            As a SOC engineer, we are spending time on events and alerts on our daily working life. Sometimes, we wish to have more features on the frontend to assist us when doing hunting or investigating in a incident. It could also be useful to make a proof of concept showing the usefulness of the features requested to the development team. This article is about user script which are customized JavaScript to load on the frontend of the web page. The user scripts cannot be used to alter the backend otherwise this leads to a severe security issue, however it gives to any user the possibility to add their own code to enhance some functionalities on the web page.
                         </p>
 
                         <h4 class="mb-0">2/ Getting Started</h4>
                         <p>
-                            <i>I will especially use Firefox, this hasn't been tested on another browser.</i><br><br>To load a user script, go to <strong>"about:debugging#/runtime/this-firefox"</strong> on your firefox browser. <br> Then click on "Load Temporary Add-on..." and select the manifest.json that describes the structure of your user script to the browser.  To load it permanently, the script must be sent to firefox so that they can validate the maliciousness of that script and make it publicly available. Temporary Extension means that you will have to load the userscript every time you close your browser.
+                            <i>I will especially use Firefox, this hasn't been tested on another browser.</i><br><br>To load a user script, go to <strong>"about:debugging#/runtime/this-firefox"</strong> on your firefox browser. <br> Then click on "Load Temporary Add-on..." and select the manifest.json that describes the structure of your user script to the browser.  To load it permanently, the script must be sent to Firefox so that they can validate the maliciousness of that script by signing it and make it publicly available. Temporary Extension means that you will have to load the user script every time you close your browser. You can consider to use Firefox Developer Edition to load it permanently as well.
 
                             <img src="img/UserScript/debuggingpage.jpg" class="img-fluid" width="600">
                         </p>
@@ -73,39 +73,39 @@
                         <p>
                             The structure of a user script can be very simple. The requirements are 2 files: <strong>manifest.json</strong> and <strong>script.js</strong>. The manifest file must contain the key "content_script" to instruct the browser to insert the given content script into pages that match the url indicated in the manifest file. Here is below an example of a manifest file: <br>
                             <img src="img/UserScript/manifest.jpg" class="img-fluid" width="400">
-                            It is possible to add the key "exclude_matches" to not take some URL into account. In the same manifest.json, it is also possible to specify 2 different indexes under "content_script" that indicate what user scripts will run on what URL.
+                            It is possible to add the key "exclude_matches" to not take some URL into account. In the same manifest.json, it is also possible to specify many different indexes under "content_script" that indicate what user scripts will run on what URL.
                             <br>
                             For more information regarding what you can do in the manifest, it is documented on the web page of <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions">Mozilla</a>:
                         </p>
-                        <h4 class="mb-0">Example: Create a link for each value of a field</h4>
+                        <h4 class="mb-0">Example: Create a link for a value of a field</h4>
                         <p>
-                            The user script will not modify anything in the backend, but can modify anything in the frontend (any user can do that without script by the way). In this example, we want to modify the HTLM and make a link on a specific element of the DOM so that we can send this selected value to another application by clicking on it.
+                            The user script will not modify anything in the backend, but can modify anything in the frontend (any user can do that without script by the way). In this example, we want to modify a HTML element to make it a link so that we can send this selected value to another application by clicking on it.
 
                             <img src="img/UserScript/elementtarget.jpg" class="img-fluid" width="1200">
-                            On the screenshot above, we want to make a link in the value of Event ID. Looking at the source code, we notice that two different html classes exist for the rows (one is a empty class and one has expanded-row class). The value of eventID cannot be view if the row is not expanded. Therefore, we need to monitor the change in the class on those <strong>tr</strong> tag and run a function everytime the script notice a change. <br>
+                            On the screenshot above, we want to make a link in the value of Event ID. Looking at the source code, we notice that two different html classes exist for the rows (one has an empty class or "expanded" and one has expanded-row class). The value of event ID cannot be view if the row is not expanded. Therefore, we need to monitor the change in the class on those <strong>tr</strong> tag and run a function everytime the script notice a change. <br>
                             <br>
-                            To target a specific element on the DOM, it is very easy in Javascript: 
+                            To target a specific element on the DOM, many functions exist in JavaScript: 
                             <div class="squarebox">
-                                document.querySelectorAll([SELECTOR]) // Selector can be table, p, div...<br>
-                                selector.getElementByTagName([TAG]) // to target a tag like tbody... <br>
+                                document.querySelectorAll([SELECTOR]) // Select a DOM element (table, p, div...)<br>
+                                selector.getElementByTagName([TAG]) // to target a tag (tbody...) <br>
                                 classList.toString() // to target the class (expanded for example)
                             </div>
-                            Document.querySelectorAll will return a list of the selector specified as argument. There might be several table in the document, so we must be sure which table to pick.
+                            Document.querySelectorAll will return a list of the selector specified as argument. There might be several tables in the document, so we must be sure which table to pick.
                             <img src="img/UserScript/queryselectorall_table.jpg" class="img-fluid" width="600">
-                            By hovering on those squares, you can see directly where the element is located on the web page.
+                            By putting the mouse over those squares, you can see directly where the element is located on the web page.
                             <img src="img/UserScript/getelementbytagname_tbody.jpg" class="img-fluid" width="600">
-                            After making those queries, we have a list of every row that exists in the selected table of the document. In the list of tr, we also have tr.expanded-row, those ones are not important for the moment so we can create our own list without tr.expanded-row.
+                            After making those queries, we have a list of every row that exists in the selected table. In the list of <strong>tr</strong>, we also have tr.expanded-row, those ones are not important for the moment so we can create our own list without tr.expanded-row.
                             <img src="img/UserScript/rowlist.jpg" class="img-fluid" width="600">
                             Now, we have all the rows of the table that we want and we can start to monitor any class modification here. <br>
                             <br>
-                            The second step is to target the HTML element we want to modify. Inspecting the source code, the element is found in the <strong>expanded-row</strong> class table. The nearest selector of the HTML element is <strong>"&ltdiv class='col-md-4 col-xl-3 col'&gt"</strong> then child of the span element <strong>"&ltspan class='wrap-amywhere pa-0'&gt"</strong>. And finally, we can get the value by looking at attribute <strong>'innerText'</strong>.
+                            The second step is to target the HTML element we want to modify. Inspecting the source code, the element is found in the <strong>expanded-row</strong> class table. The closest &ltdiv&gt is <strong>"&ltdiv class='col-md-4 col-xl-3 col'&gt"</strong> following by a span element <strong>"&ltspan class='wrap-amywhere pa-0'&gt"</strong>. And finally, we can get the value by looking at the attribute <strong>'innerText'</strong>.
                             <img src="img/UserScript/eventid.jpg" class="img-fluid" width="800">
 
                             After that, we have all the element to modify the element.
                             <img src="img/UserScript/changetolink.jpg" class="img-fluid" width="1100">
                             However, all of those tasks were manually made, how to automate it ? <br>
                             <br>
-                            In Javascript, there is a class called <strong>MutationObverser</strong>. It is a class that will check changes in the DOM. The method observe() indicates which element must be observed for change. An instance of MutationObserver takes a callback function as argument. The instance will call the callback function everytime there is a cahnge in the DOM for the observed element. <br>
+                            In Javascript, there is a class called <strong>MutationObverser</strong>. It is a class that will check changes in the DOM. The method observe() indicates which element must be observed for change. An instance of MutationObserver takes a callback function as argument. The instance will call the callback function everytime there is a change in the DOM for the observed element. <br>
                             <br>
                             But before that, we must create a listener on the document that would register a mouse click.
                             <div class="squarebox">window.addEventListener("click", clickDetected);</div>
@@ -127,9 +127,9 @@
                                 }
                             </div>
 
-                            The MutationObserver object will monnitore all the row with an empty class. 
-                            <img src="img/UserScript/mutationobserver.jpg" class="img-fluid" width="800">
-                            For every modification of class will trigger the callback function. In our case we want to do an action when an empty class row become expanded. We know that the structure of the table are made this way : 
+                            The MutationObserver object will monitor all the row with an empty class. 
+                            <img src="img/UserScript/mutationobserver.jpg" class="img-fluid" width="900">
+                            Every modification on those objects will trigger the callback function. In our case we want to do an action when an empty class row become expanded. We know that the structure of the table are made this way : 
                             <div class="squarebox">
                                 table <br>
                                 &emsp;- tr / tr.expanded <br>
@@ -140,14 +140,21 @@
                                 &emsp;- tr / tr.expanded <br>
                                 &emsp;- tr.expanded-row <br>
                             </div>
-                            Therefore, we are tagging the next sibling, because the element that we want to modify is found in the expanded-row class. Then we stop monitoring the rows of the table that are already expanded by disconnecting the observer. The number of MutationObserver object is equal of the number of empty class rows.
-                            <img src="img/UserScript/modifyeventid.jpg" class="img-fluid" width="800">
+                            Therefore, we are tagging the next sibling, because the HTML element that we want to modify is found in the expanded-row class. Then we stop monitoring the rows that are already expanded by disconnecting the observer. The number of MutationObserver instances is equal to the number of empty class rows.
+                            <img src="img/UserScript/modifyeventid.jpg" class="img-fluid" width="900">
 
-                            When expanded, we are looking for the eventID and change it to a link that send a GET request to a local application for further investigation. The value of the event id will be passed in the in the 'id' parameter. <br>
+                            When expanded, we are looking for the event ID and change it to a link that send a GET request to a local application for further investigation. The value of the event id will be passed in the 'id' parameter. <br>
 
                             <br>
-                            This is one use case among so many possibilities. This might change your way of working and make you become more creative without waiting for future development updates.
+                            This is one use case among so many possibilities. This might change your way of working and make you become more creative without waiting for future development updates. Moreover if your web application support HTTP API, JavaScript can make those API calls using the function XLMHttpRequest(). 
                         </p>
+                        <h4 class="mb-0">DEMO: Create VirusTotal Link from SHA256 value</h4>
+                        <br>
+                            <video width="80%" style="max-width: 100%; height: auto; display: block;" muted autoplay loop>
+                                <source src="img/UserScript/vtlinksha256.mp4" type="video/mp4">
+                                    Your browser does not support the video tag
+                            </video>
+
                     </div>
                 </div>
             </section>

@@ -69,7 +69,7 @@
 
                             <img src="img/UserScript/debuggingpage.jpg" class="img-fluid" width="600">
                         </p>
-                        <h4 class="mb-0">UserScript structure</h4>
+                        <h4 class="mb-0">3/ UserScript structure</h4>
                         <p>
                             The structure of a user script can be very simple. The requirements are 2 files: <strong>manifest.json</strong> and <strong>script.js</strong>. The manifest file must contain the key "content_script" to instruct the browser to insert the given content script into pages that match the url indicated in the manifest file. Here is below an example of a manifest file: <br>
                             <img src="img/UserScript/manifest.jpg" class="img-fluid" width="400">
@@ -77,7 +77,7 @@
                             <br>
                             For more information regarding what you can do in the manifest, it is documented on the web page of <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions">Mozilla</a>:
                         </p>
-                        <h4 class="mb-0">Example: Create a link for a value of a field</h4>
+                        <h4 class="mb-0">4/ Example: Create a link for a value of a field</h4>
                         <p>
                             The user script will not modify anything in the backend, but can modify anything in the frontend (any user can do that without script by the way). In this example, we want to modify a HTML element to make it a link so that we can send this selected value to another application by clicking on it.
 
@@ -105,6 +105,8 @@
                             <img src="img/UserScript/changetolink.jpg" class="img-fluid" width="1100">
                             However, all of those tasks were manually made, how to automate it ? <br>
                             <br>
+
+                            <h4 class="mb-0">Mutation Observer</h4>     
                             In Javascript, there is a class called <strong>MutationObverser</strong>. It is a class that will check changes in the DOM. The method observe() indicates which element must be observed for change. An instance of MutationObserver takes a callback function as argument. The instance will call the callback function everytime there is a change in the DOM for the observed element. <br>
                             <br>
                             But before that, we must create a listener on the document that would register a mouse click.
@@ -148,7 +150,7 @@
                             <br>
                             This is one use case among so many possibilities. This might change your way of working and make you become more creative without waiting for future development updates. Moreover if your web application support HTTP API, JavaScript can make those API calls using the function XLMHttpRequest(). 
                         </p>
-                        <h4 class="mb-0">DEMO: Create VirusTotal Link from SHA256 value</h4>
+                        <h4 class="mb-0">5/ DEMO: Create VirusTotal Link from SHA256 value</h4>
                         <br>
                             <video width="80%" style="max-width: 100%; height: auto; display: block;" muted autoplay loop>
                                 <source src="img/UserScript/vtlinksha256.mp4" type="video/mp4">

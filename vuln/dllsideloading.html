@@ -93,6 +93,10 @@
                                 gcc -shared [FILENAME].o -o [DLLNAME].dll
                             </div>
 
+                            <strong><i>When compiling for a Windows environment, use i686-w64-mingw32-gcc for 32 bits and x86_64-w64-mingw32-gcc for 64 bits <br></i></strong>
+
+                            <br>
+
                             As I previously mentioned, the main reason for an application to load a dll is to import some functions from this dll instead of rewriting the function in the program code. <br>
                             We have previously checked the export functions of the legitimate SciLexer.dll, and the file was only exporting one function called "Scntilla_DirectFunction". There might be a chance that if our dll does not contain this function, the program will also not run properly. 
 

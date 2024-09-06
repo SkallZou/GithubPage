@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Parallel Execution in Python</title>
+        <link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="../css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-xl navbar-dark bg-primary fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger" href="../index.html">
+                <span class="d-block d-xl-none">Olivier LEUNG</span>
+                <span class="d-none d-xl-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="../assets/img/profile.jpg" alt="" /></span>
+            </a>
+            <div class="d-none d-xl-block description_profile"> <!--d-none is used for responsiveness of the panel when you shring the window -->
+                <h3>Olivier LEUNG</h3>
+                <div class="subheading_panel">Cybersecurity engineer </div>
+                    <div class="subheading_description">Love testing random cyber stuff !<br>That's by baking we become a baker</div>
+            </div>
+            <!-- button collapse panel when small windows, responsive pane -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> 
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../ctfpage.html">CTF</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../dfirpage.html">DFIR</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../vulnpage.html">Vuln Exploitation</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../malwarepage.html">Malware Analysis</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="../tutorialpage.html">Tutorial</a></li>
+                </ul>
+            </div>
+
+            <div class="d-none d-xl-block social-icons">
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/olivierleung"><i class="fab fa-linkedin-in"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://github.com/SkallZou"><i class="fab fa-github"></i></a>
+                <a class="social-icon" target="_blank" rel="noopener noreferrer" href="https://twitter.com/olivier_leung"><i class="fab fa-twitter"></i></a>
+            </div>
+        <footer class="d-none d-xl-block">
+            <div class="container">
+              <p class="m-1 text-center footerpage">Copyright &copy; 2024 Olivier Leung<br>All rights reserved.</p>
+            </div>
+        </footer>
+        </nav>
+        <!-- Page Content-->
+        <div>
+            <nav class="navbar navbar-expand-xl navbar-dark bg-header sticky-top">
+            <h3 class="header-article"><a href="../tutorialpage.html">Tutorial & Cheatseet </a>> Parallel Execution in Python</h3>
+            </nav>
+            
+            <section class="article">
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <p>
+                            It is common to face some slowness when fetching many data from a big database to perform any data analysis. This slowness might be caused by many factors such as backend overhead (how data are stored, how data are queried...) or saturated network. Nowadays, computers are all multithreaded and multiprocessed so they can perform many tasks at the same time, do you see yourself running something and wait until it finishes to perform other tasks ? Computers are also getting more powerful, with more ram and more CPU cores than before. Most of our usage does not fully use the potential of our computer, so we can use it when really we need it (video games, video encoding, compressing, etc).
+                        </p>
+                        <h4 class="mb-0">Multiprocessing and Multithreading</h4>
+                        <p>
+                            In the world of parallelism, it exists 2 primary types: <strong>multiprocessing</strong> and <strong>multithreading</strong>.
+                            <ul>
+                                <li><strong>Multiprocessing:</strong> In a single core process, the instructions are stacked and run in queue. The task to run is decided by the EIP (32 bits) or RIP (64 bits), which are the instructions pointers. Multiprocessing is assigning tasks to multiple cores of the CPU so every core run a specific sequence of tasks simultaneously.</li>
+                                <img src="img/Parallelism/multiprocess.jpg" class="img-fluid" width="500">
+
+                                <li><strong>Multithreading: </strong>Concurrency will be the term to use in a multithreading situation. The multithreading is a single core process that can run asynchronous function using different threads so the program does not block on tasks such as compressing data. A thread is part of the process, so all the threads in the process shares the address spaces of the parent process.</li>
+                                <img src="img/Parallelism/multithread.jpg" class="img-fluid" width="500">
+                            </ul>
+                            When a program starts, the operating system allocates memory and load all the resources needed by the program so the CPU can execute the instructions. Threads compared to Processes are always lighter since the memory allocation has been determine when the binary has started to run. However, multithreading means concurrent execution, whereas multiprocessing enable real parallelism.
+
+                        </p>  
+                        <h4 class="mb-0">Concurrency and Parallelism</h4>
+                        <p>
+                            Multithreading does not offer true parallelism, it is possible to generate multiple threads to do different job together. But every thread cannot run at the same time together.
+                            <img src="img/Parallelism/concurrency.jpg" class="img-fluid" width="500">
+                            In the example above, we have created thread to run a asynchronous function to not block on the "Request 1" so the program continue while thread 1 is making any web server request. The program can create another thread to run the same asynchronous function but to request another web request, thread 2 will request the web server without blocking the program. Same thing will happen for the third request. The blocking moment will be to wait those 3 thread to finish to continue the rest of the program. <br>
+                            <br>On a single threaded process, the execution would have looked like this.
+                            <img src="img/Parallelism/singleprocess.jpg" class="img-fluid" width="700">
+
+                            Before running the second request, we must wait the first request to finish. <br>
+                            <br>
+                            When it comes to multiprocessing and parallel execution, it will look like this.
+                            <img src="img/Parallelism/parallelexecution.jpg" class="img-fluid" width="500">
+                            In the case of parallel execution, both processes run at the same time. The processes are started and then joined to wait for their completion. The processes run independently and complete in any order. <br>
+                            <br>
+                            Python, unlike other programming language like C, cannot run thread in parallel due to the limitation of the Python internal function. Python uses the Global Interpreter Lock to restrict access to Python objects and prevents multiple threads to run Python bytecodes in parallel. Therefore using multiprocessing in Python is a better choice for parallelism execution. Creating multiple processes means to allocate several memory spaces and each process will have their own GIL. Each process will execute the Python bytecode without being affected by the GIL. <br>
+                            <br>
+                            In general, for lighter tasks, multithreading is faster than multiprocessing since it has less overhead regarding the process creation, therefore, it doesn't need to allocate multiple memory space by the operating system.
+                        </p>
+                        <h4 class="mb-0">Multiprocessing in Python</h4>
+                        <p>
+                            A multiprocessing library exists in python to perform parallel execution. The Pool class instantiates the amount of cores we want to use in our python script. The apply_async() method of the Pool class will enable us to call functions in a asynchronous way so every process runs at the same time and the main process will not wait the first child process to finish. The goal is that the processes instantiated by the pool run independently and complete in any order.
+                            <div class="squarebox">
+                                import multiprocessing <br>
+                                import random <br>
+                                <br>
+                                def veryrandom(): <br>
+                                &emsp;return random.randbytes(10) <br>
+                                <br>
+                                def main(): <br>
+                                &emsp;with multiprocessing.Pool(processes=5) as pool: <br>
+                                &emsp;&emsp;for process in range(5): <br>
+                                &emsp;&emsp;&emsp;resultList.append(pool.apply_async(veryrandom)) <br>
+                                &emsp;&emsp;pool.close() <br>
+                                &emsp;&emsp;pool.join() <br>
+                                &emsp;print(resultList) <br>
+
+                            </div>
+                            The method apply_async will immediately return the value when the task is complete by a process. The return type is a ApplyResult object.
+                            <br>
+                            The ApplyResult object correspond to the result of one process. Each ApplyResult object has the return value of the function passed as a argument in the method <i>pool.apply_async()</i> <br>
+
+                            <br>
+                            Extracting the actual data from the ApplyResult object is done with the get() method of that class.
+                            <div class="squarebox">
+                                def extractResultMP(applyResultList): <br>
+                                &emsp;dataList = [] <br>
+                                &emsp;for applyResultObject in applyResultList: <br>
+                                &emsp;&emsp;dataList.append(applyResultObject.get()) <br>
+                                &emsp;return dataList
+                            </div>
+
+                            <u>Console Output:</u>
+                            <img src="img/Parallelism/demo.jpg" class="img-fluid" width="900">
+
+                            With this kind of example, you do not see any benefit from doing multiprocessing. In a more complexe case, it might be useful to leverage multiprocessing such as fetching data from a server, every request to the web server takes time to complete. By splitting the total data to retrieve by a number of processes can reduce the time to fully retrieve the maximum of data.
+                        </p>
+                        <h4 class="mb-0">Concrete example: Automation and acceleration</h4>
+                        <p>
+                            Automation has been a hot topic in many projects. Baselining required a significant amount of data to perform some data analysis to understand the normal behavior of the daily and weekly IT activity of a company.<br>
+                            One of the first restriction that I was facing was the limit of data that I can pull from the database. <br>
+                            <img src="img/Parallelism/restriction.jpg" class="img-fluid" width="900">
+                            In this example, the maximum of data that I can pull is set to 1000 events. My current system has 10 CPU cores, if each process run the same function to pull 1000 events, we should be able to fetch 10 000 events.
+                            <img src="img/Parallelism/initMP.jpg" class="img-fluid" width="900">
+
+                            One important parameter is the <strong>offset</strong> which indicates the number of data to skip from the beginning. Modifying the offset allows us to not fetch the same data by each process. <br>
+                            Offset: 0 and Limit: 1000 => 1 to 1000 <br>
+                            Offset: 1000 and Limit: 1000 => 1001 to 2000 <br>
+                            Offset: 2000 and Limit: 1000 => 2001 to 3000 <br>
+                            Process 1 will start at offset 0 (0*limit), process 2 will start at offset 1000 (1*limit), and so on... <br>
+                            <br>
+                            An error happened when I was trying to perform this parallel execution through multiprocessing.
+
+                            <div class="squarebox">
+                                File pkcs12.py, line 103, in init_poolmanager <br>
+                                if self.ssl_context: <br>
+                                AttributeError: 'Pkcs12Adapter' object has no attribute 'ssl_context'
+                            </div>
+                            It might be due to the GIL in Python that locks the resource of the python executable environment. When the resource is already used by a thread or by a process, the mutex will lock the resource and the other threads and processes are forbidden to access to this resource. One solution is to make every new process to get their own session by authenticating themselves, so each process can be independent from each other and will have their own needed resources. <br>
+                            <br>
+                            <strong>Keyring</strong> is a python library that can integrate with different secret manager such as Windows Credential Manager or MacOS Keychain or Ubuntu's SecretService. Credentials must not be stored in plain text in any file. Mitre technique T1552, Unsecured Credentials, is still frequently happening, and can be the cause of lateral movement or priviledge escalation.
+                        </p>
+                        <h4 class="mb-0">Demo</h4>
+                        <br>
+                            <video width="80%" style="max-width: 100%; height: auto; display: block;" muted autoplay loop>
+                                <source src="img/Parallelism/multiprocessing.mp4" type="video/mp4">
+                                    Your browser does not support the video tag
+                            </video>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

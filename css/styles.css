@@ -10223,6 +10223,10 @@ h2.header-article{
   margin: 10px;
 }
 
+.tab1{
+  tab-size: 10;
+}
+
 @media (max-width: 1200px) { /*[RESPONSIVE] title article sticky into static*/
   .sticky-top{
     position:static;

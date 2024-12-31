@@ -12,11 +12,11 @@ document.write('\
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> \
             <div class="collapse navbar-collapse" id="navbarSupportedContent">\
                 <ul class="navbar-nav">\
-                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="ctfpage.html">CTF</a></li>\
-                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="dfirpage.html">DFIR</a></li>\
-                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="vulnpage.html">Vuln Exploitation</a></li>\
-                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="malwarepage.html">Malware Analysis</a></li>\
-                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="tutorialpage.html">Tutorial</a></li>\
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/ctfpage.html">CTF</a></li>\
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/dfirpage.html">DFIR</a></li>\
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/vulnpage.html">Vuln Exploitation</a></li>\
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/malwarepage.html">Malware Analysis</a></li>\
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/tutorialpage.html">Tutorial</a></li>\
                 </ul>\
             </div>\
 \
